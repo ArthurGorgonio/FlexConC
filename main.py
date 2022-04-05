@@ -1,9 +1,10 @@
 import numpy as np
 from sklearn import datasets
+from sklearn.metrics import accuracy_score, f1_score
+from sklearn.naive_bayes import GaussianNB as Naive
+
 from src.flexcon import FlexConC
 
-from sklearn.naive_bayes import GaussianNB as Naive
-from sklearn.metrics import accuracy_score, f1_score
 ssl = FlexConC(Naive(), verbose=True)
 print(ssl)
 
@@ -21,5 +22,5 @@ ssl.fit(iris.data, iris.target_unlabelled)
 y_pred = ssl.predict(iris.data[random_unlabeled_points, :])
 
 print(f'ACC: {round(accuracy_score(iris.target[random_unlabeled_points], y_pred), 2)}%\n'
-      f'F1-Score: {round(f1_score(iris.target[random_unlabeled_points], y_pred, average="macro"), 2)}%\n'
-      f'Motivo da finalização: {ssl.termination_condition_}')
+    f'F1-Score: {round(f1_score(iris.target[random_unlabeled_points], y_pred, average="macro"), 2)}%\n'
+    f'Motivo da finalização: {ssl.termination_condition_}')

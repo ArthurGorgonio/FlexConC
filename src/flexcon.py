@@ -1,13 +1,15 @@
 import warnings
+from statistics import mean
 
 import numpy as np
-
-from sklearn.semi_supervised import SelfTrainingClassifier
+from ipdb import sset_trace
 from sklearn.base import clone
-from sklearn.utils import safe_mask
 from sklearn.metrics import accuracy_score
+from sklearn.semi_supervised import SelfTrainingClassifier
+from sklearn.utils import safe_mask
 
 from src.utils import validate_estimator
+
 
 class FlexConC(SelfTrainingClassifier):
     def __init__(
@@ -19,9 +21,10 @@ class FlexConC(SelfTrainingClassifier):
         verbose=False
     ):
         super().__init__(base_estimator=base_estimator,
-                         threshold=threshold,
-                         max_iter=max_iter)
+                        threshold=threshold,
+                        max_iter=max_iter)
         self._cr = cr
+        self._it = 0
         self._init_acc = 0
         self.verbose = verbose
         self.old_selected = []
@@ -50,7 +53,6 @@ class FlexConC(SelfTrainingClassifier):
         """
         # we need row slicing support for sparce matrices, but costly finiteness check
         # can be delegated to the base estimator.
-        import ipdb; ipdb.sset_trace()
         X, y = self._validate_data(
             X, y, accept_sparse=["csr", "csc", "lil", "dok"], force_all_finite=False
         )
@@ -59,7 +61,6 @@ class FlexConC(SelfTrainingClassifier):
             raise ValueError("base_estimator cannot be None!")
 
         self.base_estimator_ = clone(self.base_estimator)
-        self.base_estimator_select_ = clone(self.base_estimator)
 
         if self.max_iter is not None and self.max_iter < 0:
             raise ValueError(f"max_iter must be >= 0 or None, got {self.max_iter}")
@@ -87,7 +88,6 @@ class FlexConC(SelfTrainingClassifier):
 
         self.transduction_ = np.copy(y)
         self.labeled_iter_ = np.full_like(y, -1)
-        self.init_labeled_ = np.full_like(y, -1)
         self.labeled_iter_[has_label] = 0
 
         self.n_iter_ = 0
@@ -95,6 +95,7 @@ class FlexConC(SelfTrainingClassifier):
         while not np.all(has_label) and (
             self.max_iter is None or self.n_iter_ < self.max_iter
         ):
+            sset_trace()
             self.n_iter_ += 1
             self.base_estimator_.fit(
                 X[safe_mask(X, has_label)], self.transduction_[has_label]
@@ -111,37 +112,26 @@ class FlexConC(SelfTrainingClassifier):
             max_proba = np.max(prob, axis=1)
 
             # Select new labeled samples
-            selected = max_proba > self.threshold
-
+            selected = max_proba >= self.threshold
+        
+            #if()
+            
             # Map selected indices into original array
             selected_full = np.nonzero(~has_label)[0][selected]
 
-            # Traning model to classify the labeled samples
-            self.base_estimator_select_.fit(
-                X[safe_mask(X, selected_full)], pred[selected]
-            )
-
-            # Predict on the labeled samples
-            try:
-                local_acc = self.calc_local_measure(
-                    X[safe_mask(X, selected_full)],
-                    self.transduction_[selected_full],
-                    X[safe_mask(X, self.init_labeled_)],
-                    self.base_estimator_select_
-                )
-                print(f'Acurácia do novo classificador: {local_acc}')
-            except:
-                pass
             # Add newly labeled confident predictions to the dataset
             self.transduction_[selected_full] = pred[selected]
             has_label[selected_full] = True
             self.labeled_iter_[selected_full] = self.n_iter_
 
-            if selected_full.shape[0] == 0:
+            if selected_full.shape[0] > 0:
+                #
                 # no changed labels
+                self.new_threshold(max_proba, len(selected), len(max_proba))
                 self.termination_condition_ = "threshold_change"
-                self.threshold -= self._cr
-
+                # self.threshold -= self._cr  THERE IS A flexconG  
+            else:
+                self.threshold = max(max_proba)
             if self.verbose:
                 print(
                     f"End of iteration {self.n_iter_},"
@@ -157,7 +147,7 @@ class FlexConC(SelfTrainingClassifier):
         if self.n_iter_ == self.max_iter:
             self.termination_condition_ = "max_iter"
         if np.all(has_label):
-            self.termination_condition_ = "all_labeled"      
+            self.termination_condition_ = "all_labeled"
 
         self.base_estimator_.fit(
             X[safe_mask(X, has_label)], self.transduction_[has_label]
@@ -166,14 +156,19 @@ class FlexConC(SelfTrainingClassifier):
         
         return self
 
-    def calc_local_measure(self, S, y, X, classifier):
+    def calc_local_measure(self, X, y, classifier, init_lab_db):
         classifier.fit(S, y)
         y_pred = classifier.predict(X)
 
         return accuracy_score(y, y_pred)
+    def new_threshold(self, prob, qtd_add, total_unlabel):
+        #if local_measure > (init_acc + 0.01) and ((self.threshold - self.cr) > 0.0):
+        #    self.threshold -= self.cr
+        #elif (local_measure < (init_acc - 0.01)) and ((self.threshold + self.cr) <= 1):
+        #    self.threshold += self.cr
+        cobertura  = qtd_add/total_unlabel
 
-    def new_threshold(self, local_measure, init_acc):
-        if local_measure > (init_acc + 0.01) and ((self.threshold - self._cr) > 0.0):
-            self.threshold -= self._cr
-        elif (local_measure < (init_acc - 0.01)) and ((self.threshold + self._cr) <= 1):
-            self.threshold += self._cr
+        mean_conf = np.mean(prob)
+
+        self.threshold = (self.threshold + mean_conf + cobertura)/3
+        
