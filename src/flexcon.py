@@ -59,6 +59,7 @@ class FlexConC(SelfTrainingClassifier):
             raise ValueError("base_estimator cannot be None!")
 
         self.base_estimator_ = clone(self.base_estimator)
+        self.base_estimator_select_ = clone(self.base_estimator)
 
         if self.max_iter is not None and self.max_iter < 0:
             raise ValueError(f"max_iter must be >= 0 or None, got {self.max_iter}")
@@ -86,6 +87,7 @@ class FlexConC(SelfTrainingClassifier):
 
         self.transduction_ = np.copy(y)
         self.labeled_iter_ = np.full_like(y, -1)
+        self.init_labeled_ = np.full_like(y, -1)
         self.labeled_iter_[has_label] = 0
 
         self.n_iter_ = 0
@@ -111,11 +113,25 @@ class FlexConC(SelfTrainingClassifier):
             # Select new labeled samples
             selected = max_proba > self.threshold
 
-            #if()
-
             # Map selected indices into original array
             selected_full = np.nonzero(~has_label)[0][selected]
 
+            # Traning model to classify the labeled samples
+            self.base_estimator_select_.fit(
+                X[safe_mask(X, selected_full)], pred[selected]
+            )
+
+            # Predict on the labeled samples
+            try:
+                local_acc = self.calc_local_measure(
+                    X[safe_mask(X, selected_full)],
+                    self.transduction_[selected_full],
+                    X[safe_mask(X, self.init_labeled_)],
+                    self.base_estimator_select_
+                )
+                print(f'Acurácia do novo classificador: {local_acc}')
+            except:
+                pass
             # Add newly labeled confident predictions to the dataset
             self.transduction_[selected_full] = pred[selected]
             has_label[selected_full] = True
@@ -141,7 +157,7 @@ class FlexConC(SelfTrainingClassifier):
         if self.n_iter_ == self.max_iter:
             self.termination_condition_ = "max_iter"
         if np.all(has_label):
-            self.termination_condition_ = "all_labeled"
+            self.termination_condition_ = "all_labeled"      
 
         self.base_estimator_.fit(
             X[safe_mask(X, has_label)], self.transduction_[has_label]
@@ -150,7 +166,7 @@ class FlexConC(SelfTrainingClassifier):
         
         return self
 
-    def calc_local_measure(self, S, y, X, classifier, init_lab_db):
+    def calc_local_measure(self, S, y, X, classifier):
         classifier.fit(S, y)
         y_pred = classifier.predict(X)
 

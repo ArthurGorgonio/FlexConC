@@ -1,5 +1,5 @@
 import pandas as pd
-from skmultiflow.data import FileStream
+# from skmultiflow.data import FileStream
 
 
 def read_stream(filename, path='../datasets/'):
