@@ -1,11 +1,12 @@
 import numpy as np
 from sklearn import datasets
+from sklearn.metrics import accuracy_score, f1_score
+from sklearn.naive_bayes import GaussianNB as Naive
+
 from src.flexcon import FlexConC
 
-from sklearn.naive_bayes import GaussianNB as Naive
-from sklearn.metrics import accuracy_score, f1_score
 ssl = FlexConC(Naive(), verbose=True)
-print(ssl)
+#print(ssl)
 
 rng = np.random.RandomState(42)
 iris = datasets.load_iris()

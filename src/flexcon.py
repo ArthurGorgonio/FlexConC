@@ -1,13 +1,13 @@
 import warnings
 
 import numpy as np
-
-from sklearn.semi_supervised import SelfTrainingClassifier
 from sklearn.base import clone
-from sklearn.utils import safe_mask
 from sklearn.metrics import accuracy_score
+from sklearn.semi_supervised import SelfTrainingClassifier
+from sklearn.utils import safe_mask
 
 from src.utils import validate_estimator
+
 
 class FlexConC(SelfTrainingClassifier):
     def __init__(
@@ -50,7 +50,7 @@ class FlexConC(SelfTrainingClassifier):
         """
         # we need row slicing support for sparce matrices, but costly finiteness check
         # can be delegated to the base estimator.
-        import ipdb; ipdb.sset_trace()
+        
         X, y = self._validate_data(
             X, y, accept_sparse=["csr", "csc", "lil", "dok"], force_all_finite=False
         )
@@ -87,11 +87,11 @@ class FlexConC(SelfTrainingClassifier):
 
         self.transduction_ = np.copy(y)
         self.labeled_iter_ = np.full_like(y, -1)
-        self.init_labeled_ = np.full_like(y, -1)
         self.labeled_iter_[has_label] = 0
+        self.init_labeled_ = has_label.copy()
 
         self.n_iter_ = 0
-
+        #import ipdb; ipdb.sset_trace()
         while not np.all(has_label) and (
             self.max_iter is None or self.n_iter_ < self.max_iter
         ):
@@ -116,21 +116,21 @@ class FlexConC(SelfTrainingClassifier):
             # Map selected indices into original array
             selected_full = np.nonzero(~has_label)[0][selected]
 
-            # Traning model to classify the labeled samples
-            self.base_estimator_select_.fit(
-                X[safe_mask(X, selected_full)], pred[selected]
-            )
 
             # Predict on the labeled samples
             try:
+                # Traning model to classify the labeled samples
+                self.base_estimator_select_.fit(
+                    X[safe_mask(X, selected_full)], pred[selected]
+                )
+
                 local_acc = self.calc_local_measure(
-                    X[safe_mask(X, selected_full)],
-                    self.transduction_[selected_full],
                     X[safe_mask(X, self.init_labeled_)],
+                    y[self.init_labeled_],
                     self.base_estimator_select_
                 )
                 print(f'Acurácia do novo classificador: {local_acc}')
-            except:
+            except ValueError:
                 pass
             # Add newly labeled confident predictions to the dataset
             self.transduction_[selected_full] = pred[selected]
@@ -166,11 +166,10 @@ class FlexConC(SelfTrainingClassifier):
         
         return self
 
-    def calc_local_measure(self, S, y, X, classifier):
-        classifier.fit(S, y)
+    def calc_local_measure(self, X, y_true, classifier):
         y_pred = classifier.predict(X)
 
-        return accuracy_score(y, y_pred)
+        return accuracy_score(y_true, y_pred)
 
     def new_threshold(self, local_measure, init_acc):
         if local_measure > (init_acc + 0.01) and ((self.threshold - self._cr) > 0.0):
