@@ -140,7 +140,7 @@ class FlexConC(SelfTrainingClassifier):
             if selected_full.shape[0] == 0:
                 # no changed labels
                 self.termination_condition_ = "threshold_change"
-                self.threshold -= self._cr
+                self.new_threshold
 
             if self.verbose:
                 print(
