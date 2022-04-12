@@ -61,6 +61,7 @@ class FlexConC(SelfTrainingClassifier):
             raise ValueError("base_estimator cannot be None!")
 
         self.base_estimator_ = clone(self.base_estimator)
+        self.base_estimator_select_ = clone(self.base_estimator)
 
         if self.max_iter is not None and self.max_iter < 0:
             raise ValueError(f"max_iter must be >= 0 or None, got {self.max_iter}")
@@ -92,11 +93,24 @@ class FlexConC(SelfTrainingClassifier):
         self.init_labeled_ = has_label.copy()
 
         self.n_iter_ = 0
-        #import ipdb; ipdb.sset_trace()
+        # import ipdb; ipdb.sset_trace()
+        base_estimator_init = clone(self.base_estimator)
+        # L0 - MODELO TREINADO E CLASSIFICADO COM L0
+        base_estimator_init.fit(
+            X[safe_mask(X, has_label)], self.transduction_[has_label]
+        )
+        # ACC EM L0 - RETORNA A EFICACIA DO MODELO 
+        init_acc = self.calc_local_measure(
+                    X[safe_mask(X, self.init_labeled_)],
+                    y[self.init_labeled_],
+                    base_estimator_init
+                )
+        print(f'Acurácia do novo classificador: {init_acc}')
+
         while not np.all(has_label) and (
             self.max_iter is None or self.n_iter_ < self.max_iter
         ):
-            sset_trace()
+            #sset_trace()
             self.n_iter_ += 1
             self.base_estimator_.fit(
                 X[safe_mask(X, has_label)], self.transduction_[has_label]
@@ -144,10 +158,12 @@ class FlexConC(SelfTrainingClassifier):
             if selected_full.shape[0] > 0:
                 #
                 # no changed labels
-                self.new_threshold(max_proba, len(selected), len(max_proba))
+                self.new_threshold(local_acc, init_acc)
                 self.termination_condition_ = "threshold_change"
-                self.new_threshold
-
+                # print(self.threshold)
+            else:
+                self.threshold = np.max(max_proba)
+                # print(self.threshold)
             if self.verbose:
                 print(
                     f"End of iteration {self.n_iter_},"
@@ -182,3 +198,5 @@ class FlexConC(SelfTrainingClassifier):
             self.threshold -= self._cr
         elif (local_measure < (init_acc - 0.01)) and ((self.threshold + self._cr) <= 1):
             self.threshold += self._cr
+        else:
+            pass
