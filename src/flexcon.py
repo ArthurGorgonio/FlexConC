@@ -56,7 +56,7 @@ class FlexConC(SelfTrainingClassifier):
         X, y = self._validate_data(
             X, y, accept_sparse=["csr", "csc", "lil", "dok"], force_all_finite=False
         )
-
+        
         if self.base_estimator is None:
             raise ValueError("base_estimator cannot be None!")
 
@@ -84,6 +84,8 @@ class FlexConC(SelfTrainingClassifier):
 
         has_label = y != -1
 
+        self.matriz = [[0] * np.unique(y[has_label]) for _ in range(len(X))]
+
         if np.all(has_label):
             warnings.warn("y contains no unlabeled samples", UserWarning)
 
@@ -93,7 +95,7 @@ class FlexConC(SelfTrainingClassifier):
         self.init_labeled_ = has_label.copy()
 
         self.n_iter_ = 0
-        # import ipdb; ipdb.sset_trace()
+        
         base_estimator_init = clone(self.base_estimator)
         # L0 - MODELO TREINADO E CLASSIFICADO COM L0
         base_estimator_init.fit(
@@ -125,16 +127,17 @@ class FlexConC(SelfTrainingClassifier):
             prob = self.base_estimator_.predict_proba(X[safe_mask(X, ~has_label)])
             pred = self.base_estimator_.classes_[np.argmax(prob, axis=1)]
             max_proba = np.max(prob, axis=1)
+            
 
             # Select new labeled samples
             selected = max_proba >= self.threshold
-        
+            
             #if()
             
             # Map selected indices into original array
             selected_full = np.nonzero(~has_label)[0][selected]
-
-
+            import ipdb; ipdb.sset_trace()
+            self.build_matriz(pred, np.nonzero(~has_label)[0])
             # Predict on the labeled samples
             try:
                 # Traning model to classify the labeled samples
@@ -187,6 +190,10 @@ class FlexConC(SelfTrainingClassifier):
         self.classes_ = self.base_estimator_.classes_
         
         return self
+
+    def build_matriz(self, pred, ids):
+        for x, y in zip(ids, pred):
+            self.matriz[x][y] += 1
 
     def calc_local_measure(self, X, y_true, classifier):
         y_pred = classifier.predict(X)
