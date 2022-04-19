@@ -1,5 +1,6 @@
 import warnings
 from statistics import mean
+from typing import Optional
 
 import numpy as np
 from sklearn.base import clone
@@ -28,6 +29,7 @@ class FlexConC(SelfTrainingClassifier):
         self.verbose = verbose
         self.old_selected = []
         self.selected = []
+        self.dict_first = {}
     
     def __str__(self):
         return (f'Classificador {self.base_estimator}\n'
@@ -84,7 +86,7 @@ class FlexConC(SelfTrainingClassifier):
 
         has_label = y != -1
 
-        self.matriz = [[0] * np.unique(y[has_label]) for _ in range(len(X))]
+        self.cl_memory = [[0] * np.unique(y[has_label]) for _ in range(len(X))]
 
         if np.all(has_label):
             warnings.warn("y contains no unlabeled samples", UserWarning)
@@ -128,16 +130,28 @@ class FlexConC(SelfTrainingClassifier):
             pred = self.base_estimator_.classes_[np.argmax(prob, axis=1)]
             max_proba = np.max(prob, axis=1)
             
+            if self._it == 1:
+                self.dict_first = self.storage_predict(
+                    id=np.nonzero(~has_label)[0],
+                    confidence=max_proba,
+                    classes=pred
+                )
+            else:
+                self.pred_x_it = self.storage_predict(
+                    id=np.nonzero(~has_label)[0],
+                    confidence=max_proba,
+                    classes=pred
+                )
 
             # Select new labeled samples
             selected = max_proba >= self.threshold
             
-            #if()
+            self.update_memory()
             
             # Map selected indices into original array
             selected_full = np.nonzero(~has_label)[0][selected]
-            import ipdb; ipdb.sset_trace()
-            self.build_matriz(pred, np.nonzero(~has_label)[0])
+            # import ipdb; ipdb.sset_trace()
+            self.update_memory(pred, np.nonzero(~has_label)[0])
             # Predict on the labeled samples
             try:
                 # Traning model to classify the labeled samples
@@ -191,10 +205,6 @@ class FlexConC(SelfTrainingClassifier):
         
         return self
 
-    def build_matriz(self, pred, ids):
-        for x, y in zip(ids, pred):
-            self.matriz[x][y] += 1
-
     def calc_local_measure(self, X, y_true, classifier):
         y_pred = classifier.predict(X)
 
@@ -207,3 +217,21 @@ class FlexConC(SelfTrainingClassifier):
             self.threshold += self._cr
         else:
             pass
+
+    def update_memory(self, intances: List, labels: List, weights: Optional[List] = None) -> None:
+        if not weights:
+            weights = [1 for _ in range(len(intances))]
+        for x, y, w in zip(intances, labels, weights):
+            self.cr_memory[x][y] += w
+
+    def remember(self, X: List) -> List:
+        y = [np.argmax(self.cl_memory[x]) for x in X]
+        return y
+
+    def storage_predict(self, ids, confidence, classes):
+        dict = {}
+        for i, conf, cl in zip(ids, confidence, classes):
+            dict[i] = {}
+            dict[i]['conf'] = conf
+            dict[i]['class'] = cl
+        return dict
