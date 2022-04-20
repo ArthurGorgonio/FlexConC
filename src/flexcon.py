@@ -1,6 +1,7 @@
 import warnings
+from select import select
 from statistics import mean
-from typing import Optional
+from typing import List, Optional
 
 import numpy as np
 from sklearn.base import clone
@@ -24,7 +25,6 @@ class FlexConC(SelfTrainingClassifier):
                         threshold=threshold,
                         max_iter=max_iter)
         self._cr = cr
-        self._it = 0
         self._init_acc = 0
         self.verbose = verbose
         self.old_selected = []
@@ -114,7 +114,7 @@ class FlexConC(SelfTrainingClassifier):
         while not np.all(has_label) and (
             self.max_iter is None or self.n_iter_ < self.max_iter
         ):
-            #sset_trace()
+            # sset_trace()
             self.n_iter_ += 1
             self.base_estimator_.fit(
                 X[safe_mask(X, has_label)], self.transduction_[has_label]
@@ -130,28 +130,36 @@ class FlexConC(SelfTrainingClassifier):
             pred = self.base_estimator_.classes_[np.argmax(prob, axis=1)]
             max_proba = np.max(prob, axis=1)
             
-            if self._it == 1:
+            if self.n_iter_ == 1:
                 self.dict_first = self.storage_predict(
-                    id=np.nonzero(~has_label)[0],
+                    ids=np.nonzero(~has_label)[0],
                     confidence=max_proba,
                     classes=pred
                 )
+                # Select new labeled samples
+                selected = max_proba >= self.threshold
             else:
                 self.pred_x_it = self.storage_predict(
-                    id=np.nonzero(~has_label)[0],
+                    ids=np.nonzero(~has_label)[0],
                     confidence=max_proba,
                     classes=pred
                 )
+                selected, pred = self.rule_1()
+                if not len(selected):
+                    selected, pred  = self.rule_2()
+                    if not len(selected):
+                        selected, pred = self.rule_3()
+                        if not len(selected):
+                            selected, pred = self.rule_4()
+                            if not len(selected):
+                                self.threshold = np.max(max_proba)
 
-            # Select new labeled samples
-            selected = max_proba >= self.threshold
-            
-            self.update_memory()
-            
+            # self.update_memory()
+
             # Map selected indices into original array
             selected_full = np.nonzero(~has_label)[0][selected]
-            # import ipdb; ipdb.sset_trace()
-            self.update_memory(pred, np.nonzero(~has_label)[0])
+            import ipdb; ipdb.sset_trace()
+            self.update_memory(np.nonzero(~has_label)[0], pred)
             # Predict on the labeled samples
             try:
                 # Traning model to classify the labeled samples
@@ -218,11 +226,13 @@ class FlexConC(SelfTrainingClassifier):
         else:
             pass
 
-    def update_memory(self, intances: List, labels: List, weights: Optional[List] = None) -> None:
+    def update_memory(self, instances: List, labels: List, weights: Optional[List] = None) -> None:
         if not weights:
-            weights = [1 for _ in range(len(intances))]
-        for x, y, w in zip(intances, labels, weights):
-            self.cr_memory[x][y] += w
+            weights = [1 for _ in range(len(instances))]
+            print(f'X = {instances}\n\n\n\nY = {labels}\n\n\n\n')
+        for x, y, w in zip(instances, labels, weights):
+            # print(f'X = {x}\nY = {y}\nW = {w}')
+            self.cl_memory[x][y] += w
 
     def remember(self, X: List) -> List:
         y = [np.argmax(self.cl_memory[x]) for x in X]
@@ -232,6 +242,47 @@ class FlexConC(SelfTrainingClassifier):
         dict = {}
         for i, conf, cl in zip(ids, confidence, classes):
             dict[i] = {}
-            dict[i]['conf'] = conf
-            dict[i]['class'] = cl
+            dict[i]['confidence'] = conf
+            dict[i]['classes'] = cl
         return dict
+
+    def rule_1(self):
+        selected = []
+        classes_selected = []
+        for id in self.pred_x_it:
+            if (self.dict_first[id]['confidence'] >= self.threshold 
+                and self.pred_x_it[id]['confidence'] >= self.threshold 
+                and self.dict_first[id]['classes'] == self.pred_x_it[id]['classes']):
+                    selected.append(id)
+                    classes_selected.append(self.dict_first[id]['classes'])
+        return selected, classes_selected
+
+    def rule_2(self):
+        selected = []
+        classes_selected = []
+        for id in self.pred_x_it:
+            if ((self.dict_first[id]['confidence'] >= self.threshold
+                or self.pred_x_it[id]['confidence'] >= self.threshold)
+                and self.dict_first[id]['classes'] == self.pred_x_it[id]['classes']):
+                    selected.append(id)
+                    classes_selected.append(self.dict_first[id]['classes'])
+        return selected, classes_selected
+
+    def rule_3(self):
+        selected = []
+        for id in self.pred_x_it:
+            if (self.dict_first[id]['classes'] != self.pred_x_it[id]['classes']
+                and self.dict_first[id]['confidence'] >= self.threshold 
+                and self.pred_x_it[id]['confidence'] >= self.threshold ):
+                    selected.append(id)
+        return selected, self.remember(selected)
+
+    def rule_4(self):
+        selected = []
+        for id in self.pred_x_it:
+            if (self.dict_first[id]['classes'] != self.pred_x_it[id]['classes']
+                and (self.dict_first[id]['confidence'] >= self.threshold 
+                or self.pred_x_it[id]['confidence'] >= self.threshold)):
+                    selected.append(id)
+        return selected, self.remember(selected)
+
