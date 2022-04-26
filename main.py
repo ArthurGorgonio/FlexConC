@@ -6,16 +6,12 @@ from sklearn.naive_bayes import GaussianNB as Naive
 from src.flexcon import FlexConC
 
 ssl = FlexConC(Naive(), verbose=True)
-#print(ssl)
 
 rng = np.random.RandomState(42)
 iris = datasets.load_iris()
 random_unlabeled_points = rng.rand(iris.target.shape[0]) < 0.9
 iris.target_unlabelled = iris.target.copy()
 iris.target_unlabelled[random_unlabeled_points] = -1
-# 
-# model = Naive()
-#
 
 ssl.fit(iris.data, iris.target_unlabelled)
 
