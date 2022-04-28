@@ -149,7 +149,7 @@ class FlexConC(SelfTrainingClassifier):
 
             # Map selected indices into original array
             selected_full = np.nonzero(~has_label)[0][selected]
-            # import ipdb; ipdb.sset_trace()
+
             self.update_memory(np.nonzero(~has_label)[0], pred)
             # Predict on the labeled samples
             try:
@@ -168,34 +168,39 @@ class FlexConC(SelfTrainingClassifier):
                 pass
 
             # Add newly labeled confident predictions to the dataset
-        self.add_new_labeled(selected_full, selected, local_acc, init_acc, max_proba, pred, has_label)
+            self.transduction_[selected_full] = pred[selected]
+            has_label[selected_full] = True
+            #import ipdb; ipdb.sset_trace()
+            self.labeled_iter_[selected_full] = self.n_iter_
 
-        if self.n_iter_ == self.max_iter:
-            self.termination_condition_ = "max_iter"
-        if np.all(has_label):
-            self.termination_condition_ = "all_labeled"
+            if selected_full.shape[0] > 0:
+                # no changed labels
+                self.new_threshold(local_acc, init_acc)
+                self.termination_condition_ = "threshold_change"
+            else:
+                self.threshold = np.max(max_proba)
+            if self.verbose:
+                print(
+                    f"End of iteration {self.n_iter_},"
+                    f" added {selected} new labels."
+                )
+            else:
+                print(
+                    f"End of iteration {self.n_iter_},"
+                    f" 0 new instaces are labelled."
+                )
 
-        self.base_estimator_.fit(
-            X[safe_mask(X, has_label)], self.transduction_[has_label]
-        )
-        self.classes_ = self.base_estimator_.classes_
-        return self
+            if self.n_iter_ == self.max_iter:
+                self.termination_condition_ = "max_iter"
+            if np.all(has_label):
+                self.termination_condition_ = "all_labeled"
 
-    @classmethod
-    def calc_local_measure(cls, X, y_true, classifier):
-        """
-        Calcula o valor da acurácia do modelo
+            self.base_estimator_.fit(
+                X[safe_mask(X, has_label)], self.transduction_[has_label]
+            )
+            self.classes_ = self.base_estimator_.classes_
+            return self
 
-        Args:
-            X: instâncias
-            y_true: classes
-            classifier: modelo
-
-        Returns:
-            Retorna a acurácia do modelo
-        """
-        y_pred = classifier.predict(X)
-        return accuracy_score(y_true, y_pred)
 
     def new_threshold(self, local_measure, init_acc):
         """
@@ -224,10 +229,10 @@ class FlexConC(SelfTrainingClassifier):
         if not weights:
             weights = [1 for _ in range(len(instances))]
             print(f'X = {instances}\n\n\n\nY = {labels}\n\n\n\n')
-        for x, y, w in zip(instances, labels, weights):
-            self.cl_memory[x][y] += w
+        for x_instances, y_labels, w_weights in zip(instances, labels, weights):
+            self.cl_memory[x_instances][y_labels] += w_weights
 
-    def remember(self, X: List) -> List:
+    def remember(self, instances_x: List) -> List:
         """
         Responsável por armazenar como está as instâncias dado um  momento no
         código
@@ -238,11 +243,24 @@ class FlexConC(SelfTrainingClassifier):
         Returns:
             A lista memorizada em um dado momento
         """
-        y = [np.argmax(self.cl_memory[x]) for x in X]
-        return y
+        classes_y = [np.argmax(self.cl_memory[x]) for x in instances_x]
+        return classes_y
+    def calc_local_measure(self, instances_x, y_true, classifier):
+        """
+        Calcula o valor da acurácia do modelo
 
-    @classmethod
-    def storage_predict(cls, ids, confidence, classes):
+        Args:
+            X: instâncias
+            y_true: classes
+            classifier: modelo
+
+        Returns:
+            Retorna a acurácia do modelo
+        """
+        y_pred = classifier.predict(instances_x)
+        return accuracy_score(y_true, y_pred)
+
+    def storage_predict(self, ids, confidence, classes):
         """
         Responsável por armazenar o dicionário de dados da matriz
 
@@ -255,10 +273,10 @@ class FlexConC(SelfTrainingClassifier):
             Retorna o dicionário com as classes das instâncias não rotuladas
         """
         dict = {}
-        for i, conf, cl in zip(ids, confidence, classes):
+        for i, conf, classes_ in zip(ids, confidence, classes):
             dict[i] = {}
             dict[i]['confidence'] = conf
-            dict[i]['classes'] = cl
+            dict[i]['classes'] = classes_
         return dict
 
     def rule_1(self):
@@ -271,12 +289,12 @@ class FlexConC(SelfTrainingClassifier):
         """
         selected = []
         classes_selected = []
-        for id in self.pred_x_it:
-            if (self.dict_first[id]['confidence'] >= self.threshold
-                and self.pred_x_it[id]['confidence'] >= self.threshold
-                and self.dict_first[id]['classes'] == self.pred_x_it[id]['classes']):
-                selected.append(id)
-                classes_selected.append(self.dict_first[id]['classes'])
+        for id_ in self.pred_x_it:
+            if (self.dict_first[id_]['confidence'] >= self.threshold
+                and self.pred_x_it[id_]['confidence'] >= self.threshold
+                and self.dict_first[id_]['classes'] == self.pred_x_it[id_]['classes']):
+                selected.append(id_)
+                classes_selected.append(self.dict_first[id_]['classes'])
         return selected, classes_selected
 
     def rule_2(self):
@@ -290,12 +308,12 @@ class FlexConC(SelfTrainingClassifier):
 
         selected = []
         classes_selected = []
-        for id in self.pred_x_it:
-            if ((self.dict_first[id]['confidence'] >= self.threshold
-                or self.pred_x_it[id]['confidence'] >= self.threshold)
-                and self.dict_first[id]['classes'] == self.pred_x_it[id]['classes']):
-                selected.append(id)
-                classes_selected.append(self.dict_first[id]['classes'])
+        for id_ in self.pred_x_it:
+            if ((self.dict_first[id_]['confidence'] >= self.threshold
+                or self.pred_x_it[id_]['confidence'] >= self.threshold)
+                and self.dict_first[id_]['classes'] == self.pred_x_it[id_]['classes']):
+                selected.append(id_)
+                classes_selected.append(self.dict_first[id_]['classes'])
         return selected, classes_selected
 
     def rule_3(self):
@@ -307,11 +325,11 @@ class FlexConC(SelfTrainingClassifier):
         a lista correspondente pela condição
         """
         selected = []
-        for id in self.pred_x_it:
-            if (self.dict_first[id]['classes'] != self.pred_x_it[id]['classes']
-                and self.dict_first[id]['confidence'] >= self.threshold
-                    and self.pred_x_it[id]['confidence'] >= self.threshold ):
-                selected.append(id)
+        for id_ in self.pred_x_it:
+            if (self.dict_first[id_]['classes'] != self.pred_x_it[id_]['classes']
+                and self.dict_first[id_]['confidence'] >= self.threshold
+                    and self.pred_x_it[id_]['confidence'] >= self.threshold ):
+                selected.append(id_)
         return selected, self.remember(selected)
 
     def rule_4(self):
@@ -323,15 +341,15 @@ class FlexConC(SelfTrainingClassifier):
         a lista correspondente pela condição
         """
         selected = []
-        for id in self.pred_x_it:
-            if (self.dict_first[id]['classes'] != self.pred_x_it[id]['classes']
-                and (self.dict_first[id]['confidence'] >= self.threshold
-                or self.pred_x_it[id]['confidence'] >= self.threshold)):
-                selected.append(id)
+        for id_ in self.pred_x_it:
+            if (self.dict_first[id_]['classes'] != self.pred_x_it[id_]['classes']
+                and (self.dict_first[id_]['confidence'] >= self.threshold
+                or self.pred_x_it[id_]['conf_ence'] >= self.threshold)):
+                selected.append(id_)
         return selected, self.remember(selected)
 
 
-    def train_new_classifier(self, has_label, X, y):
+    def train_new_classifier(self, has_label, instances_x, classes_y):
         """
         Responsável por treinar um classificador e mensurar
             a sua acertividade
@@ -345,8 +363,8 @@ class FlexConC(SelfTrainingClassifier):
             Acurácia do modelo
         """
 
-        self.transduction_ = np.copy(y)
-        self.labeled_iter_ = np.full_like(y, -1)
+        self.transduction_ = np.copy(classes_y)
+        self.labeled_iter_ = np.full_like(classes_y, -1)
         self.labeled_iter_[has_label] = 0
         self.init_labeled_ = has_label.copy()
 
@@ -355,49 +373,14 @@ class FlexConC(SelfTrainingClassifier):
         base_estimator_init = clone(self.base_estimator)
         # L0 - MODELO TREINADO E CLASSIFICADO COM L0
         base_estimator_init.fit(
-            X[safe_mask(X, has_label)], self.transduction_[has_label]
+            instances_x[safe_mask(instances_x, has_label)], self.transduction_[has_label]
         )
         # ACC EM L0 - RETORNA A EFICACIA DO MODELO
         init_acc = self.calc_local_measure(
-                    X[safe_mask(X, self.init_labeled_)],
-                    y[self.init_labeled_],
+                    instances_x[safe_mask(instances_x, self.init_labeled_)],
+                    classes_y[self.init_labeled_],
                     base_estimator_init
                     )
         print(f'Acurácia do novo classificador: {init_acc}')
 
         return init_acc
-
-
-    def add_new_labeled(self, selected_full, selected, local_acc, init_acc, max_proba, pred, has_label):
-        """
-        Função que retorna as intâncias rotuladas
-
-        Args:
-            selected_full: lista com os indices das instâncias originais
-            selected: lista das intâncias com acc acima do limiar
-            local_acc: acurácia do modelo treinado com base na lista selected
-            init_acc: acurácia do modelo treinado com base na lista selected_full
-            max_proba: valores de probabilidade de predição das intâncias não rotuladas
-            pred: predição das instâncias não rotuladas
-            has_label: lista de instâncias rotuladas
-        """
-        self.transduction_[selected_full] = pred[selected]
-        has_label[selected_full] = True
-        self.labeled_iter_[selected_full] = self.n_iter_
-
-        if selected_full.shape[0] > 0:
-            # no changed labels
-            self.new_threshold(local_acc, init_acc)
-            self.termination_condition_ = "threshold_change"
-        else:
-            self.threshold = np.max(max_proba)
-        if self.verbose:
-            print(
-                f"End of iteration {self.n_iter_},"
-                f" added {selected} new labels."
-            )
-        else:
-            print(
-                f"End of iteration {self.n_iter_},"
-                f" 0 new instaces are labelled."
-            )
