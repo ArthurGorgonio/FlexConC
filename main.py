@@ -16,7 +16,10 @@ iris.target_unlabelled[random_unlabeled_points] = -1
 ssl.fit(iris.data, iris.target_unlabelled)
 
 y_pred = ssl.predict(iris.data[random_unlabeled_points, :])
+y_true = iris.target[random_unlabeled_points]
 
-print(f'ACC: {round(accuracy_score(iris.target[random_unlabeled_points], y_pred), 2)}%\n'
-      f'F1-Score: {round(f1_score(iris.target[random_unlabeled_points], y_pred, average="macro"), 2)}%\n'
-      f'Motivo da finalização: {ssl.termination_condition_}')
+print(
+    f"ACC: {round(accuracy_score(y_true, y_pred), 2)}%\n"
+    f'F1-Score: {round(f1_score(y_true, y_pred, average="macro"), 2)}%\n'
+    f"Motivo da finalização: {ssl.termination_condition_}"
+)
