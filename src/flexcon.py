@@ -79,6 +79,8 @@ class FlexConC(SelfTrainingClassifier):
             warnings.warn("y contains no unlabeled samples", UserWarning)
 
         init_acc = self.train_new_classifier(has_label, X, y)
+        old_selected = []
+        old_pred = []
         self.n_iter_ = 0
 
         while not np.all(has_label) and (
@@ -133,31 +135,34 @@ class FlexConC(SelfTrainingClassifier):
             self.update_memory(np.nonzero(~has_label)[0], pred)
             # Predict on the labeled samples
             try:
-                if self.old_selected:
-                    selected += self.old_selected
+                if old_selected:
+                    selected_full = np.array(old_selected + selected_full.tolist())
+                    selected = old_pred + selected
+                    old_selected = []
+                    old_pred = []
+
                 # Traning model to classify the labeled samples
                 self.base_estimator_select_.fit(
-                    X[safe_mask(X, selected_full)], pred[selected]
+                    X[selected_full], pred[selected]
                 )
-                # WIP
+                #WIP
+
                 local_acc = self.calc_local_measure(
                     X[safe_mask(X, self.init_labeled_)],
                     y[self.init_labeled_],
                     self.base_estimator_select_,
                 )
+                self.add_new_labeled(
+                    selected_full,
+                    selected,
+                    local_acc,
+                    init_acc,
+                    max_proba,
+                    pred,
+                )
             except ValueError:
-                self.old_selected = selected
-
-            # WIP
-            self.add_new_labeled(
-                selected_full,
-                selected,
-                local_acc,
-                init_acc,
-                max_proba,
-                pred,
-                has_label,
-            )
+                old_selected = selected_full.tolist()
+                old_pred = pred[selected].tolist()
 
         if self.n_iter_ == self.max_iter:
             self.termination_condition_ = "max_iter"
@@ -347,7 +352,6 @@ class FlexConC(SelfTrainingClassifier):
 
         return selected, self.remember(selected)
 
-    # WIP
     def train_new_classifier(self, has_label, X, y):
         """
         Responsável por treinar um classificador e mensurar
@@ -368,6 +372,7 @@ class FlexConC(SelfTrainingClassifier):
         self.init_labeled_ = has_label.copy()
 
         base_estimator_init = clone(self.base_estimator)
+
         # L0 - MODELO TREINADO E CLASSIFICADO COM L0
         base_estimator_init.fit(
             X[safe_mask(X, has_label)], self.transduction_[has_label]
@@ -390,7 +395,6 @@ class FlexConC(SelfTrainingClassifier):
         init_acc,
         max_proba,
         pred,
-        has_label,
     ):
         """
         Função que retorna as intâncias rotuladas
