@@ -1,3 +1,4 @@
+import numpy as np
 from statistics import mode
 
 from src.flexcon import FlexConC
@@ -19,7 +20,8 @@ class Ensemble():
         Args:
             classifier: Classificador
         """
-        self.ensemble.append(classifier)
+        flexconc = FlexConC(classifier)
+        self.ensemble.append(flexconc)
 
     def remover_classifier(self, classifier):
         """
@@ -58,7 +60,7 @@ class Ensemble():
         for classifier in self.ensemble:
             self.fit_single_classifier(classifier, instances, classes)
 
-    def fit_single_classifier(self, classifier, instances, classes):
+    def fit_single_classifier(self, classifier: FlexConC, instances, classes):
         """
         Treinar cada classificador iterativamente
 
@@ -67,8 +69,7 @@ class Ensemble():
             instances: instâncias da base de dados
             classes: classes da base de dados
         """
-        flexconc = FlexConC(classifier)
-        return flexconc.fit(instances, classes)
+        return classifier.fit(instances, classes)
 
     def predict_one_classifier(self, classifier, instances):
         """
@@ -86,10 +87,10 @@ class Ensemble():
         Args:
             instances: instâncias da base de dados
         """
-        y_pred = []
+        y_pred = np.array([], dtype="int64")
         for instance in instances:
             pred = []
             for classifier in self.ensemble:
-                pred.append(classifier.predict(instance))
-            y_pred.append(mode(pred))
+                pred.append(classifier.predict(instance.reshape(1,-1)).tolist()[0])
+            y_pred = np.append(y_pred, mode(pred))
         return y_pred

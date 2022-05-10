@@ -20,8 +20,7 @@ class FlexConC(SelfTrainingClassifier):
         super().__init__(
             base_estimator=base_estimator, threshold=threshold, max_iter=100
         )
-        self._cr: float = cr
-        self._init_acc: float = 0.0
+        self.cr: float = cr
         self.verbose = verbose
         self.old_selected: List = []
         self.dict_first: Dict = {}
@@ -39,7 +38,7 @@ class FlexConC(SelfTrainingClassifier):
         return (
             f"Classificador {self.base_estimator}\n"
             f"Outros Parâmetro:"
-            f" CR: {self._cr}\t Threshold: {self.threshold}"
+            f" CR: {self.cr}\t Threshold: {self.threshold}"
             f" Máximo IT: {self.max_iter}"
         )
 
@@ -113,7 +112,7 @@ class FlexConC(SelfTrainingClassifier):
                 pseudo_ids = np.nonzero(~has_label)[0].tolist()
                 selected_full, pred_full = self.select_instances_by_rules()
 
-                if not selected_full:
+                if not selected_full.size:
                     self.threshold = np.max(max_proba)
                     selected_full, pred_full = self.select_instances_by_rules()
                 selected = [pseudo_ids.index(inst) for inst in selected_full]
@@ -137,14 +136,20 @@ class FlexConC(SelfTrainingClassifier):
             try:
                 if old_selected:
                     selected_full = np.array(old_selected + selected_full.tolist())
-                    selected = old_pred + selected
+                    selected = old_selected + selected
+                    print(f'Selected_FULL:\n{selected_full}\n{"="*30}\n\nSelected:\n{selected}\n{"-"*30}\n\n\n')
                     old_selected = []
                     old_pred = []
-
-                # Traning model to classify the labeled samples
-                self.base_estimator_select_.fit(
-                    X[selected_full], pred[selected]
-                )
+                    pass
+                    # WIP - pred bugada!
+                    self.base_estimator_select_.fit(
+                        X[selected_full], pred[selected]
+                    )
+                else:
+                    # Traning model to classify the labeled samples
+                    self.base_estimator_select_.fit(
+                        X[selected_full], pred[selected]
+                    )
                 #WIP
 
                 local_acc = self.calc_local_measure(
@@ -201,13 +206,13 @@ class FlexConC(SelfTrainingClassifier):
             init_acc: valor da acurácia inicial
         """
         if local_measure > (init_acc + 0.01) and (
-            (self.threshold - self._cr) > 0.0
+            (self.threshold - self.cr) > 0.0
         ):
-            self.threshold -= self._cr
+            self.threshold -= self.cr
         elif (local_measure < (init_acc - 0.01)) and (
-            (self.threshold + self._cr) <= 1
+            (self.threshold + self.cr) <= 1
         ):
-            self.threshold += self._cr
+            self.threshold += self.cr
         else:
             pass
 
@@ -423,11 +428,6 @@ class FlexConC(SelfTrainingClassifier):
                 f"End of iteration {self.n_iter_},"
                 f" added {len(selected)} new labels."
             )
-        else:
-            print(
-                f"End of iteration {self.n_iter_},"
-                f" 0 new instaces are labelled."
-            )
 
     def select_instances_by_rules(self):
         """
@@ -443,4 +443,4 @@ class FlexConC(SelfTrainingClassifier):
 
             if selected:
                 return np.array(selected), pred
-        return "", ""
+        return np.array([]), ""
