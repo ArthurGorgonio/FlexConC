@@ -2,7 +2,7 @@ from unittest import TestCase
 
 from mock import Mock, patch
 
-from src.flexcon import FlexConC
+from src.ssl.flexcon import BaseFlexConC
 
 
 class SelfTrainingClassifierMock(Mock):
@@ -59,13 +59,13 @@ class GenerateMemory():
         }
 
 class TestFlexCon(TestCase):
-    @patch("src.flexcon.clone")
-    @patch("src.flexcon.SelfTrainingClassifier")
+    @patch("src.ssl.flexcon.clone")
+    @patch("src.ssl.flexcon.SelfTrainingClassifier")
     def setUp(self, super_class, model_clone):
         super_class.return_value = SelfTrainingClassifierMock()
         model_clone.return_value = ""
 
-        self.flexcon = FlexConC("")
+        self.flexcon = BaseFlexConC("")
 
     def test_update_model_memory(self):
         instances = [i for i in range(10)]
@@ -104,7 +104,7 @@ class TestFlexCon(TestCase):
         self.flexcon.update_memory(instances, labels)
         self.assertListEqual(self.flexcon.cl_memory, expected_output_weights)
 
-    @patch("src.flexcon.FlexConC.remember")
+    @patch("src.ssl.flexcon.BaseFlexConC.remember")
     def test_rules(self, remaind):
         remaind.return_value = [0]
         self.flexcon.threshold = 0.9
