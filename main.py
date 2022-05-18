@@ -4,11 +4,11 @@ import numpy as np
 from sklearn import datasets
 from sklearn.metrics import accuracy_score, f1_score
 from sklearn.naive_bayes import GaussianNB as Naive
-from sklearn.tree import DecisionTreeClassifier as Tree
 from sklearn.neighbors import KNeighborsClassifier as KNN
+from sklearn.tree import DecisionTreeClassifier as Tree
 
-from src.ensemble import Ensemble
-from src.flexcon import FlexConC
+from src.ssl.ensemble import Ensemble
+from src.ssl.self_flexcon import SelfFlexCon
 
 warnings.simplefilter("ignore")
 # ssl = FlexConC(Naive(), verbose=True)
@@ -30,9 +30,9 @@ warnings.simplefilter("ignore")
 #     f"Motivo da finalização: {ssl.termination_condition_}"
 # )
 
-comite = Ensemble()
+comite = Ensemble(SelfFlexCon)
 comite.add_classifier(Naive())
-comite.add_classifier(Tree())
+comite.add_classifier(Tree(criterion="entropy"))
 comite.add_classifier(KNN())
 
 
@@ -42,7 +42,7 @@ random_unlabeled_points = rng.rand(iris.target.shape[0]) < 0.9
 iris.target_unlabelled = iris.target.copy()
 iris.target_unlabelled[random_unlabeled_points] = -1
 
-comite.fit_ensembĺe(iris.data, iris.target_unlabelled)
+comite.fit_ensemble(iris.data, iris.target_unlabelled)
 
 y_pred = comite.predict(iris.data[random_unlabeled_points, :])
 y_true = iris.target[random_unlabeled_points]

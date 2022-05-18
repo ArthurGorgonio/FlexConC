@@ -1,17 +1,17 @@
-import numpy as np
 from statistics import mode
 
-from src.flexcon import FlexConC
+import numpy as np
 
 
-class Ensemble():
+class Ensemble:
     """
     Classe responsável por criar um cômite de classificadores e implementar
     seus métodos
     """
 
-    def __init__(self) -> None:
+    def __init__(self, ssl_algorithm: object) -> None:
         self.ensemble = []
+        self.ssl_algorithm = ssl_algorithm
 
     def add_classifier(self, classifier):
         """
@@ -20,7 +20,7 @@ class Ensemble():
         Args:
             classifier: Classificador
         """
-        flexconc = FlexConC(classifier)
+        flexconc = self.ssl_algorithm(classifier)
         self.ensemble.append(flexconc)
 
     def remover_classifier(self, classifier):
@@ -43,8 +43,12 @@ class Ensemble():
             métrica de classificação do cômite
         """
         measure_ensemble = []
+
         for classifier in self.ensemble:
-            measure_ensemble.append(self.predict_one_classifier(classifier, instances))
+            measure_ensemble.append(
+                self.predict_one_classifier(classifier, instances)
+            )
+
         return measure_ensemble
 
     def drop_ensemble(self):
@@ -53,14 +57,15 @@ class Ensemble():
         """
         self.ensemble = []
 
-    def fit_ensembĺe(self, instances, classes):
+    def fit_ensemble(self, instances, classes):
         """
         Treina os classificadores presentes no cômite
         """
+
         for classifier in self.ensemble:
             self.fit_single_classifier(classifier, instances, classes)
 
-    def fit_single_classifier(self, classifier: FlexConC, instances, classes):
+    def fit_single_classifier(self, classifier, instances, classes):
         """
         Treinar cada classificador iterativamente
 
@@ -69,6 +74,7 @@ class Ensemble():
             instances: instâncias da base de dados
             classes: classes da base de dados
         """
+
         return classifier.fit(instances, classes)
 
     def predict_one_classifier(self, classifier, instances):
@@ -79,6 +85,7 @@ class Ensemble():
             instances: instâncias da base de dados
         """
         y_pred = classifier.predict(instances)
+
         return y_pred
 
     def predict(self, instances):
@@ -88,9 +95,14 @@ class Ensemble():
             instances: instâncias da base de dados
         """
         y_pred = np.array([], dtype="int64")
+
         for instance in instances:
             pred = []
+
             for classifier in self.ensemble:
-                pred.append(classifier.predict(instance.reshape(1,-1)).tolist()[0])
+                pred.append(
+                    classifier.predict(instance.reshape(1, -1)).tolist()[0]
+                )
             y_pred = np.append(y_pred, mode(pred))
+
         return y_pred
