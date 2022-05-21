@@ -1,3 +1,4 @@
+from abc import abstractmethod
 import warnings
 from typing import Dict, List, Optional
 
@@ -43,8 +44,9 @@ class BaseFlexConC(SelfTrainingClassifier):
             f" Máximo IT: {self.max_iter}"
         )
 
+    @abstractmethod
     def fit(self, X, y):
-        raise NotImplementedError
+        ...
 
     def validate(self):
         # Validate the fitted estimator since `predict_proba` can be
