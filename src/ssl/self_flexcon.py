@@ -41,7 +41,7 @@ class SelfFlexCon(BaseFlexConC):
         self.cl_memory = [[0] * np.unique(y[has_label]) for _ in range(len(X))]
 
         if np.all(has_label):
-            warnings.warn("y contains no unlabeled samples", UserWarning)
+            raise ValueError("y contains no unlabeled sample")
 
         init_acc = self.train_new_classifier(has_label, X, y)
         old_selected = []

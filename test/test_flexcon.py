@@ -1,6 +1,5 @@
-from unittest import TestCase
-
 from mock import Mock, patch
+from unittest import TestCase
 
 from src.ssl.flexcon import BaseFlexConC
 
@@ -46,7 +45,7 @@ class GenerateMemory():
             },
             3: {
                 'confidence': 0.96,
-                'classes':1
+                'classes': 1
             },
             4: {
                 'confidence': 0.7,
@@ -57,6 +56,7 @@ class GenerateMemory():
                 'classes': 1
             }
         }
+
 
 class TestFlexCon(TestCase):
     @patch("src.ssl.flexcon.clone")
@@ -88,6 +88,8 @@ class TestFlexCon(TestCase):
         self.assertListEqual(self.flexcon.cl_memory, expected_output_weights)
 
     def test_should_return_updated_cl_memory_by_one_when_no_weights_are_passed(self):  # NOQA
+        instances = [i for i in range(10)]
+        labels = [0, 0, 0, 1, 1, 1, 1, 1, 0, 1]
         output_without_weights = [
             [1, 0],
             [1, 0],

@@ -1,5 +1,4 @@
 from abc import abstractmethod
-import warnings
 from typing import Dict, List, Optional
 
 import numpy as np
@@ -7,7 +6,6 @@ from sklearn.base import clone
 from sklearn.metrics import accuracy_score
 from sklearn.semi_supervised import SelfTrainingClassifier
 from sklearn.utils import safe_mask
-
 from src.utils import validate_estimator
 
 
