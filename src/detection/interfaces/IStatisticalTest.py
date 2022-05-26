@@ -4,7 +4,8 @@ from src.detection.interfaces.IChunk import IChunk
 
 
 class IStatisticalTest(IChunk):
-    def __init__(self):
+    def __init__(self, threshold):
+        super().__init__(threshold)
         self.statistical_test = "kolmogorov"
 
     @abstractmethod

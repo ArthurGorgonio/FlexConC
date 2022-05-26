@@ -6,7 +6,7 @@ class IDriftDetector(ABC):
         self.drift_counter = 0
 
     @abstractmethod
-    def detect(self, chunk):
+    def detect(self, chunk) -> bool:
         ...
 
     @abstractmethod
