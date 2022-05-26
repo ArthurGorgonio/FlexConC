@@ -9,6 +9,7 @@ from sklearn.tree import DecisionTreeClassifier as Tree
 
 from src.ssl.ensemble import Ensemble
 from src.ssl.self_flexcon import SelfFlexCon
+from src.detection.weighted_statistical import WeightedStatistical
 
 warnings.simplefilter("ignore")
 # ssl = FlexConC(Naive(), verbose=True)
@@ -47,8 +48,14 @@ comite.fit_ensemble(iris.data, iris.target_unlabelled)
 y_pred = comite.predict(iris.data[random_unlabeled_points, :])
 y_true = iris.target[random_unlabeled_points]
 
+s_test = WeightedStatistical(0.05)
+s_test.update_chunks(y_pred)
+s_test.update_chunks(y_true)
+alpha = s_test.eval_test()
+
 print(
     f"ACC: {round(accuracy_score(y_true, y_pred), 4)}%\n"
     f'F1-Score: {round(f1_score(y_true, y_pred, average="macro"), 4)}%\n'
-    f"Motivo da finalização: {comite.ensemble[0].termination_condition_}"
+    f"Motivo da finalização: {comite.ensemble[0].termination_condition_}\n"
+    f"Valor do teste estatístico é de {alpha}, significante? {alpha <= 0.05}"
 )
