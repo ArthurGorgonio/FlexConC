@@ -1,5 +1,4 @@
 import numpy as np
-
 from sklearn.utils import safe_mask
 from src.ssl.flexcon import BaseFlexConC
 
@@ -63,24 +62,24 @@ class SelfFlexCon(BaseFlexConC):
             max_proba = np.max(prob, axis=1)
 
             if self.n_iter_ > 1:
-                self.pred_x_it = self.storage_predict(
+                pred_x_it = self.storage_predict(
                     idx=np.nonzero(~has_label)[0],
                     confidence=max_proba,
                     classes=pred,
                 )
 
                 pseudo_ids = np.nonzero(~has_label)[0].tolist()
-                selected_full, pred_full = self.select_instances_by_rules()
+                selected_full, pred_full = self.select_instances_by_rules(self.threshold, dict_first, pred_x_it)
 
                 if not selected_full.size:
                     self.threshold = np.max(max_proba)
-                    selected_full, pred_full = self.select_instances_by_rules()
+                    selected_full, pred_full = self.select_instances_by_rules(self.threshold, dict_first, pred_x_it)
                 selected = [pseudo_ids.index(inst) for inst in selected_full]
                 pred[selected] = pred_full
                 # WIP - transformar o selected num vetor bool do tamanho da predição (pred)
                 # Assim, é possível fazer as operações
             else:
-                self.dict_first = self.storage_predict(
+                dict_first = self.storage_predict(
                     idx=np.nonzero(~has_label)[0],
                     confidence=max_proba,
                     classes=pred,
@@ -115,7 +114,7 @@ class SelfFlexCon(BaseFlexConC):
                     y[self.init_labeled_],
                     self.base_estimator_select_,
                 )
-                self.new_threshold(local_acc, init_acc)
+                self.new_threshold(self.threshold, local_acc, init_acc)
             except ValueError:
                 old_selected = selected_full.tolist()
 

@@ -7,6 +7,7 @@ from sklearn.naive_bayes import GaussianNB as Naive
 from sklearn.neighbors import KNeighborsClassifier as KNN
 from sklearn.tree import DecisionTreeClassifier as Tree
 
+from src.ssl.co_flexcon import CoFlexCon
 from src.ssl.ensemble import Ensemble
 from src.ssl.self_flexcon import SelfFlexCon
 
@@ -30,7 +31,7 @@ warnings.simplefilter("ignore")
 #     f"Motivo da finalização: {ssl.termination_condition_}"
 # )
 
-comite = Ensemble(SelfFlexCon)
+comite = Ensemble(CoFlexCon)
 comite.add_classifier(Naive())
 comite.add_classifier(Tree(criterion="entropy"))
 comite.add_classifier(KNN())

@@ -1,5 +1,5 @@
-from abc import abstractmethod
 import warnings
+from abc import abstractmethod
 from typing import Dict, List, Optional
 
 import numpy as np
@@ -7,7 +7,6 @@ from sklearn.base import clone
 from sklearn.metrics import accuracy_score
 from sklearn.semi_supervised import SelfTrainingClassifier
 from sklearn.utils import safe_mask
-
 from src.utils import validate_estimator
 
 
@@ -73,7 +72,7 @@ class BaseFlexConC(SelfTrainingClassifier):
         y_pred = classifier.predict(X)
         return accuracy_score(y_true, y_pred)
 
-    def new_threshold(self, local_measure, init_acc):
+    def new_threshold(self, threshold, local_measure, init_acc):
         """
         Responsável por calcular o novo limiar
 
@@ -82,15 +81,16 @@ class BaseFlexConC(SelfTrainingClassifier):
             init_acc: valor da acurácia inicial
         """
         if local_measure > (init_acc + 0.01) and (
-            (self.threshold - self.cr) > 0.0
+            (threshold - self.cr) > 0.0
         ):
-            self.threshold -= self.cr
+            threshold -= self.cr
         elif (local_measure < (init_acc - 0.01)) and (
-            (self.threshold + self.cr) <= 1
+            (threshold + self.cr) <= 1
         ):
-            self.threshold += self.cr
+            threshold += self.cr
         else:
-            pass
+            threshold = threshold
+        return threshold
 
     def update_memory(
         self, instances: List, labels: List, weights: Optional[List] = None
@@ -145,7 +145,7 @@ class BaseFlexConC(SelfTrainingClassifier):
 
         return memo
 
-    def rule_1(self):
+    def rule_1(self, threshold, pred_1_it, pred_x_it):
         """
         Regra responsável por verificar se as classes são iguais E as duas
             confianças preditas é maior que o limiar
@@ -156,19 +156,19 @@ class BaseFlexConC(SelfTrainingClassifier):
         selected = []
         classes_selected = []
 
-        for i in self.pred_x_it:
+        for i in pred_x_it:
             if (
-                self.dict_first[i]["confidence"] >= self.threshold
-                and self.pred_x_it[i]["confidence"] >= self.threshold
-                and self.dict_first[i]["classes"]
-                == self.pred_x_it[i]["classes"]
+                pred_1_it[i]["confidence"] >= threshold
+                and pred_x_it[i]["confidence"] >= threshold
+                and pred_1_it[i]["classes"]
+                == pred_x_it[i]["classes"]
             ):
                 selected.append(i)
-                classes_selected.append(self.dict_first[i]["classes"])
+                classes_selected.append(pred_1_it[i]["classes"])
 
         return selected, classes_selected
 
-    def rule_2(self):
+    def rule_2(self, threshold, pred_1_it, pred_x_it):
         """
         regra responsável por verificar se as classes são iguais E uma das
         confianças preditas é maior que o limiar
@@ -180,19 +180,19 @@ class BaseFlexConC(SelfTrainingClassifier):
         selected = []
         classes_selected = []
 
-        for i in self.pred_x_it:
+        for i in pred_x_it:
             if (
-                self.dict_first[i]["confidence"] >= self.threshold
-                or self.pred_x_it[i]["confidence"] >= self.threshold
-            ) and self.dict_first[i]["classes"] == self.pred_x_it[i][
+                pred_1_it[i]["confidence"] >= threshold
+                or pred_x_it[i]["confidence"] >= threshold
+            ) and pred_1_it[i]["classes"] == pred_x_it[i][
                 "classes"
             ]:
                 selected.append(i)
-                classes_selected.append(self.dict_first[i]["classes"])
+                classes_selected.append(pred_1_it[i]["classes"])
 
         return selected, classes_selected
 
-    def rule_3(self):
+    def rule_3(self, threshold, pred_1_it, pred_x_it):
         """
         regra responsável por verificar se as classes são diferentes E  as
         confianças preditas são maiores que o limiar
@@ -202,17 +202,17 @@ class BaseFlexConC(SelfTrainingClassifier):
         """
         selected = []
 
-        for i in self.pred_x_it:
+        for i in pred_x_it:
             if (
-                self.dict_first[i]["classes"] != self.pred_x_it[i]["classes"]
-                and self.dict_first[i]["confidence"] >= self.threshold
-                and self.pred_x_it[i]["confidence"] >= self.threshold
+                pred_1_it[i]["classes"] != pred_x_it[i]["classes"]
+                and pred_1_it[i]["confidence"] >= threshold
+                and pred_x_it[i]["confidence"] >= threshold
             ):
                 selected.append(i)
 
         return selected, self.remember(selected)
 
-    def rule_4(self):
+    def rule_4(self, threshold, pred_1_it, pred_x_it):
         """
         regra responsável por verificar se as classes são diferentes E uma das
         confianças preditas é maior que o limiar
@@ -222,12 +222,12 @@ class BaseFlexConC(SelfTrainingClassifier):
         """
         selected = []
 
-        for i in self.pred_x_it:
-            if self.dict_first[i]["classes"] != self.pred_x_it[i][
+        for i in pred_x_it:
+            if pred_1_it[i]["classes"] != pred_x_it[i][
                 "classes"
             ] and (
-                self.dict_first[i]["confidence"] >= self.threshold
-                or self.pred_x_it[i]["confidence"] >= self.threshold
+                pred_1_it[i]["confidence"] >= threshold
+                or pred_x_it[i]["confidence"] >= threshold
             ):
                 selected.append(i)
 
@@ -280,7 +280,7 @@ class BaseFlexConC(SelfTrainingClassifier):
         self.transduction_[selected_full] = pred[selected]
         self.labeled_iter_[selected_full] = self.n_iter_
 
-    def select_instances_by_rules(self):
+    def select_instances_by_rules(self, threshold, pred_1_it, pred_x_it):
         """
         Função responsável por gerenciar todas as regras de inclusão do método
 
@@ -290,7 +290,7 @@ class BaseFlexConC(SelfTrainingClassifier):
         insertion_rules = [self.rule_1, self.rule_2, self.rule_3, self.rule_4]
 
         for rule in insertion_rules:
-            selected, pred = rule()
+            selected, pred = rule(threshold, pred_1_it, pred_x_it)
 
             if selected:
                 return np.array(selected), pred
