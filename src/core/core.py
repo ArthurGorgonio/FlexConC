@@ -21,7 +21,9 @@ class Core:
         self,
         ssl_algorithm,
         detector,
-        reactor
+        reactor,
+        params_detector: dict[str, any] = {},
+        params_reactor: dict[str, any] = {}
     ):
         """
         Função que configura uma execução do fluxo do framework DyDaSL.
@@ -36,8 +38,8 @@ class Core:
                 contexto
         """
         self.ensemble = Ensemble(ssl_algorithm)
-        self.detection = detector
-        self.reaction = reactor
+        self.detection = detector(params_detector)
+        self.reaction = reactor(params_reactor)
 
     def configure_classifier(self, base_classifiers: list):
         """
@@ -59,10 +61,17 @@ class Core:
                 )
 
     def run(self, chunk):
+        y_pred = self.ensemble.predict(chunk)
+
+        if self.detection.detect():
+            self.reaction.react()
+
+        self.log_iteration_info()
+
         pass
 
     def plot_graph(self, metric, color):
         pass
 
-    def Operation1(self, ):
-        pass
+    def log_iteration_info(self):
+        ...

@@ -9,7 +9,7 @@ class Ensemble:
     seus métodos
     """
 
-    def __init__(self, ssl_algorithm: object) -> None:
+    def __init__(self, ssl_algorithm: callable):
         self.ensemble = []
         self.ssl_algorithm = ssl_algorithm
 
@@ -32,7 +32,7 @@ class Ensemble:
         """
         self.ensemble.remove(classifier)
 
-    def measure_classifier(self, instances):
+    def measure_classifier(self, instances) -> list:
         """
         Calcula métrica de classificação
 
