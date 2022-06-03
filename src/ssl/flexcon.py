@@ -7,7 +7,7 @@ from sklearn.base import clone
 from sklearn.metrics import accuracy_score
 from sklearn.semi_supervised import SelfTrainingClassifier
 from sklearn.utils import safe_mask
-from src.utils import validate_estimator
+from src.ssl.utils import validate_estimator
 
 
 class BaseFlexConC(SelfTrainingClassifier):
@@ -268,7 +268,7 @@ class BaseFlexConC(SelfTrainingClassifier):
 
         return init_acc
 
-    def add_new_labeled(self, selected_full, selected, pred):
+    def add_new_labeled(self, selected_full, y_pred, transduction_):
         """
         Função que retorna as intâncias rotuladas
 
@@ -277,8 +277,8 @@ class BaseFlexConC(SelfTrainingClassifier):
             selected: lista das intâncias com acc acima do limiar
             pred: predição das instâncias não rotuladas
         """
-        self.transduction_[selected_full] = pred[selected]
-        self.labeled_iter_[selected_full] = self.n_iter_
+        transduction_[selected_full] = y_pred
+        return transduction_
 
     def select_instances_by_rules(self, threshold, pred_1_it, pred_x_it):
         """

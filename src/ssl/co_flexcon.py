@@ -111,6 +111,8 @@ class CoFlexCon(BaseFlexConC):
                     selected_full2, pred_full2 = self.select_instances_by_rules(self.threshold2, dict_first2, pred_x2_it)
                 selected = [pseudo_ids.index(inst) for inst in selected_full]
                 selected2 = [pseudo_ids2.index(inst) for inst in selected_full2]
+                # TODO: fazer a duplicação do código da parte que seleciona
+                # a menor quantidade de instâncias
 
                 pred1[selected] = pred_full
                 pred2[selected2] = pred_full2
@@ -130,17 +132,27 @@ class CoFlexCon(BaseFlexConC):
                 # Select new labeled samples
                 selected = max_proba1 >= self.threshold
                 selected2 = max_proba2 >= self.threshold2
-                #WIP FORÇAR NOVO TAMANHO PARA O DICIONARIO
                 qtd_selected = min([sum(selected),sum(selected2)])
                 # Map selected indices into original array
-                selected_full = self.convert_data(dict_first, qtd_selected)
-                selected_full2 = self.convert_data(dict_first2, qtd_selected)
+                selected_full = self.get_best_instances_from_dict(dict_first, qtd_selected)
+                selected_full2 = self.get_best_instances_from_dict(dict_first2, qtd_selected)
+
+            # Trata os ids pred1
+            # y_pred1 = converter_to_fake(self, selected_full, pred1)
+            fake_list_1 = np.flatnonzero(~has_label).tolist()
+            fake_id_1 = [fake_list_1.index(i) for i in selected_full]
+            y_pred1 = pred1[fake_id_1]
+            # Trata os ids pred2
+            fake_list_2 = np.flatnonzero(~has_label2).tolist()
+            fake_id_2 = [fake_list_2.index(i) for i in selected_full2]
+            y_pred2 = pred2[fake_id_2]
+
 
             # Add newly labeled confident predictions to the dataset
             has_label[selected_full] = True
             has_label2[selected_full2] = True
-            self.add_new_labeled(selected_full, selected, pred1)
-            self.add_new_labeled(selected_full2, selected2, pred2)
+            self.transduction_ = self.add_new_labeled(selected_full, y_pred1, self.transduction_)
+            self.transduction_2 = self.add_new_labeled(selected_full2, y_pred2, self.transduction_2)
             self.update_memory(np.nonzero(~has_label)[0], pred1)
             self.update_memory(np.nonzero(~has_label2)[0], pred2)
             # Predict on the labeled samples
@@ -198,7 +210,7 @@ class CoFlexCon(BaseFlexConC):
         shuffle(features)
         return X[:, :len(features) // 2], X[:, len(features) // 2:]
 
-    def convert_data(self, dict_data, n_instances):
+    def get_best_instances_from_dict(self, dict_data, n_instances):
         list_data = list(dict_data.keys())[:n_instances]
         return np.array(list_data)
 
