@@ -33,8 +33,13 @@ warnings.simplefilter("ignore")
 
 comite = Ensemble(SelfFlexCon)
 comite.add_classifier(Naive())
-comite.add_classifier(Tree(criterion="entropy"))
-comite.add_classifier(KNN())
+comite.add_classifier(Naive(var_smoothing=1e-8))
+comite.add_classifier(Naive(var_smoothing=1e7))
+comite.add_classifier(Naive(var_smoothing=1e6))
+comite.add_classifier(Naive(var_smoothing=1e5))
+comite.add_classifier(Naive(var_smoothing=1e4))
+# comite.add_classifier(Tree(criterion="entropy"))
+# comite.add_classifier(KNN())
 
 
 rng = np.random.RandomState(42)

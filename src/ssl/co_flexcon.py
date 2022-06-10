@@ -1,4 +1,4 @@
-from ssl.BaseFlexCon import BaseFlexCon
+from src.ssl.BaseFlexCon import BaseFlexCon
 
 class CoFlexCon(BaseFlexCon):
     def __init__(self, base_estimator):
