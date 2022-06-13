@@ -91,15 +91,16 @@ class CoFlexCon(BaseFlexConC):
                     confidence=max_proba1,
                     classes=pred1
                 )
-
                 pred_x2_it = self.storage_predict(
                     idx=np.nonzero(~has_label)[0],
                     confidence=max_proba2,
                     classes=pred2
                 )
-
+                pred_x1_it = dict(sorted(pred_x1_it.items(), key=lambda item: item[1]['confidence'], reverse=True))
+                pred_x2_it = dict(sorted(pred_x2_it.items(), key=lambda item: item[1]['confidence'], reverse=True))
                 pseudo_ids = np.nonzero(~has_label)[0].tolist()
                 pseudo_ids2 = np.nonzero(~has_label2)[0].tolist()
+
                 selected_full, pred_full = self.select_instances_by_rules(self.threshold, dict_first, pred_x1_it)
                 selected_full2, pred_full2 = self.select_instances_by_rules(self.threshold2, dict_first2, pred_x2_it)
 
@@ -113,6 +114,10 @@ class CoFlexCon(BaseFlexConC):
                 selected2 = [pseudo_ids2.index(inst) for inst in selected_full2]
                 # TODO: fazer a duplicação do código da parte que seleciona
                 # a menor quantidade de instâncias
+                # Map selected indices into original array
+                qtd_selected_ = min([sum(selected),sum(selected2)])
+                selected_full = self.get_best_instances_from_dict(dict_first, qtd_selected_)
+                selected_full2 = self.get_best_instances_from_dict(dict_first2, qtd_selected_)
 
                 pred1[selected] = pred_full
                 pred2[selected2] = pred_full2
@@ -137,16 +142,9 @@ class CoFlexCon(BaseFlexConC):
                 selected_full = self.get_best_instances_from_dict(dict_first, qtd_selected)
                 selected_full2 = self.get_best_instances_from_dict(dict_first2, qtd_selected)
 
-            # Trata os ids pred1
-            # y_pred1 = converter_to_fake(self, selected_full, pred1)
-            fake_list_1 = np.flatnonzero(~has_label).tolist()
-            fake_id_1 = [fake_list_1.index(i) for i in selected_full]
-            y_pred1 = pred1[fake_id_1]
-            # Trata os ids pred2
-            fake_list_2 = np.flatnonzero(~has_label2).tolist()
-            fake_id_2 = [fake_list_2.index(i) for i in selected_full2]
-            y_pred2 = pred2[fake_id_2]
-
+            # Trata os ids pred1/pred2
+            y_pred1 = self.converter_to_fake(selected_full, has_label, pred1)
+            y_pred2 = self.converter_to_fake(selected_full2, has_label2, pred2)
 
             # Add newly labeled confident predictions to the dataset
             has_label[selected_full] = True
@@ -221,3 +219,8 @@ class CoFlexCon(BaseFlexConC):
         )
         new_pred = np.concatenate((transduction[old_selected], pred[selected]))
         return selected_full, new_pred
+
+    def converter_to_fake(self, selected_full, has_label, pred):
+        fake_list = np.flatnonzero(~has_label).tolist()
+        fake_id = [fake_list.index(i) for i in selected_full]
+        return pred[fake_id]
