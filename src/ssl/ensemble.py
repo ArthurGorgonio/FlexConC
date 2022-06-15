@@ -2,6 +2,8 @@ from statistics import mode
 
 import numpy as np
 
+from src.ssl import flexcon
+
 
 class Ensemble:
     """
@@ -22,6 +24,15 @@ class Ensemble:
         """
         flexconc = self.ssl_algorithm(classifier)
         self.ensemble.append(flexconc)
+
+    def add_model(self, model):
+        """
+        Adiciona um classificador treinado ao cômite
+
+        Args:
+            Classificador treinado
+        """
+        self.ensemble.append(model)
 
     def remover_classifier(self, classifier):
         """
