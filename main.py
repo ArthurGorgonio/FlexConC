@@ -40,23 +40,33 @@ digits.target_unlabelled = digits.target.copy()
 
 # flexCon = SelfFlexCon(Tree())
 
+list_tree_het = [
+    Tree(criterion="entropy"), Tree(), 
+    Tree(criterion="entropy", max_features="log2"),
+    Tree(criterion="entropy", max_features='auto'), Tree(max_features='auto')]
+
+list_knn_het = [
+    KNN(n_neighbors=11),KNN(n_neighbors=12),
+    KNN(n_neighbors=13),KNN(n_neighbors=14),
+    KNN(n_neighbors=15)]
+
 list_tree = [
     Tree(criterion="entropy"), Tree(), 
     Tree(criterion="entropy", max_features=1), Tree(max_features=1),
-    Tree(criterion="entropy", max_features="log2"),Tree(max_features="log2"),
-    Tree(criterion="entropy", max_features='auto'), Tree(max_features='auto'), 
+    Tree(criterion="entropy", max_features="log2"),
+    Tree(criterion="entropy", max_features='auto'), Tree(max_features='auto'),
     Tree(splitter="random"), Tree(criterion="entropy",splitter="random")]
 
-list_knn = [
+list_knn= [
     KNN(n_neighbors=10, weights='distance'),KNN(n_neighbors=11, weights='distance'),
     KNN(n_neighbors=12, weights='distance'),KNN(n_neighbors=13, weights='distance'),
-    KNN(n_neighbors=14, weights='distance'),KNN(n_neighbors=10),
-    KNN(n_neighbors=11),KNN(n_neighbors=12),
-    KNN(n_neighbors=13),KNN(n_neighbors=14)
-]
-# print('Data-Set tamanho: ', len(digits.data))
+    KNN(n_neighbors=14, weights='distance'),KNN(n_neighbors=11),KNN(n_neighbors=12),
+    KNN(n_neighbors=13),KNN(n_neighbors=14)]
+# ]
+labelled_instances = int(len(digits.data)*0.2)
+print('Instâncias rotulada: ', labelled_instances)
 print('Data-Set carregado: Digits\n\n')
-print("Classificadores disponíveis:\n\n\t(1) Naive\n\t(2) Tree\n\t(3) KNN\n\t(0) Sair\n\n")
+print("Classificadores disponíveis:\n\n\t(1) Naive\n\t(2) Tree\n\t(3) KNN\n\t(4) COMITE HETEROGENEO\n\t(0) Sair\n\n")
 option = input('Informe o classificador: ')
 flag = False
 while flag == False:
@@ -68,7 +78,7 @@ while flag == False:
         print('Naive Bayes selecionado...\n\n')
         for i in range(10):
             flexCon = SelfFlexCon(Naive(var_smoothing=float(f'1e{i}')))
-            random_unlabeled_points = np.random.choice(len(digits.data), 15, replace=False)
+            random_unlabeled_points = np.random.choice(len(digits.data), labelled_instances, replace=False)
             digits.target_unlabelled[random_unlabeled_points] = -1
             X = digits.data
             y = digits.target_unlabelled
@@ -79,7 +89,7 @@ while flag == False:
         print('Decision Tree selecionado...\n\n')
         for i in list_tree:
             flexCon = SelfFlexCon(i)
-            random_unlabeled_points = np.random.choice(len(digits.data), 15, replace=False)
+            random_unlabeled_points = np.random.choice(len(digits.data), labelled_instances, replace=False)
             digits.target_unlabelled[random_unlabeled_points] = -1
             X = digits.data
             y = digits.target_unlabelled
@@ -90,11 +100,40 @@ while flag == False:
         print('K-NN selecionado...\n\n')
         for i in list_knn:
             flexCon = SelfFlexCon(i)
-            random_unlabeled_points = np.random.choice(len(digits.data), 15, replace=False)
+            random_unlabeled_points = np.random.choice(len(digits.data), labelled_instances, replace=False)
             digits.target_unlabelled[random_unlabeled_points] = -1
             X = digits.data
             y = digits.target_unlabelled
             comite.add_model(flexCon.fit(X, y))
+
+    elif option == 'COMITE HETEROGENEO' or option == '4':
+        flag = True
+        print('Comite heterogêneo selecionado...\n\n')
+        print('Executando com Naive Bayes...\n\n')
+        for i in range(5):
+            flexCon = SelfFlexCon(Naive(var_smoothing=float(f'1e{i}')))
+            random_unlabeled_points = np.random.choice(len(digits.data), labelled_instances, replace=False)
+            digits.target_unlabelled[random_unlabeled_points] = -1
+            X = digits.data
+            y = digits.target_unlabelled
+            comite.add_model(flexCon.fit(X, y))
+        print('Executando com Decision Tree...\n\n')
+        for i in list_tree_het:
+            flexCon = SelfFlexCon(i)
+            random_unlabeled_points = np.random.choice(len(digits.data), labelled_instances, replace=False)
+            digits.target_unlabelled[random_unlabeled_points] = -1
+            X = digits.data
+            y = digits.target_unlabelled
+            comite.add_model(flexCon.fit(X, y))
+        print('Executando com KNN...\n\n')
+        for i in list_knn_het:
+            flexCon = SelfFlexCon(i)
+            random_unlabeled_points = np.random.choice(len(digits.data), labelled_instances, replace=False)
+            digits.target_unlabelled[random_unlabeled_points] = -1
+            X = digits.data
+            y = digits.target_unlabelled
+            comite.add_model(flexCon.fit(X, y))
+
     else:
         print('Classificador não disponível! Insira outro...\n')
         print("Classificadores disponíveis:\n\n\t(1) Naive\n\t(2) Tree\n\t(3) KNN\n\t(0) Sair\n\n")
