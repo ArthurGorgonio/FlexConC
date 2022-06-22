@@ -61,6 +61,8 @@ class Core:
                 )
 
     def run(self, chunk):
+        run_first_it()
+
         y_pred = self.ensemble.predict(chunk)
 
         if self.detection.detect():
