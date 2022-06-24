@@ -1,5 +1,5 @@
+from typing import Dict
 from src.detection import (
-    cpssds,
     fixed_threshold,
     normal,
     page_hinkley,
@@ -22,8 +22,8 @@ class Core:
         ssl_algorithm,
         detector,
         reactor,
-        params_detector: dict[str, any] = {},
-        params_reactor: dict[str, any] = {}
+        params_detector: Dict[str, any] = {},
+        params_reactor: Dict[str, any] = {}
     ):
         """
         Função que configura uma execução do fluxo do framework DyDaSL.
