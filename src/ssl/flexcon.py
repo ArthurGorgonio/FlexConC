@@ -6,6 +6,7 @@ from sklearn.base import clone
 from sklearn.metrics import accuracy_score
 from sklearn.semi_supervised import SelfTrainingClassifier
 from sklearn.utils import safe_mask
+
 from src.utils import validate_estimator
 
 
@@ -231,7 +232,7 @@ class BaseFlexConC(SelfTrainingClassifier):
 
         return selected, self.remember(selected)
 
-    def train_new_classifier(self, has_label, X, y):
+    def train_new_classifier(self, has_label, X, y, option):
         """
         Responsável por treinar um classificador e mensurar
             a sua acertividade
@@ -262,7 +263,21 @@ class BaseFlexConC(SelfTrainingClassifier):
             y[self.init_labeled_],
             base_estimator_init,
         )
-        print(f"Acurácia do novo classificador: {init_acc}")
+
+        if option == 'Naive' or option == '1':
+            with open('Comite_Naive.txt', 'a') as f:
+                f.write(f"\nAcurácia do novo classificador: {init_acc}")
+
+        elif option == 'Tree' or option == '2':
+            with open('Comite_Tree.txt', 'a') as f:
+                f.write(f"\nAcurácia do novo classificador: {init_acc}")
+
+        elif option == 'KNN' or option == '3':
+            with open('Comite_KNN.txt', 'a') as f:
+                f.write(f"\nAcurácia do novo classificador: {init_acc}")
+        elif option == 'COMITE HETEROGENEO' or option == '4':
+            with open('Comite_Heterogeneo.txt', 'a') as f:
+                f.write(f"\nAcurácia do novo classificador: {init_acc}")
 
         return init_acc
 

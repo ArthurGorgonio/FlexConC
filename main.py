@@ -68,6 +68,7 @@ print('Instâncias rotulada: ', labelled_instances)
 print('Data-Set carregado: Digits\n\n')
 print("Classificadores disponíveis:\n\n\t(1) Naive\n\t(2) Tree\n\t(3) KNN\n\t(4) COMITE HETEROGENEO\n\t(0) Sair\n\n")
 option = input('Informe o classificador: ')
+print('\nExecutando o treinamento...\n\n')
 flag = False
 while flag == False:
     if option == 'Sair' or option == '0':
@@ -75,68 +76,74 @@ while flag == False:
         exit()
     elif option == 'Naive' or option == '1':
         flag = True
-        print('Naive Bayes selecionado...\n\n')
+        with open('Comite_Naive.txt', 'a') as f:
+            f.write('Naive Bayes selecionado...\n\n')
         for i in range(10):
             flexCon = SelfFlexCon(Naive(var_smoothing=float(f'1e{i}')))
             random_unlabeled_points = np.random.choice(len(digits.data), labelled_instances, replace=False)
             digits.target_unlabelled[random_unlabeled_points] = -1
             X = digits.data
             y = digits.target_unlabelled
-            comite.add_model(flexCon.fit(X, y))
+            comite.add_model(flexCon.fit(X, y, option))
 
     elif option == 'Tree' or option == '2':
         flag = True
-        print('Decision Tree selecionado...\n\n')
+        with open('Comite_Tree.txt', 'a') as f:
+            f.write('Decision Tree selecionado...\n\n')
         for i in list_tree:
             flexCon = SelfFlexCon(i)
             random_unlabeled_points = np.random.choice(len(digits.data), labelled_instances, replace=False)
             digits.target_unlabelled[random_unlabeled_points] = -1
             X = digits.data
             y = digits.target_unlabelled
-            comite.add_model(flexCon.fit(X, y))
+            comite.add_model(flexCon.fit(X, y, option))
 
     elif option == 'KNN' or option == '3':
         flag = True
-        print('K-NN selecionado...\n\n')
+        with open('Comite_KNN.txt', 'a') as f:
+            f.write('\n\nKNN selecionado...\n\n')
         for i in list_knn:
             flexCon = SelfFlexCon(i)
             random_unlabeled_points = np.random.choice(len(digits.data), labelled_instances, replace=False)
             digits.target_unlabelled[random_unlabeled_points] = -1
             X = digits.data
             y = digits.target_unlabelled
-            comite.add_model(flexCon.fit(X, y))
+            comite.add_model(flexCon.fit(X, y, option))
 
     elif option == 'COMITE HETEROGENEO' or option == '4':
         flag = True
-        print('Comite heterogêneo selecionado...\n\n')
-        print('Executando com Naive Bayes...\n\n')
+        with open('Comite_Heterogeneo.txt', 'a') as f:
+            f.write('Comite heterogêneo selecionado...\n\n'
+                    'Executando com Naive Bayes...\n\n')
         for i in range(5):
             flexCon = SelfFlexCon(Naive(var_smoothing=float(f'1e{i}')))
             random_unlabeled_points = np.random.choice(len(digits.data), labelled_instances, replace=False)
             digits.target_unlabelled[random_unlabeled_points] = -1
-            X = digits.data
+            X = digits.data 
             y = digits.target_unlabelled
-            comite.add_model(flexCon.fit(X, y))
-        print('Executando com Decision Tree...\n\n')
+            comite.add_model(flexCon.fit(X, y, option))
+        with open('Comite_Heterogeneo.txt', 'a') as f:
+            f.write('\n\nExecutando com Decision Tree...\n\n')
         for i in list_tree_het:
             flexCon = SelfFlexCon(i)
             random_unlabeled_points = np.random.choice(len(digits.data), labelled_instances, replace=False)
             digits.target_unlabelled[random_unlabeled_points] = -1
             X = digits.data
             y = digits.target_unlabelled
-            comite.add_model(flexCon.fit(X, y))
-        print('Executando com KNN...\n\n')
+            comite.add_model(flexCon.fit(X, y, option))
+        with open('Comite_Heterogeneo.txt', 'a') as f:
+            f.write('\n\nExecutando com KNN...\n\n')
         for i in list_knn_het:
             flexCon = SelfFlexCon(i)
             random_unlabeled_points = np.random.choice(len(digits.data), labelled_instances, replace=False)
             digits.target_unlabelled[random_unlabeled_points] = -1
             X = digits.data
             y = digits.target_unlabelled
-            comite.add_model(flexCon.fit(X, y))
+            comite.add_model(flexCon.fit(X, y, option))
 
     else:
         print('Classificador não disponível! Insira outro...\n')
-        print("Classificadores disponíveis:\n\n\t(1) Naive\n\t(2) Tree\n\t(3) KNN\n\t(0) Sair\n\n")
+        print("Classificadores disponíveis:\n\n\t(1) Naive\n\t(2) Tree\n\t(3) KNN\n\t(4) COMITE HETEROGENEO\n\t(0) Sair\n\n")
         option = input('Informe o classificador: ')
 
 
@@ -153,9 +160,45 @@ s_test.update_chunks(y_pred)
 s_test.update_chunks(y_true)
 alpha = s_test.eval_test()
 
-print(
-    f"ACC: {round(accuracy_score(y_true, y_pred), 4)}%\n"
-    f'F1-Score: {round(f1_score(y_true, y_pred, average="macro"), 4)}%\n'
-    f"Motivo da finalização: {comite.ensemble[0].termination_condition_}\n"
-    f"Valor do teste estatístico é de {alpha}, significante? {alpha <= 0.05}\n"
-)
+if option == 'Naive' or option == '1':
+    print('Salvando os resultados em um arquivo Comite_Naive.txt\n\n')
+    print('Finalizando...')
+    with open('Comite_Naive.txt', 'a') as f:
+        f.write(
+            f"\n\nACC: {round(accuracy_score(y_true, y_pred), 4) * 100}%\n"
+            f'F1-Score: {round(f1_score(y_true, y_pred, average="macro"), 4) * 100}%\n'
+            f"Motivo da finalização: {comite.ensemble[0].termination_condition_}\n"
+            # f"Valor do teste estatístico é de {alpha}, significante? {alpha <= 0.05}\n"
+        )
+
+elif option == 'Tree' or option == '2':
+    print('Salvando os resultados em um arquivo Comite_Tree.txt\n\n')
+    print('Finalizando...')
+    with open('Comite_Tree.txt', 'a') as f:
+        f.write(
+            f"\n\nACC: {round(accuracy_score(y_true, y_pred), 4) * 100}%\n"
+            f'F1-Score: {round(f1_score(y_true, y_pred, average="macro"), 4) * 100}%\n'
+            f"Motivo da finalização: {comite.ensemble[0].termination_condition_}\n"
+            # f"Valor do teste estatístico é de {alpha}, significante? {alpha <= 0.05}\n"
+        )
+
+elif option == 'KNN' or option == '3':
+    print('Salvando os resultados em um arquivo Comite_KNN.txt\n\n')
+    print('Finalizando...')
+    with open('Comite_KNN.txt', 'a') as f:
+        f.write(
+            f"\n\nACC: {round(accuracy_score(y_true, y_pred), 4) * 100}%\n"
+            f'F1-Score: {round(f1_score(y_true, y_pred, average="macro"), 4) * 100}%\n'
+            f"Motivo da finalização: {comite.ensemble[0].termination_condition_}\n"
+            # f"Valor do teste estatístico é de {alpha}, significante? {alpha <= 0.05}\n"
+        )
+elif option == 'COMITE HETEROGENEO' or option == '4':
+    print('Salvando os resultados em um arquivo Comite_Heterogeneo.txt\n\n')
+    print('Finalizando...')
+    with open('Comite_Heterogeneo.txt', 'a') as f:
+        f.write(
+            f"\n\nACC: {round(accuracy_score(y_true, y_pred), 4) * 100}%\n"
+            f'F1-Score: {round(f1_score(y_true, y_pred, average="macro"), 4) * 100}%\n'
+            f"Motivo da finalização: {comite.ensemble[0].termination_condition_}\n"
+            # f"Valor do teste estatístico é de {alpha}, significante? {alpha <= 0.05}\n"
+        )

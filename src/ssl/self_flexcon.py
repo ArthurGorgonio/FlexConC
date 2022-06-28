@@ -1,6 +1,6 @@
 import numpy as np
-
 from sklearn.utils import safe_mask
+
 from src.ssl.flexcon import BaseFlexConC
 
 
@@ -8,7 +8,7 @@ class SelfFlexCon(BaseFlexConC):
     def __init__(self, base_estimator):
         super().__init__(base_estimator=base_estimator)
 
-    def fit(self, X, y):
+    def fit(self, X, y, option):
         """
         Fit self-training classifier using `X`, `y` as training data.
         Parameters
@@ -43,7 +43,7 @@ class SelfFlexCon(BaseFlexConC):
         if np.all(has_label):
             raise ValueError("y contains no unlabeled sample")
 
-        init_acc = self.train_new_classifier(has_label, X, y)
+        init_acc = self.train_new_classifier(has_label, X, y, option)
         old_selected = []
         self.n_iter_ = 0
 
