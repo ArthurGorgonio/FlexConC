@@ -1,10 +1,11 @@
 from typing import Dict
+
 from src.detection import (
     fixed_threshold,
     normal,
     page_hinkley,
     weighted,
-    weighted_statistical
+    weighted_statistical,
 )
 from src.reaction import Exchange
 from src.ssl.ensemble import Ensemble
@@ -12,6 +13,7 @@ from src.ssl.ensemble import Ensemble
 
 class Core:
     _base_classifiers = None
+
     def __init__(self):
         self.ensemble = None
         self.reaction = None
@@ -23,7 +25,7 @@ class Core:
         detector,
         reactor,
         params_detector: Dict[str, any] = {},
-        params_reactor: Dict[str, any] = {}
+        params_reactor: Dict[str, any] = {},
     ):
         """
         Função que configura uma execução do fluxo do framework DyDaSL.
@@ -31,7 +33,7 @@ class Core:
         Args:
             ssl_algorithm: algoritmo semissupervisionado que será
                 utilizado no comitê
-            base_classifiers: lista dos classificadores que 
+            base_classifiers: lista dos classificadores que
             detector: classe que realiza a detecção de mudanças de
                 contexto
             reactor: classe que realiza a reação de mudanças de
@@ -58,7 +60,7 @@ class Core:
             raise ValueError(
                 "variável 'ensemble' não foi instanciada. "
                 "Utilize a função 'configure_params' para preparar o ambiente."
-                )
+            )
 
     def run(self, chunk):
         run_first_it()

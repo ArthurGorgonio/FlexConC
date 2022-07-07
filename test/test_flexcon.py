@@ -1,5 +1,6 @@
-from mock import Mock, patch
 from unittest import TestCase
+
+from mock import Mock, patch
 
 from src.ssl.flexcon import BaseFlexConC
 

@@ -1,6 +1,6 @@
 import numpy as np
-
 from sklearn.utils import safe_mask
+
 from src.ssl.flexcon import BaseFlexConC
 
 
@@ -100,14 +100,15 @@ class SelfFlexCon(BaseFlexConC):
                     selected_full = np.array(
                         old_selected + selected_full.tolist()
                     )
-                    new_pred = np.concatenate((self.transduction_[old_selected], pred[selected]))
+                    new_pred = np.concatenate(
+                        (self.transduction_[old_selected], pred[selected])
+                    )
                     self.base_estimator_select_.fit(X[selected_full], new_pred)
                     old_selected = []
                 else:
                     # Traning model to classify the labeled samples
                     self.base_estimator_select_.fit(
-                        X[selected_full],
-                        pred[selected]
+                        X[selected_full], pred[selected]
                     )
 
                 local_acc = self.calc_local_measure(

@@ -13,14 +13,18 @@ class Ensemble:
         self.ensemble = []
         self.ssl_algorithm = ssl_algorithm
 
-    def add_classifier(self, classifier):
+    def add_classifier(self, classifier, need_train: bool = True):
         """
         Adiciona um novo classificador no cômite
 
         Args:
             classifier: Classificador
         """
-        flexconc = self.ssl_algorithm(classifier)
+
+        if need_train:
+            flexconc = self.ssl_algorithm(classifier)
+        else:
+            flexconc = classifier
         self.ensemble.append(flexconc)
 
     def remover_classifier(self, classifier):

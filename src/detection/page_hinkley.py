@@ -9,10 +9,7 @@ from src.detection.interfaces.IDriftDetector import IDriftDetector
 
 class PageHinkley(IDriftDetector):
     def __init__(
-        self,
-        delta: float = 5e-2,
-        lambda_: int = 50,
-        alpha: float = 0.9999
+        self, delta: float = 5e-2, lambda_: int = 50, alpha: float = 0.9999
     ):
         super().__init__()
         self.delta = delta

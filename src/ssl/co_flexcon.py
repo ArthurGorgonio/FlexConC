@@ -1,5 +1,6 @@
 from src.ssl.BaseFlexCon import BaseFlexCon
 
+
 class CoFlexCon(BaseFlexCon):
     def __init__(self, base_estimator):
         super().__init__(base_estimator=base_estimator)
