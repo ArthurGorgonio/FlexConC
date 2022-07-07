@@ -1,5 +1,6 @@
 import warnings
 
+import matplotlib.pyplot as plt
 import src.utils as preprocessing
 import pandas as pd
 import numpy as np
@@ -97,7 +98,7 @@ while flag == False:
         with open('Comite_Naive.txt', 'a') as f:
             f.write('Naive Bayes selecionado...\n\n')
         for i in range(10):
-            flexCon = SelfFlexCon(Naive(var_smoothing=float(f'1e{i}')))
+            flexCon = SelfFlexCon(Naive(var_smoothing=float(f'1e-{i}')))
             random_unlabeled_points = np.random.choice(len(digits_instances), labelled_instances, replace=False)
             digits_target_unlabelled[random_unlabeled_points] = -1
             X = digits_instances
