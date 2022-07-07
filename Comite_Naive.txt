@@ -1,0 +1,17 @@
+Naive Bayes selecionado...
+
+
+Acurácia do novo classificador: 0.7805203468979319
+Acurácia do novo classificador: 0.7126148705096074
+Acurácia do novo classificador: 0.4559246664922835
+Acurácia do novo classificador: 0.10836627140974966
+Acurácia do novo classificador: 0.10877626699629171
+Acurácia do novo classificador: 0.11053719008264463
+Acurácia do novo classificador: 0.11154094132817537
+Acurácia do novo classificador: 0.11869918699186992
+Acurácia do novo classificador: 0.12114989733059549
+Acurácia do novo classificador: 0.11994949494949494
+
+ACC: 10.879999999999999%
+F1-Score: 1.96%
+Motivo da finalização: 

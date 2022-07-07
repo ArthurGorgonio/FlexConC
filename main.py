@@ -1,5 +1,7 @@
 import warnings
 
+import src.utils as preprocessing
+import pandas as pd
 import numpy as np
 from sklearn import datasets
 from sklearn.metrics import accuracy_score, f1_score
@@ -12,6 +14,7 @@ from src.ssl.ensemble import Ensemble
 from src.ssl.self_flexcon import SelfFlexCon
 
 warnings.simplefilter("ignore")
+
 # ssl = FlexConC(Naive(), verbose=True)
 
 # rng = np.random.RandomState(42)
@@ -34,9 +37,24 @@ comite = Ensemble(SelfFlexCon)
 
 # iris = datasets.load_iris()
 # wine = datasets.load_wine()
-digits = datasets.load_digits()
+# digits = datasets.load_digits()
 
-digits.target_unlabelled = digits.target.copy()
+#digits_target_unlabelled = digits.target.copy()
+
+input_file = "pendigits.tra"
+
+df = pd.read_csv(input_file, header=None)
+
+kfold = preprocessing.crossValidation(10)
+digits_instances = df.iloc[:,:-1].values #X
+digits_target_unlabelled = df.iloc[:,-1].values #Y
+digits_target_unlabelled_copy = digits_target_unlabelled.copy()
+
+# TODO: DPS
+# for train, test in kfold.split(digits_instances, digits_target_unlabelled):
+#     X_train, X_test = digits_instances[train], digits_instances[test]
+#     y_train, y_test = digits_target_unlabelled[train], digits_target_unlabelled[test]
+
 
 # flexCon = SelfFlexCon(Tree())
 
@@ -62,9 +80,9 @@ list_knn= [
     KNN(n_neighbors=12, weights='distance'),KNN(n_neighbors=13, weights='distance'),
     KNN(n_neighbors=14, weights='distance'),KNN(n_neighbors=11),KNN(n_neighbors=12),
     KNN(n_neighbors=13),KNN(n_neighbors=14)]
-# ]
-labelled_instances = int(len(digits.data)*0.2)
-print('Instâncias rotulada: ', labelled_instances)
+
+labelled_instances = int(len(digits_instances)*0.2)
+print('Instâncias rotuladas: ', labelled_instances)
 print('Data-Set carregado: Digits\n\n')
 print("Classificadores disponíveis:\n\n\t(1) Naive\n\t(2) Tree\n\t(3) KNN\n\t(4) COMITE HETEROGENEO\n\t(0) Sair\n\n")
 option = input('Informe o classificador: ')
@@ -80,10 +98,10 @@ while flag == False:
             f.write('Naive Bayes selecionado...\n\n')
         for i in range(10):
             flexCon = SelfFlexCon(Naive(var_smoothing=float(f'1e{i}')))
-            random_unlabeled_points = np.random.choice(len(digits.data), labelled_instances, replace=False)
-            digits.target_unlabelled[random_unlabeled_points] = -1
-            X = digits.data
-            y = digits.target_unlabelled
+            random_unlabeled_points = np.random.choice(len(digits_instances), labelled_instances, replace=False)
+            digits_target_unlabelled[random_unlabeled_points] = -1
+            X = digits_instances
+            y = digits_target_unlabelled
             comite.add_model(flexCon.fit(X, y, option))
 
     elif option == 'Tree' or option == '2':
@@ -92,10 +110,10 @@ while flag == False:
             f.write('Decision Tree selecionado...\n\n')
         for i in list_tree:
             flexCon = SelfFlexCon(i)
-            random_unlabeled_points = np.random.choice(len(digits.data), labelled_instances, replace=False)
-            digits.target_unlabelled[random_unlabeled_points] = -1
-            X = digits.data
-            y = digits.target_unlabelled
+            random_unlabeled_points = np.random.choice(len(digits_instances), labelled_instances, replace=False)
+            digits_target_unlabelled[random_unlabeled_points] = -1
+            X = digits_instances
+            y = digits_target_unlabelled
             comite.add_model(flexCon.fit(X, y, option))
 
     elif option == 'KNN' or option == '3':
@@ -104,10 +122,10 @@ while flag == False:
             f.write('\n\nKNN selecionado...\n\n')
         for i in list_knn:
             flexCon = SelfFlexCon(i)
-            random_unlabeled_points = np.random.choice(len(digits.data), labelled_instances, replace=False)
-            digits.target_unlabelled[random_unlabeled_points] = -1
-            X = digits.data
-            y = digits.target_unlabelled
+            random_unlabeled_points = np.random.choice(len(digits_instances), labelled_instances, replace=False)
+            digits_target_unlabelled[random_unlabeled_points] = -1
+            X = digits_instances
+            y = digits_target_unlabelled
             comite.add_model(flexCon.fit(X, y, option))
 
     elif option == 'COMITE HETEROGENEO' or option == '4':
@@ -117,28 +135,28 @@ while flag == False:
                     'Executando com Naive Bayes...\n\n')
         for i in range(5):
             flexCon = SelfFlexCon(Naive(var_smoothing=float(f'1e{i}')))
-            random_unlabeled_points = np.random.choice(len(digits.data), labelled_instances, replace=False)
-            digits.target_unlabelled[random_unlabeled_points] = -1
-            X = digits.data 
-            y = digits.target_unlabelled
+            random_unlabeled_points = np.random.choice(len(digits_instances), labelled_instances, replace=False)
+            digits_target_unlabelled[random_unlabeled_points] = -1
+            X = digits_instances 
+            y = digits_target_unlabelled
             comite.add_model(flexCon.fit(X, y, option))
         with open('Comite_Heterogeneo.txt', 'a') as f:
             f.write('\n\nExecutando com Decision Tree...\n\n')
         for i in list_tree_het:
             flexCon = SelfFlexCon(i)
-            random_unlabeled_points = np.random.choice(len(digits.data), labelled_instances, replace=False)
-            digits.target_unlabelled[random_unlabeled_points] = -1
-            X = digits.data
-            y = digits.target_unlabelled
+            random_unlabeled_points = np.random.choice(len(digits_instances), labelled_instances, replace=False)
+            digits_target_unlabelled[random_unlabeled_points] = -1
+            X = digits_instances
+            y = digits_target_unlabelled
             comite.add_model(flexCon.fit(X, y, option))
         with open('Comite_Heterogeneo.txt', 'a') as f:
             f.write('\n\nExecutando com KNN...\n\n')
         for i in list_knn_het:
             flexCon = SelfFlexCon(i)
-            random_unlabeled_points = np.random.choice(len(digits.data), labelled_instances, replace=False)
-            digits.target_unlabelled[random_unlabeled_points] = -1
-            X = digits.data
-            y = digits.target_unlabelled
+            random_unlabeled_points = np.random.choice(len(digits_instances), labelled_instances, replace=False)
+            digits_target_unlabelled[random_unlabeled_points] = -1
+            X = digits_instances
+            y = digits_target_unlabelled
             comite.add_model(flexCon.fit(X, y, option))
 
     else:
@@ -150,10 +168,10 @@ while flag == False:
 # comite.add_classifier(Tree(criterion="entropy"))
 # comite.add_classifier(KNN())
 
-# comite.fit_ensemble(digits.data, digits.target_unlabelled)
+# comite.fit_ensemble(digits.data,digits_target_unlabelled)
 
-y_pred = comite.predict(digits.data[random_unlabeled_points, :])
-y_true = digits.target[random_unlabeled_points]
+y_pred = comite.predict(digits_instances[random_unlabeled_points, :])
+y_true = digits_target_unlabelled_copy[random_unlabeled_points]
 
 s_test = WeightedStatistical(0.05)
 s_test.update_chunks(y_pred)
