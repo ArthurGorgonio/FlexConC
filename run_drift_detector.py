@@ -145,19 +145,16 @@ for dataset in datasets:
     instances_chunk, target_chunk = stream.next_sample(chunk_size)
     num_samples = instances.shape[0] - instances_chunk.shape[0]
 
-    ensemble1.add_classifier(NaiveBayes(), False)
+    # ensemble1.add_classifier(NaiveBayes(), False)
+    # ensemble2.add_classifier(NaiveBayes(), False)
+    # ensemble3.add_classifier(NaiveBayes(), False)
+    # ensemble5.add_classifier(NaiveBayes(), False)
+    # ensemble4.add_classifier(NaiveBayes(), False)
+
     ensemble1.add_classifier(HoeffdingTreeClassifier(), False)
-
-    ensemble2.add_classifier(NaiveBayes(), False)
     ensemble2.add_classifier(HoeffdingTreeClassifier(), False)
-
-    ensemble3.add_classifier(NaiveBayes(), False)
     ensemble3.add_classifier(HoeffdingTreeClassifier(), False)
-
-    ensemble4.add_classifier(NaiveBayes(), False)
     ensemble4.add_classifier(HoeffdingTreeClassifier(), False)
-
-    ensemble5.add_classifier(NaiveBayes(), False)
     ensemble5.add_classifier(HoeffdingTreeClassifier(), False)
 
     # classifier1.fit(instances_chunk, target_chunk)
@@ -201,6 +198,23 @@ for dataset in datasets:
         acc_ensemble3.append(accuracy_score(target_chunk_n, y_pred_ensemble3))
         acc_ensemble4.append(accuracy_score(target_chunk_n, y_pred_ensemble4))
         acc_ensemble5.append(accuracy_score(target_chunk_n, y_pred_ensemble5))
+
+        if len(ensemble1) < 10:
+            ensemble1.add_fit_classifier(
+                HoeffdingTreeClassifier(), instances_chunk_n, target_chunk_n
+            )
+            ensemble2.add_fit_classifier(
+                HoeffdingTreeClassifier(), instances_chunk_n, target_chunk_n
+            )
+            ensemble3.add_fit_classifier(
+                HoeffdingTreeClassifier(), instances_chunk_n, target_chunk_n
+            )
+            ensemble4.add_fit_classifier(
+                HoeffdingTreeClassifier(), instances_chunk_n, target_chunk_n
+            )
+            ensemble5.add_fit_classifier(
+                HoeffdingTreeClassifier(), instances_chunk_n, target_chunk_n
+            )
 
         #         if it1:
         #             drift.thr1 = acc_scor1[-1]
@@ -365,7 +379,7 @@ for dataset in datasets:
     }
 
     pd.DataFrame(data).to_csv(
-        f"{dataset.split('.csv')[0]}_five_ensembles.dat",
+        f"{dataset.split('.csv')[0]}_ten_classifier_ensembles.dat",
         sep="\t",
         header=False,
         index=False,

@@ -27,6 +27,18 @@ class Ensemble:
             flexconc = classifier
         self.ensemble.append(flexconc)
 
+    def add_fit_classifier(self, classifier, instances, labels):
+        """
+        Adiciona um novo classificador durante em um comitê já existente.
+
+        Args:
+            classifier: Classificador a ser treinado e adicionado
+            instances: Instâncias
+            labels: Rótulos
+        """
+        classifier.fit(instances, labels)
+        self.ensemble.append(classifier)
+
     def remover_classifier(self, classifier):
         """
         Remove um classificador do cômite
