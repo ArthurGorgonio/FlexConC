@@ -1,6 +1,7 @@
 from statistics import mode
 
 import numpy as np
+from sklearn.metrics import accuracy_score
 
 
 class Ensemble:
@@ -48,7 +49,7 @@ class Ensemble:
         """
         self.ensemble.remove(classifier)
 
-    def measure_classifier(self, instances) -> list:
+    def measure_classifier(self, instances, labels) -> list:
         """
         Calcula métrica de classificação
 
@@ -61,9 +62,8 @@ class Ensemble:
         measure_ensemble = []
 
         for classifier in self.ensemble:
-            measure_ensemble.append(
-                self.predict_one_classifier(classifier, instances)
-            )
+            y_pred = self.predict_one_classifier(classifier, instances)
+            measure_ensemble.append(accuracy_score(labels, y_pred))
 
         return measure_ensemble
 
