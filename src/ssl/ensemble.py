@@ -122,3 +122,11 @@ class Ensemble:
             y_pred = np.append(y_pred, mode(pred))
 
         return y_pred
+
+    def swap(self, classifier, pos: List) -> None:
+        if len(pos) == len(classifier):
+            for i, j in zip(pos, classifier):
+                self.ensemble[i] = classifier[j]
+        else:
+            for i in pos:
+                self.ensemble[i] = classifier

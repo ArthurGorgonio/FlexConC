@@ -3,7 +3,6 @@ from abc import ABC, abstractmethod
 
 class IDriftDetector(ABC):
     def __init__(self):
-        self.drift = False
         self.drift_counter = 0
 
     @abstractmethod
