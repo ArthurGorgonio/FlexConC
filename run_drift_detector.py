@@ -19,8 +19,8 @@ class DriftDetectorThreshold:
     _counter = 0
 
     def __init__(self) -> None:
-        self.thr1 = 0.0
-        self.thr2 = 0.0
+        self.thr1 = 0.8
+        self.thr2 = 0.8
 
     def react(self):
         if self._counter > 10:
@@ -183,7 +183,7 @@ for dataset in datasets:
     acc_base1 = []
     acc_base2 = []
 
-    it1, it2, it3, it4, it5 = False, False, False, False, False
+    it1, it2, it3, it4, it5 = True, True, True, True, True
 
     while stream.has_more_samples():
         instances_chunk_n, target_chunk_n = stream.next_sample(chunk_size)
@@ -224,35 +224,35 @@ for dataset in datasets:
         #         HoeffdingTreeClassifier(), instances_chunk_n, target_chunk_n
         #    )
 
-        #         if it1:
-        #             drift.thr1 = acc_scor1[-1]
-        #             it1 = False
-        #
-        #         if it2:
-        #             drift.thr2 = acc_scor2[-1]
-        #             it2 = False
-
         if it1:
+            drift.thr1 = acc_scor1[-1]
             it1 = False
 
         if it2:
-            drift_ensemble.thr1 = acc_ensemble2[-1]
+            drift.thr2 = acc_scor2[-1]
+            it2 = False
 
-        if it3:
-            ...
+        # if it1:
+        #     it1 = False
 
-        if it4:
-            drift_ensemble.thr_when_drift.append(acc_ensemble4[-1])
+        # if it2:
+        #     drift_ensemble.thr1 = acc_ensemble2[-1]
 
-        if it5:
-            drift_ensemble.thr_old = (
-                drift_ensemble.thr_new
-                if drift_ensemble.thr_new < acc_ensemble5[-1]
-                else drift_ensemble.thr_old
-            )
-            drift_ensemble.thr2 = max(
-                drift_ensemble.thr_new, drift_ensemble.thr_old
-            )
+        # if it3:
+        #     ...
+
+        # if it4:
+        #     drift_ensemble.thr_when_drift.append(acc_ensemble4[-1])
+
+        # if it5:
+        #     drift_ensemble.thr_old = (
+        #         drift_ensemble.thr_new
+        #         if drift_ensemble.thr_new < acc_ensemble5[-1]
+        #         else drift_ensemble.thr_old
+        #     )
+        #     drift_ensemble.thr2 = max(
+        #         drift_ensemble.thr_new, drift_ensemble.thr_old
+        #     )
 
         if drift.detect_better(acc_scor1[-1], True):
             classifier1.partial_fit(instances_chunk_n, target_chunk_n)

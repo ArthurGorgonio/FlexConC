@@ -6,7 +6,7 @@ class FixedThreshold(IChunk):
         super().__init__(threshold)
 
     def detect(self, chunk_acc) -> bool:
-        if chunk_acc < threshold:
+        if chunk_acc < self.threshold:
             self.increase_counter()
 
             return True

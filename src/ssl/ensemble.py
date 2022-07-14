@@ -2,6 +2,7 @@ from statistics import mode
 
 import numpy as np
 from sklearn.metrics import accuracy_score
+from typing import List, NoReturn
 
 
 class Ensemble:
@@ -123,7 +124,7 @@ class Ensemble:
 
         return y_pred
 
-    def swap(self, classifier, pos: List) -> None:
+    def swap(self, classifier, pos: List) -> NoReturn:
         if len(pos) == len(classifier):
             for i, j in zip(pos, classifier):
                 self.ensemble[i] = classifier[j]
