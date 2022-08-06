@@ -1,0 +1,160 @@
+Decision Tree selecionado...
+
+
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+
+ACC: 99.41%
+F1-Score: 99.42%
+Motivo da finalização: all_labeled
+Decision Tree selecionado...
+
+
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+
+ACC: 99.78%
+F1-Score: 99.77000000000001%
+Motivo da finalização: all_labeled
+Decision Tree selecionado...
+
+
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+
+ACC: 99.48%
+F1-Score: 99.48%
+Motivo da finalização: all_labeled
+Decision Tree selecionado...
+
+
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+
+ACC: 99.92999999999999%
+F1-Score: 99.92999999999999%
+Motivo da finalização: all_labeled
+Decision Tree selecionado...
+
+
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+
+ACC: 99.92999999999999%
+F1-Score: 99.92%
+Motivo da finalização: all_labeled
+Decision Tree selecionado...
+
+
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+
+ACC: 99.85000000000001%
+F1-Score: 99.85000000000001%
+Motivo da finalização: all_labeled
+Decision Tree selecionado...
+
+
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+
+ACC: 99.85000000000001%
+F1-Score: 99.86%
+Motivo da finalização: all_labeled
+Decision Tree selecionado...
+
+
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+
+ACC: 99.56%
+F1-Score: 99.57000000000001%
+Motivo da finalização: all_labeled
+Decision Tree selecionado...
+
+
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+
+ACC: 99.7%
+F1-Score: 99.7%
+Motivo da finalização: all_labeled
+Decision Tree selecionado...
+
+
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+
+ACC: 99.92999999999999%
+F1-Score: 99.92999999999999%
+Motivo da finalização: all_labeled

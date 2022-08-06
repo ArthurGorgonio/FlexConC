@@ -1,0 +1,160 @@
+Naive Bayes selecionado...
+
+
+Acurácia do novo classificador: 0.7772652388797364
+Acurácia do novo classificador: 0.8735590118938701
+Acurácia do novo classificador: 0.884584013050571
+Acurácia do novo classificador: 0.882472366343334
+Acurácia do novo classificador: 0.8849335673101028
+Acurácia do novo classificador: 0.8837860543265191
+Acurácia do novo classificador: 0.8862144420131292
+Acurácia do novo classificador: 0.8869233437391606
+Acurácia do novo classificador: 0.8827160493827161
+
+ACC: 87.39%
+F1-Score: 87.09%
+Motivo da finalização: 
+Naive Bayes selecionado...
+
+
+Acurácia do novo classificador: 0.7762767710049423
+Acurácia do novo classificador: 0.8734686414335344
+Acurácia do novo classificador: 0.8826872336107164
+Acurácia do novo classificador: 0.8791357191087104
+Acurácia do novo classificador: 0.8764044943820225
+Acurácia do novo classificador: 0.8786111111111111
+Acurácia do novo classificador: 0.8804448563484708
+Acurácia do novo classificador: 0.87782340862423
+Acurácia do novo classificador: 0.8789373814041745
+
+ACC: 89.17%
+F1-Score: 88.46000000000001%
+Motivo da finalização: 
+Naive Bayes selecionado...
+
+
+Acurácia do novo classificador: 0.7794069192751235
+Acurácia do novo classificador: 0.8734223522955917
+Acurácia do novo classificador: 0.8831671076735192
+Acurácia do novo classificador: 0.8817131203263087
+Acurácia do novo classificador: 0.8802122820318423
+Acurácia do novo classificador: 0.8815311539536184
+Acurácia do novo classificador: 0.8795518207282913
+Acurácia do novo classificador: 0.8823936354202698
+Acurácia do novo classificador: 0.8769825918762089
+
+ACC: 86.94%
+F1-Score: 86.78%
+Motivo da finalização: 
+Naive Bayes selecionado...
+
+
+Acurácia do novo classificador: 0.7771004942339373
+Acurácia do novo classificador: 0.8722975448882374
+Acurácia do novo classificador: 0.8836452400325467
+Acurácia do novo classificador: 0.8781264211005002
+Acurácia do novo classificador: 0.8758236188545362
+Acurácia do novo classificador: 0.8784731967443166
+Acurácia do novo classificador: 0.8751173708920188
+Acurácia do novo classificador: 0.8725936296814841
+Acurácia do novo classificador: 0.8707536118703632
+
+ACC: 89.17%
+F1-Score: 88.92999999999999%
+Motivo da finalização: 
+Naive Bayes selecionado...
+
+
+Acurácia do novo classificador: 0.7781255147422171
+Acurácia do novo classificador: 0.8718418161845478
+Acurácia do novo classificador: 0.8826395939086294
+Acurácia do novo classificador: 0.8813559322033898
+Acurácia do novo classificador: 0.8761594384557533
+Acurácia do novo classificador: 0.8772077375946173
+Acurácia do novo classificador: 0.8745709828393136
+Acurácia do novo classificador: 0.8741721854304636
+Acurácia do novo classificador: 0.87141750580945
+
+ACC: 88.42999999999999%
+F1-Score: 87.76%
+Motivo da finalização: 
+Naive Bayes selecionado...
+
+
+Acurácia do novo classificador: 0.7832317575358261
+Acurácia do novo classificador: 0.8774016468435498
+Acurácia do novo classificador: 0.8910830618892508
+Acurácia do novo classificador: 0.8859530261969286
+Acurácia do novo classificador: 0.8816120906801007
+Acurácia do novo classificador: 0.8792040358744395
+Acurácia do novo classificador: 0.8797369245223927
+Acurácia do novo classificador: 0.8809276566285912
+Acurácia do novo classificador: 0.880292532717475
+
+ACC: 87.53999999999999%
+F1-Score: 87.22999999999999%
+Motivo da finalização: 
+Naive Bayes selecionado...
+
+
+Acurácia do novo classificador: 0.7784549497611596
+Acurácia do novo classificador: 0.8738804606104917
+Acurácia do novo classificador: 0.8842554922701383
+Acurácia do novo classificador: 0.8798825920072251
+Acurácia do novo classificador: 0.872745490981964
+Acurácia do novo classificador: 0.8753124132185504
+Acurácia do novo classificador: 0.8751537515375154
+Acurácia do novo classificador: 0.8753820033955857
+Acurácia do novo classificador: 0.8739622641509434
+
+ACC: 88.42999999999999%
+F1-Score: 87.83%
+Motivo da finalização: 
+Naive Bayes selecionado...
+
+
+Acurácia do novo classificador: 0.787020260253665
+Acurácia do novo classificador: 0.878400584261457
+Acurácia do novo classificador: 0.8896761133603239
+Acurácia do novo classificador: 0.8879892037786775
+Acurácia do novo classificador: 0.886579869804707
+Acurácia do novo classificador: 0.8884263114071607
+Acurácia do novo classificador: 0.8901912399753239
+Acurácia do novo classificador: 0.8894610367318915
+Acurácia do novo classificador: 0.8921904761904762
+
+ACC: 87.83%
+F1-Score: 87.72999999999999%
+Motivo da finalização: 
+Naive Bayes selecionado...
+
+
+Acurácia do novo classificador: 0.7758194696096194
+Acurácia do novo classificador: 0.8704076037287516
+Acurácia do novo classificador: 0.8826872336107164
+Acurácia do novo classificador: 0.8818489289740699
+Acurácia do novo classificador: 0.8822355289421158
+Acurácia do novo classificador: 0.8834763354553004
+Acurácia do novo classificador: 0.8842720837180671
+Acurácia do novo classificador: 0.8825136612021858
+Acurácia do novo classificador: 0.8783576362240982
+
+ACC: 88.87%
+F1-Score: 88.61%
+Motivo da finalização: 
+Naive Bayes selecionado...
+
+
+Acurácia do novo classificador: 0.776148904628562
+Acurácia do novo classificador: 0.8694859642726941
+Acurácia do novo classificador: 0.8815175491986205
+Acurácia do novo classificador: 0.8804054054054054
+Acurácia do novo classificador: 0.8778359511343804
+Acurácia do novo classificador: 0.8752420470262794
+Acurácia do novo classificador: 0.876078914919852
+Acurácia do novo classificador: 0.8749569410954185
+Acurácia do novo classificador: 0.8738912456613961
+
+ACC: 89.47%
+F1-Score: 89.28%
+Motivo da finalização: 

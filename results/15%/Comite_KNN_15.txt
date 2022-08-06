@@ -1,0 +1,180 @@
+
+
+KNN selecionado...
+
+
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 0.9772370486656201
+Acurácia do novo classificador: 0.9709275496077526
+Acurácia do novo classificador: 0.9667381974248928
+Acurácia do novo classificador: 0.9625935162094763
+
+ACC: 98.71%
+F1-Score: 98.72999999999999%
+Motivo da finalização: all_labeled
+
+
+KNN selecionado...
+
+
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 0.9818897637795275
+Acurácia do novo classificador: 0.9776744186046512
+Acurácia do novo classificador: 0.9737274220032841
+Acurácia do novo classificador: 0.9731457800511509
+
+ACC: 98.91%
+F1-Score: 98.91%
+Motivo da finalização: all_labeled
+
+
+KNN selecionado...
+
+
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 0.983484073928431
+Acurácia do novo classificador: 0.9828146771946121
+Acurácia do novo classificador: 0.9747447608812466
+Acurácia do novo classificador: 0.9682539682539683
+
+ACC: 99.00999999999999%
+F1-Score: 99.05000000000001%
+Motivo da finalização: all_labeled
+
+
+KNN selecionado...
+
+
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 0.9781050955414012
+Acurácia do novo classificador: 0.9721059972105998
+Acurácia do novo classificador: 0.9626988480526605
+Acurácia do novo classificador: 0.9566049776643267
+
+ACC: 99.31%
+F1-Score: 99.29%
+Motivo da finalização: all_labeled
+
+
+KNN selecionado...
+
+
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 0.9831899921813917
+Acurácia do novo classificador: 0.9782709200184928
+Acurácia do novo classificador: 0.9677771709448388
+Acurácia do novo classificador: 0.963855421686747
+
+ACC: 98.52%
+F1-Score: 98.49%
+Motivo da finalização: all_labeled
+
+
+KNN selecionado...
+
+
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 0.986105750675415
+Acurácia do novo classificador: 0.9829825347066726
+Acurácia do novo classificador: 0.9760765550239234
+Acurácia do novo classificador: 0.9706066291432145
+
+ACC: 98.71%
+F1-Score: 98.76%
+Motivo da finalização: all_labeled
+
+
+KNN selecionado...
+
+
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 0.980944819372767
+Acurácia do novo classificador: 0.9789424426766495
+Acurácia do novo classificador: 0.9687842278203724
+Acurácia do novo classificador: 0.9583061889250815
+
+ACC: 98.71%
+F1-Score: 98.74000000000001%
+Motivo da finalização: all_labeled
+
+
+KNN selecionado...
+
+
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 0.9822134387351779
+Acurácia do novo classificador: 0.973659454374412
+Acurácia do novo classificador: 0.9675288937809576
+Acurácia do novo classificador: 0.9546338302009073
+
+ACC: 98.22%
+F1-Score: 98.24000000000001%
+Motivo da finalização: all_labeled
+
+
+KNN selecionado...
+
+
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 0.986046511627907
+Acurácia do novo classificador: 0.9810273021749191
+Acurácia do novo classificador: 0.9754797441364605
+Acurácia do novo classificador: 0.97264631043257
+
+ACC: 98.32%
+F1-Score: 98.34%
+Motivo da finalização: all_labeled
+
+
+KNN selecionado...
+
+
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 0.9801169590643275
+Acurácia do novo classificador: 0.9761029411764706
+Acurácia do novo classificador: 0.9707792207792207
+Acurácia do novo classificador: 0.9622762148337596
+
+ACC: 99.11%
+F1-Score: 99.15%
+Motivo da finalização: all_labeled

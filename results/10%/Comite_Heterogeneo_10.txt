@@ -1,0 +1,320 @@
+Comite heterogêneo selecionado...
+
+Executando com Naive Bayes...
+
+
+Acurácia do novo classificador: 0.7820428336079077
+Acurácia do novo classificador: 0.8688344903178663
+Acurácia do novo classificador: 0.8796596434359806
+Acurácia do novo classificador: 0.877141568981064
+Acurácia do novo classificador: 0.8718397997496871
+
+Executando com Decision Tree...
+
+
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+
+Executando com KNN...
+
+
+Acurácia do novo classificador: 0.9836829836829837
+Acurácia do novo classificador: 0.9799588900308325
+Acurácia do novo classificador: 0.9778283115406481
+Acurácia do novo classificador: 0.9676395939086294
+Acurácia do novo classificador: 0.959830866807611
+
+ACC: 97.18%
+F1-Score: 97.39999999999999%
+Motivo da finalização: 
+Comite heterogêneo selecionado...
+
+Executando com Naive Bayes...
+
+
+Acurácia do novo classificador: 0.7790774299835256
+Acurácia do novo classificador: 0.8702178290316676
+Acurácia do novo classificador: 0.8831063224232567
+Acurácia do novo classificador: 0.8764705882352941
+Acurácia do novo classificador: 0.8784225069078121
+
+Executando com Decision Tree...
+
+
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+
+Executando com KNN...
+
+
+Acurácia do novo classificador: 0.9787935909519322
+Acurácia do novo classificador: 0.9745627980922098
+Acurácia do novo classificador: 0.9710572947430597
+Acurácia do novo classificador: 0.9655857048312376
+Acurácia do novo classificador: 0.9547775346462436
+
+ACC: 97.03%
+F1-Score: 97.14%
+Motivo da finalização: 
+Comite heterogêneo selecionado...
+
+Executando com Naive Bayes...
+
+
+Acurácia do novo classificador: 0.7761120263591433
+Acurácia do novo classificador: 0.8689667828959442
+Acurácia do novo classificador: 0.8779046066041581
+Acurácia do novo classificador: 0.8790834845735027
+Acurácia do novo classificador: 0.8790627362055934
+
+Executando com Decision Tree...
+
+
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+
+Executando com KNN...
+
+
+Acurácia do novo classificador: 0.9785100286532952
+Acurácia do novo classificador: 0.9745493107104984
+Acurácia do novo classificador: 0.9696084161309176
+Acurácia do novo classificador: 0.9635653871177619
+Acurácia do novo classificador: 0.9522409992652462
+
+ACC: 97.77%
+F1-Score: 97.72%
+Motivo da finalização: 
+Comite heterogêneo selecionado...
+
+Executando com Naive Bayes...
+
+
+Acurácia do novo classificador: 0.7787479406919275
+Acurácia do novo classificador: 0.8676416819012797
+Acurácia do novo classificador: 0.8822813070834179
+Acurácia do novo classificador: 0.8831754623364908
+Acurácia do novo classificador: 0.8810716074111167
+
+Executando com Decision Tree...
+
+
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+
+Executando com KNN...
+
+
+Acurácia do novo classificador: 0.9765917602996255
+Acurácia do novo classificador: 0.9712082262210797
+Acurácia do novo classificador: 0.9703365658870508
+Acurácia do novo classificador: 0.9661442006269593
+Acurácia do novo classificador: 0.9583333333333334
+
+ACC: 98.37%
+F1-Score: 98.46000000000001%
+Motivo da finalização: 
+Comite heterogêneo selecionado...
+
+Executando com Naive Bayes...
+
+
+Acurácia do novo classificador: 0.7771372096853896
+Acurácia do novo classificador: 0.8724182050813379
+Acurácia do novo classificador: 0.8868538868538869
+Acurácia do novo classificador: 0.8849898120896537
+Acurácia do novo classificador: 0.8825900730662636
+
+Executando com Decision Tree...
+
+
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+
+Executando com KNN...
+
+
+Acurácia do novo classificador: 0.9784791965566715
+Acurácia do novo classificador: 0.9731154454401687
+Acurácia do novo classificador: 0.9617612977983777
+Acurácia do novo classificador: 0.955700325732899
+Acurácia do novo classificador: 0.9549090909090909
+
+ACC: 97.33000000000001%
+F1-Score: 97.15%
+Motivo da finalização: 
+Comite heterogêneo selecionado...
+
+Executando com Naive Bayes...
+
+
+Acurácia do novo classificador: 0.7779607972327458
+Acurácia do novo classificador: 0.8760058522311631
+Acurácia do novo classificador: 0.8891600569452919
+Acurácia do novo classificador: 0.8857336037863421
+Acurácia do novo classificador: 0.8836509528585758
+
+Executando com Decision Tree...
+
+
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+
+Executando com KNN...
+
+
+Acurácia do novo classificador: 0.9789227166276346
+Acurácia do novo classificador: 0.9755590223608944
+Acurácia do novo classificador: 0.9691604797258709
+Acurácia do novo classificador: 0.964968152866242
+Acurácia do novo classificador: 0.9535382416011436
+
+ACC: 98.66%
+F1-Score: 98.63%
+Motivo da finalização: 
+Comite heterogêneo selecionado...
+
+Executando com Naive Bayes...
+
+
+Acurácia do novo classificador: 0.7871849777631362
+Acurácia do novo classificador: 0.877128731001648
+Acurácia do novo classificador: 0.8867886178861789
+Acurácia do novo classificador: 0.8830077237619264
+Acurácia do novo classificador: 0.8843537414965986
+
+Executando com Decision Tree...
+
+
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+
+Executando com KNN...
+
+
+Acurácia do novo classificador: 0.9806603773584905
+Acurácia do novo classificador: 0.9780104712041885
+Acurácia do novo classificador: 0.9693287037037037
+Acurácia do novo classificador: 0.9580686149936467
+Acurácia do novo classificador: 0.9516468114926419
+
+ACC: 97.48%
+F1-Score: 97.35000000000001%
+Motivo da finalização: 
+Comite heterogêneo selecionado...
+
+Executando com Naive Bayes...
+
+
+Acurácia do novo classificador: 0.7810904299126997
+Acurácia do novo classificador: 0.8761191302758998
+Acurácia do novo classificador: 0.8849969629479651
+Acurácia do novo classificador: 0.8809791152032338
+Acurácia do novo classificador: 0.87725
+
+Executando com Decision Tree...
+
+
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+
+Executando com KNN...
+
+
+Acurácia do novo classificador: 0.9737219302436694
+Acurácia do novo classificador: 0.9715512614063339
+Acurácia do novo classificador: 0.9649643705463183
+Acurácia do novo classificador: 0.953625081645983
+Acurácia do novo classificador: 0.947985347985348
+
+ACC: 97.63%
+F1-Score: 97.69%
+Motivo da finalização: 
+Comite heterogêneo selecionado...
+
+Executando com Naive Bayes...
+
+
+Acurácia do novo classificador: 0.7728545544391369
+Acurácia do novo classificador: 0.8704416345977644
+Acurácia do novo classificador: 0.8850294535852122
+Acurácia do novo classificador: 0.8836265223274695
+Acurácia do novo classificador: 0.8865230460921844
+
+Executando com Decision Tree...
+
+
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+
+Executando com KNN...
+
+
+Acurácia do novo classificador: 0.9781191806331471
+Acurácia do novo classificador: 0.9767801857585139
+Acurácia do novo classificador: 0.9677233429394813
+Acurácia do novo classificador: 0.9603580562659847
+Acurácia do novo classificador: 0.9544159544159544
+
+ACC: 98.07000000000001%
+F1-Score: 98.16%
+Motivo da finalização: 
+Comite heterogêneo selecionado...
+
+Executando com Naive Bayes...
+
+
+Acurácia do novo classificador: 0.7707132268160105
+Acurácia do novo classificador: 0.8676200953428677
+Acurácia do novo classificador: 0.8821014050091631
+Acurácia do novo classificador: 0.8818879855465221
+Acurácia do novo classificador: 0.8794486215538847
+
+Executando com Decision Tree...
+
+
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+Acurácia do novo classificador: 1.0
+
+Executando com KNN...
+
+
+Acurácia do novo classificador: 0.9821763602251408
+Acurácia do novo classificador: 0.9774278215223097
+Acurácia do novo classificador: 0.9708114419147694
+Acurácia do novo classificador: 0.9673842139595564
+Acurácia do novo classificador: 0.9551049963794352
+
+ACC: 97.77%
+F1-Score: 97.82%
+Motivo da finalização: 
