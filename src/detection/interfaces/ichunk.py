@@ -1,5 +1,7 @@
 from typing import NoReturn
+
 from numpy import ndarray
+
 from src.detection.interfaces.idrift_detector import IDriftDetector
 
 

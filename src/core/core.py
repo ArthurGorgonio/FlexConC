@@ -1,6 +1,6 @@
 from typing import Callable, Dict, NoReturn
-from numpy import ndarray
 
+from numpy import ndarray
 from skmultiflow.data import DataStream
 from skmultiflow.trees import HoeffdingAdaptiveTreeClassifier as HT
 
