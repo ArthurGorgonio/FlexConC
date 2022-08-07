@@ -108,7 +108,7 @@ class TestFlexCon(TestCase):
         self.assertListEqual(self.flexcon.cl_memory, output_without_weights)
 
     @patch("src.ssl.flexcon.BaseFlexConC.remember")
-    def test_rules(self, remaind):
+    def test_rule1_should_return_single_instance_when_thr_90(self, remaind):
         remaind.return_value = [0]
         self.flexcon.threshold = 0.9
         preds = GenerateMemory()
@@ -116,12 +116,65 @@ class TestFlexCon(TestCase):
         self.flexcon.dict_first = preds.pred_1_it()
         # labels from dict (class1 == class2)
         expected_rule1 = ([5], [1])
-        expected_rule2 = ([4, 5], [1, 1])
-        # labels from mock (class1 != class2)
-        expected_rule3 = ([3], [0])
-        expected_rule4 = ([2, 3], [0])
 
         self.assertTupleEqual(self.flexcon.rule_1(), expected_rule1)
+
+    @patch("src.ssl.flexcon.BaseFlexConC.remember")
+    def test_rule2_should_return_pair_instance_when_thr_90(self, remaind):
+        remaind.return_value = [0]
+        self.flexcon.threshold = 0.9
+        preds = GenerateMemory()
+        self.flexcon.pred_x_it = preds.pred_x_it()
+        self.flexcon.dict_first = preds.pred_1_it()
+        # labels from dict (class1 == class2)
+        expected_rule2 = ([4, 5], [1, 1])
+
         self.assertTupleEqual(self.flexcon.rule_2(), expected_rule2)
+
+    @patch("src.ssl.flexcon.BaseFlexConC.remember")
+    def test_rule3_should_return_single_instance_when_thr_90(self, remaind):
+        remaind.return_value = [0]
+        self.flexcon.threshold = 0.9
+        preds = GenerateMemory()
+        self.flexcon.pred_x_it = preds.pred_x_it()
+        self.flexcon.dict_first = preds.pred_1_it()
+        # labels from mock (class1 != class2)
+        expected_rule3 = ([3], [0])
+    
         self.assertTupleEqual(self.flexcon.rule_3(), expected_rule3)
+
+    @patch("src.ssl.flexcon.BaseFlexConC.remember")
+    def test_rule4_should_return_pair_instance_when_thr_90(self, remaind):
+        remaind.return_value = [0]
+        self.flexcon.threshold = 0.9
+        preds = GenerateMemory()
+        self.flexcon.pred_x_it = preds.pred_x_it()
+        self.flexcon.dict_first = preds.pred_1_it()
+        # labels from mock (class1 != class2)
+        expected_rule4 = ([2, 3], [0])
+
         self.assertTupleEqual(self.flexcon.rule_4(), expected_rule4)
+
+
+    def test_new_threshold_should_return_higher_threshold_when_local_acc_is_lower_than_init_acc(self):  # noqa
+        self.flexcon.new_threshold(0.4, 0.9)
+
+        self.assertEqual(self.flexcon.threshold, 1.0)
+
+    def test_new_threshold_should_return_lower_threshold_when_local_acc_is_higher_than_init_acc(self):  # noqa
+        self.flexcon.new_threshold(1.0, 0.9)
+
+        self.assertEqual(self.flexcon.threshold, 0.8999999999999999)
+
+    def test_new_threshold_should_return_unchanged_threshold_when_local_acc_in_acceptable_variace_from_init_acc(self):  # noqa
+        self.flexcon.new_threshold(0.9, 0.9)
+
+        self.assertEqual(self.flexcon.threshold, 0.95)
+
+        self.flexcon.new_threshold(0.91, 0.9)
+
+        self.assertEqual(self.flexcon.threshold, 0.95)
+
+        self.flexcon.new_threshold(0.89, 0.9)
+
+        self.assertEqual(self.flexcon.threshold, 0.95)
