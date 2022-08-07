@@ -1,12 +1,20 @@
+from typing import Any, Dict
+
 import numpy as np
+from sklearn.naive_bayes import GaussianNB
 from sklearn.utils import safe_mask
 
 from src.ssl.flexcon import BaseFlexConC
 
 
 class SelfFlexCon(BaseFlexConC):
-    def __init__(self, base_estimator):
-        super().__init__(base_estimator=base_estimator)
+    def __init__(self, params: Dict[str, Any] = None):
+        if params is None or "base_estimator" not in params.keys():
+            params = {
+                "base_estimator": GaussianNB()
+            }
+        super().__init__(**params)
+        self.n_iter_ = 0
 
     def fit(self, X, y):
         """
@@ -45,7 +53,6 @@ class SelfFlexCon(BaseFlexConC):
 
         init_acc = self.train_new_classifier(has_label, X, y)
         old_selected = []
-        self.n_iter_ = 0
 
         while not np.all(has_label) and (
             self.max_iter is None or self.n_iter_ <= self.max_iter

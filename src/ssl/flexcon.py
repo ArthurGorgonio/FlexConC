@@ -80,12 +80,14 @@ class BaseFlexConC(SelfTrainingClassifier):
             local_measure: valor da acurácia do modelo treinado
             init_acc: valor da acurácia inicial
         """
-        if local_measure > (init_acc + 0.01) and (
-            (self.threshold - self.cr) > 0.0
+        if (
+            local_measure > init_acc + 0.01
+            and self.threshold - self.cr >= 0.0
         ):
             self.threshold -= self.cr
-        elif (local_measure < (init_acc - 0.01)) and (
-            (self.threshold + self.cr) <= 1
+        elif (
+            local_measure < init_acc - 0.01
+            and self.threshold + self.cr <= 1.0
         ):
             self.threshold += self.cr
         else:

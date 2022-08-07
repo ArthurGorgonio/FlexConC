@@ -1,19 +1,22 @@
-from src.detection.interfaces.IChunk import IChunk
+from typing import Any, Dict
+
+from src.detection.interfaces.ichunk import IChunk
 
 
 class FixedThreshold(IChunk):
-    def __init__(self, threshold=0.8):
-        super().__init__(threshold)
+    """Classe de detecção de drift com treshold fixo"""
+    def __init__(self, **params: Dict[str, Any]):
+        super().__init__(**params)
 
-    def detect(self, chunk_acc) -> bool:
-        if chunk_acc < self.threshold:
+    def detect(self, chunk: float) -> bool:
+        if chunk < self.threshold:
             self.increase_counter()
 
             return True
-        else:
-            self.drift = False
-
-            return False
+        return False
 
     def reset_params(self):
+        ...
+
+    def __reset_all(self):
         self.drift_counter = 0
