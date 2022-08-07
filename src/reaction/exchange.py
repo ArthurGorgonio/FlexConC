@@ -1,6 +1,6 @@
 from skmultiflow.trees import HoeffdingTreeClassifier as HT
 
-from src.reaction.interfaces.Ireaction import IReaction
+from src.reaction.interfaces.ireaction import IReaction
 from src.ssl.ensemble import Ensemble
 
 

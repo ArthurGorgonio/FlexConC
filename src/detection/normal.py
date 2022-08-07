@@ -1,4 +1,4 @@
-from src.detection.interfaces.IChunk import IChunk
+from src.detection.interfaces.ichunk import IChunk
 
 
 class Normal(IChunk):

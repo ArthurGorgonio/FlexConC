@@ -1,7 +1,6 @@
 from abc import abstractmethod
 
-from src.detection.interfaces.IChunk import IChunk
-
+from src.detection.interfaces.ichunk import IChunk
 
 class IStatisticalTest(IChunk):
     def __init__(self, threshold):

@@ -1,4 +1,4 @@
-from src.ssl.BaseFlexCon import BaseFlexCon
+from src.ssl.flexcon import BaseFlexCon
 
 
 class CoFlexCon(BaseFlexCon):

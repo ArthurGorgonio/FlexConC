@@ -1,6 +1,6 @@
 from scipy.stats import kstest
 
-from src.detection.interfaces.IStatisticalTest import IStatisticalTest
+from src.detection.interfaces.istatisticaltest import IStatisticalTest
 
 
 class WeightedStatistical(IStatisticalTest):
