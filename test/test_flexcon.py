@@ -1,6 +1,7 @@
 from unittest import TestCase
 
 from mock import Mock, patch
+from numpy import array
 
 from src.ssl.flexcon import BaseFlexConC
 
@@ -91,41 +92,39 @@ class TestFlexCon(TestCase):
     def test_should_return_updated_cl_memory_by_one_when_no_weights_are_passed(self):  # NOQA
         instances = [i for i in range(10)]
         labels = [0, 0, 0, 1, 1, 1, 1, 1, 0, 1]
+        labels2 = [1, 1, 0, 1, 0, 1, 0, 0, 1, 1]
         output_without_weights = [
-            [1, 0],
-            [1, 0],
-            [1, 0],
-            [0, 1],
-            [0, 1],
-            [0, 1],
-            [0, 1],
-            [0, 1],
-            [1, 0],
-            [0, 1],
+            [1, 1],
+            [1, 1],
+            [2, 0],
+            [0, 2],
+            [1, 1],
+            [0, 2],
+            [1, 1],
+            [1, 1],
+            [1, 1],
+            [0, 2],
         ]
         self.flexcon.cl_memory = [[0] * 2 for _ in range(len(instances))]
         self.flexcon.update_memory(instances, labels)
+        self.flexcon.update_memory(instances, labels2)
         self.assertListEqual(self.flexcon.cl_memory, output_without_weights)
 
-    @patch("src.ssl.flexcon.BaseFlexConC.remember")
-    def test_rule1_should_return_single_instance_when_thr_90(self, remaind):
-        remaind.return_value = [0]
+    def test_rule1_should_return_single_instance_when_thr_90(self):
         self.flexcon.threshold = 0.9
         preds = GenerateMemory()
         self.flexcon.pred_x_it = preds.pred_x_it()
-        self.flexcon.dict_first = preds.pred_1_it()
+        self.flexcon.pred_1_it = preds.pred_1_it()
         # labels from dict (class1 == class2)
         expected_rule1 = ([5], [1])
 
         self.assertTupleEqual(self.flexcon.rule_1(), expected_rule1)
 
-    @patch("src.ssl.flexcon.BaseFlexConC.remember")
-    def test_rule2_should_return_pair_instance_when_thr_90(self, remaind):
-        remaind.return_value = [0]
+    def test_rule2_should_return_pair_instance_when_thr_90(self):
         self.flexcon.threshold = 0.9
         preds = GenerateMemory()
         self.flexcon.pred_x_it = preds.pred_x_it()
-        self.flexcon.dict_first = preds.pred_1_it()
+        self.flexcon.pred_1_it = preds.pred_1_it()
         # labels from dict (class1 == class2)
         expected_rule2 = ([4, 5], [1, 1])
 
@@ -137,7 +136,7 @@ class TestFlexCon(TestCase):
         self.flexcon.threshold = 0.9
         preds = GenerateMemory()
         self.flexcon.pred_x_it = preds.pred_x_it()
-        self.flexcon.dict_first = preds.pred_1_it()
+        self.flexcon.pred_1_it = preds.pred_1_it()
         # labels from mock (class1 != class2)
         expected_rule3 = ([3], [0])
     
@@ -149,12 +148,23 @@ class TestFlexCon(TestCase):
         self.flexcon.threshold = 0.9
         preds = GenerateMemory()
         self.flexcon.pred_x_it = preds.pred_x_it()
-        self.flexcon.dict_first = preds.pred_1_it()
+        self.flexcon.pred_1_it = preds.pred_1_it()
         # labels from mock (class1 != class2)
         expected_rule4 = ([2, 3], [0])
 
         self.assertTupleEqual(self.flexcon.rule_4(), expected_rule4)
 
+    @patch("src.ssl.flexcon.BaseFlexConC.remember")
+    def test_select_instances_should_return_empty_numpy_array_when_no_instance_is_available_for_insertion_rules(self, remaind):  # noqa
+        self.flexcon.threshold = 1.0
+        preds = GenerateMemory()
+        self.flexcon.pred_x_it = preds.pred_x_it()
+        self.flexcon.pred_1_it = preds.pred_1_it()
+        expected_output = ""
+
+        _, pred = self.flexcon.select_instances_by_rules()
+
+        self.assertEqual(pred, expected_output)
 
     def test_new_threshold_should_return_higher_threshold_when_local_acc_is_lower_than_init_acc(self):  # noqa
         self.flexcon.new_threshold(0.4, 0.9)
@@ -178,3 +188,43 @@ class TestFlexCon(TestCase):
         self.flexcon.new_threshold(0.89, 0.9)
 
         self.assertEqual(self.flexcon.threshold, 0.95)
+
+    def test_remember_should_return_best_labelled_classes_for_each_instance(self):  # noqa
+        expected_output = [0, 0, 2, 1, 2, 0, 2, 1, 1, 2]
+        self.flexcon.cl_memory = [
+            [5, 0, 3],
+            [5, 5, 5],
+            [1, 2, 3],
+            [2, 4, 3],
+            [0, 1, 2],
+            [3, 2, 0],
+            [0, 0, 3],
+            [3, 4, 2],
+            [0, 5, 3],
+            [4, 2, 5],
+        ]
+        instances = [i for i in range(10)]
+        labels = self.flexcon.remember(instances)
+
+        self.assertListEqual(labels, expected_output)
+
+    def test_storage_predict_should_return_valid_struct(self,):
+        expected_output = {
+            1: {
+                'confidence': 0.952,
+                'classes': 0
+            },
+            2: {
+                'confidence': 0.45,
+                'classes': 1
+            },
+        }
+
+        instances = [1, 2]
+        confidences = [0.952, 0.45]
+        classes = [0, 1]
+
+        self.assertDictEqual(
+            self.flexcon.storage_predict(instances, confidences, classes),
+            expected_output
+        )

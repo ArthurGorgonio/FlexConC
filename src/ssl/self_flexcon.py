@@ -8,6 +8,17 @@ from src.ssl.flexcon import BaseFlexConC
 
 
 class SelfFlexCon(BaseFlexConC):
+    """
+    Implementação do FlexConC no algoritmo Self-training.
+
+    Parameters
+    ----------
+        params : Dict[str, Any]
+            Parâmetros que são passados para a superclasse para ela
+            realizar as setagens, por default None. Se não receber um
+            classificador no atributo `base_estimator` será utilizado
+            um Naïve Bayes como classificador do método.
+    """
     def __init__(self, params: Dict[str, Any] = None):
         if params is None or "base_estimator" not in params.keys():
             params = {
@@ -19,6 +30,7 @@ class SelfFlexCon(BaseFlexConC):
     def fit(self, X, y):
         """
         Fit self-training classifier using `X`, `y` as training data.
+
         Parameters
         ----------
         X : {array-like, sparse matrix} of shape (n_samples, n_features)
@@ -26,6 +38,7 @@ class SelfFlexCon(BaseFlexConC):
         y : {array-like, sparse matrix} of shape (n_samples,)
             Array representing the labels. Unlabeled samples should have the
             label -1.
+
         Returns
         -------
         self : object
