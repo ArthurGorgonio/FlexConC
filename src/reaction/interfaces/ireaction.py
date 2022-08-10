@@ -22,9 +22,9 @@ class IReaction:
         ----------
         ensemble : Ensemble
             Comitê de classificadores.
-        instances : _type_
+        instances : ndarray
             instâncias que serão utilizadas no treinamento.
-        labels : _type_
+        labels : ndarray
             Rótulo das instâncias.
 
         Returns

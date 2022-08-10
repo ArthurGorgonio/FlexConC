@@ -9,7 +9,10 @@ class WeightedStatistical(IStatisticalTest):
         self.sig_level = 1
 
     def eval_test(self, alpha: float = 0.05):
-        return kstest(self.actual_chunk, self.last_chunk).pvalue
+        return kstest(
+            self.actual_chunk,
+            self.last_chunk
+        ).pvalue <= alpha
 
     def detect(self, chunk):
         ...
