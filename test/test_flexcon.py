@@ -1,7 +1,6 @@
 from unittest import TestCase
 
 from mock import Mock, patch
-from numpy import array
 
 from src.ssl.flexcon import BaseFlexConC
 
@@ -155,7 +154,7 @@ class TestFlexCon(TestCase):
         self.assertTupleEqual(self.flexcon.rule_4(), expected_rule4)
 
     @patch("src.ssl.flexcon.BaseFlexConC.remember")
-    def test_select_instances_should_return_empty_numpy_array_when_no_instance_is_available_for_insertion_rules(self, remaind):  # noqa
+    def test_select_instances_should_return_empty_numpy_array_when_no_instance_is_available_for_insertion_rules(self, remaind):  # NOQA
         self.flexcon.threshold = 1.0
         preds = GenerateMemory()
         self.flexcon.pred_x_it = preds.pred_x_it()
@@ -166,17 +165,17 @@ class TestFlexCon(TestCase):
 
         self.assertEqual(pred, expected_output)
 
-    def test_new_threshold_should_return_higher_threshold_when_local_acc_is_lower_than_init_acc(self):  # noqa
+    def test_new_threshold_should_return_higher_threshold_when_local_acc_is_lower_than_init_acc(self):  # NOQA
         self.flexcon.new_threshold(0.4, 0.9)
 
         self.assertEqual(self.flexcon.threshold, 1.0)
 
-    def test_new_threshold_should_return_lower_threshold_when_local_acc_is_higher_than_init_acc(self):  # noqa
+    def test_new_threshold_should_return_lower_threshold_when_local_acc_is_higher_than_init_acc(self):  # NOQA
         self.flexcon.new_threshold(1.0, 0.9)
 
         self.assertEqual(self.flexcon.threshold, 0.8999999999999999)
 
-    def test_new_threshold_should_return_unchanged_threshold_when_local_acc_in_acceptable_variace_from_init_acc(self):  # noqa
+    def test_new_threshold_should_return_unchanged_threshold_when_local_acc_in_acceptable_variace_from_init_acc(self):  # NOQA
         self.flexcon.new_threshold(0.9, 0.9)
 
         self.assertEqual(self.flexcon.threshold, 0.95)
@@ -189,7 +188,7 @@ class TestFlexCon(TestCase):
 
         self.assertEqual(self.flexcon.threshold, 0.95)
 
-    def test_remember_should_return_best_labelled_classes_for_each_instance(self):  # noqa
+    def test_remember_should_return_best_labelled_classes_for_each_instance(self):  # NOQA
         expected_output = [0, 0, 2, 1, 2, 0, 2, 1, 1, 2]
         self.flexcon.cl_memory = [
             [5, 0, 3],

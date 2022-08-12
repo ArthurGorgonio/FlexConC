@@ -50,7 +50,7 @@ class TestCore(TestCase):
             {}
         ])
 
-    def test_configure_param_should_return_valid_configurations_when_args_are_valid(self,):  #noqa
+    def test_configure_param_should_return_valid_configurations_when_args_are_valid(self,):  #NOQA
         expected_output = {
             'ssl': {
                 'cr': 0.05,
@@ -98,7 +98,7 @@ class TestCore(TestCase):
         )
 
     @patch("src.core.core.Ensemble")
-    def test_configurae_ensemble_should_create_ensemble_when_all_in_configured_with_four_classifiers(self, ensemble):  #noqa
+    def test_configurae_ensemble_should_create_ensemble_when_all_in_configured_with_four_classifiers(self, ensemble):  #NOQA
         base_classifiers = [1,2,3,4]
         self.core = Core(ensemble)
         self.core.configure_params(ensemble, {}, {}, {})
@@ -125,7 +125,7 @@ class TestCore(TestCase):
             }
         )
     
-    def test_evaluate_metrics_should_return_two_values_when_two_metrics_are_used(self):  # noqa
+    def test_evaluate_metrics_should_return_two_values_when_two_metrics_are_used(self):  # NOQA
         evaluate = MetricsMock()
         self.core.add_metrics("acc", evaluate.accuracy_score)
         self.core.add_metrics("f1", evaluate.f1_score)
