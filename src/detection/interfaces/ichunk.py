@@ -22,7 +22,7 @@ class IChunk(IDriftDetector):
         self.last_chunk = None
         self.actual_chunk = None
 
-    def update_chunks(self, labels: ndarray) -> NoReturn:
+    def update_chunks(self, labels: ndarray) -> None:
         """
         Realiza a atualização das instâncias do chunk atual vão para o
         chunk anterior e as novas instâncias vão para o chunk atual.
@@ -38,4 +38,4 @@ class IChunk(IDriftDetector):
     def __str__(self) -> str:
         msg = super().__str__()
         msg += f'Threshold é de {self.detection_threshold}.\n'
-        return 
+        return msg

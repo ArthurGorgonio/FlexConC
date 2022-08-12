@@ -9,7 +9,7 @@ class FixedThreshold(IChunk):
         super().__init__(**params)
 
     def detect(self, chunk: float) -> bool:
-        if chunk < self.threshold:
+        if chunk < self.detection_threshold:
             self.increase_counter()
 
             return True

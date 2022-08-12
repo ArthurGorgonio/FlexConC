@@ -13,7 +13,7 @@ class IDriftDetector(ABC):
         self.drift_counter = 0
 
     @abstractmethod
-    def detect(self, chunk: Union[ndarray,float]) -> bool:
+    def detect(self, chunk: Union[ndarray, float]) -> bool:
         """
         Identificador de uma detecção de drift que utiliza batches de
         instâncias.
