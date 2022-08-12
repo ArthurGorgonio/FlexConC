@@ -1,5 +1,5 @@
 from statistics import mode
-from typing import List, NoReturn
+from typing import List
 
 import numpy as np
 from sklearn.metrics import accuracy_score
@@ -11,7 +11,9 @@ class Ensemble:
     seus métodos
     """
 
-    def __init__(self, ssl_algorithm: callable, ssl_params):
+    def __init__(self, ssl_algorithm: callable, ssl_params = None):
+        if ssl_params is None:
+            ssl_params = {}
         self.ensemble = []
         self.ssl_algorithm = ssl_algorithm
         self.ssl_params = ssl_params
@@ -66,10 +68,18 @@ class Ensemble:
         ----------
         classifier : Classificador
             Obejto classificador a ser removido do comitê.
-        """
-        self.ensemble.remove(classifier)
 
-    def measure_classifier(self, instances: np.ndarray, classes: np.ndarray) -> List[float]:
+        Raises
+        ------
+        ValueError
+            Quando o classificador a ser removido não existe na lista.
+        """
+        try:
+            self.ensemble.remove(classifier)
+        except ValueError as err:
+            raise ValueError(f'Classificador não existe no comitê', err)
+
+    def measure_ensemble(self, instances: np.ndarray, classes: np.ndarray) -> List[float]:
         """
         Calcula a acurácia dos classificadores base do comitê.
 
@@ -85,13 +95,13 @@ class Ensemble:
         List[float]
             Acurácia de cada classificador base do comitê.
         """
-        measure_ensemble = []
+        ensemble_metric = []
 
         for classifier in self.ensemble:
             y_pred = self.predict_one_classifier(classifier, instances)
-            measure_ensemble.append(accuracy_score(classes, y_pred))
+            ensemble_metric.append(accuracy_score(classes, y_pred))
 
-        return measure_ensemble
+        return ensemble_metric
 
     def drop_ensemble(self):
         """Esvazia o cômite de classificadores"""
@@ -165,7 +175,7 @@ class Ensemble:
 
         return y_pred
 
-    def predict(self, instances: np.ndarray) -> List[int]:
+    def predict_ensemble(self, instances: np.ndarray) -> List[int]:
         """
         Realiza a predição de instâncias do comitê. A estratégia de
         agragação é a votação simples.
@@ -194,7 +204,7 @@ class Ensemble:
 
         return y_pred
 
-    def swap(self, classifier: List, pos: List[int]) -> NoReturn:
+    def swap(self, classifier: List, pos: List[int]) -> None:
         """
         Função para trocar um classificador do comitê por outro já
         treinado.
@@ -207,14 +217,9 @@ class Ensemble:
         pos : List[int]
             Lista indicando quais classificadores do comitê devem ser
             substituídos pelos novos.
-
-        Returns
-        -------
-        NoReturn
-            _description_
         """
         if len(pos) == len(classifier):
-            for i, j in zip(pos, classifier):
+            for i, j in enumerate(pos):
                 self.ensemble[i] = classifier[j]
         else:
             for i in pos:
