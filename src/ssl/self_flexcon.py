@@ -97,8 +97,6 @@ class SelfFlexCon(BaseFlexConC):
                     selected_full, pred_full = self.select_instances_by_rules()
                 selected = [pseudo_ids.index(inst) for inst in selected_full]
                 pred[selected] = pred_full
-                # WIP - transformar o selected num vetor bool do tamanho da predição (pred)
-                # Assim, é possível fazer as operações
             else:
                 self.dict_first = self.storage_predict(
                     idx=np.nonzero(~has_label)[0],

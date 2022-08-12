@@ -11,4 +11,3 @@ class IStatisticalTest(IChunk):
     @abstractmethod
     def eval_test(self, alpha):
         ...
-

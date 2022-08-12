@@ -69,7 +69,7 @@ class TestFlexCon(TestCase):
         self.flexcon = BaseFlexConC("")
 
     def test_should_return_updated_cl_memory_by_weights_when_weights_are_passed(self):  # NOQA
-        instances = [i for i in range(10)]
+        instances = list(range(10))
         labels = [0, 0, 0, 1, 1, 1, 1, 1, 0, 1]
         weights = [0.3, 0.2, 0.5, 0.6, 0.7, 0.1, 0.8, 0.4, 0.9, 0.57]
         expected_output_weights = [
@@ -89,7 +89,7 @@ class TestFlexCon(TestCase):
         self.assertListEqual(self.flexcon.cl_memory, expected_output_weights)
 
     def test_should_return_updated_cl_memory_by_one_when_no_weights_are_passed(self):  # NOQA
-        instances = [i for i in range(10)]
+        instances = list(range(10))
         labels = [0, 0, 0, 1, 1, 1, 1, 1, 0, 1]
         labels2 = [1, 1, 0, 1, 0, 1, 0, 0, 1, 1]
         output_without_weights = [
@@ -138,7 +138,7 @@ class TestFlexCon(TestCase):
         self.flexcon.pred_1_it = preds.pred_1_it()
         # labels from mock (class1 != class2)
         expected_rule3 = ([3], [0])
-    
+
         self.assertTupleEqual(self.flexcon.rule_3(), expected_rule3)
 
     @patch("src.ssl.flexcon.BaseFlexConC.remember")
@@ -164,6 +164,7 @@ class TestFlexCon(TestCase):
         _, pred = self.flexcon.select_instances_by_rules()
 
         self.assertEqual(pred, expected_output)
+        self.assertEqual(remaind.call_count, 2)
 
     def test_new_threshold_should_return_higher_threshold_when_local_acc_is_lower_than_init_acc(self):  # NOQA
         self.flexcon.new_threshold(0.4, 0.9)
@@ -202,7 +203,7 @@ class TestFlexCon(TestCase):
             [0, 5, 3],
             [4, 2, 5],
         ]
-        instances = [i for i in range(10)]
+        instances = list(range(10))
         labels = self.flexcon.remember(instances)
 
         self.assertListEqual(labels, expected_output)

@@ -116,7 +116,6 @@ class Core:
 
         self.log_iteration_info()
 
-
     def run_first_it(self, instances: ndarray, classes: ndarray):
         """
         Executa a primeira iteração do loop, pois é necessários treinar

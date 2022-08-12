@@ -8,9 +8,10 @@ from src.ssl.ensemble import Ensemble
 class ClassifierMock(Mock):
     def predict(self, instances):
         ...
-    
+
     def fit(self, instances, labels):
         ...
+
 
 class FlexConMock(Mock):
     ...
@@ -56,7 +57,7 @@ class TestEnsemble(TestCase):
         self.ensemble.remover_classifier("cl_2")
 
         self.assertListEqual(self.ensemble.ensemble, ["cl_1"])
-    
+
     def test_remove_classifier_should_empty_ensemble_when_it_not_exists(self):  # NOQA
         base_classifiers = ["cl_1", "cl_2"]
 
@@ -70,7 +71,7 @@ class TestEnsemble(TestCase):
             self.ensemble.remover_classifier("cl_3")
 
         self.assertListEqual(self.ensemble.ensemble, [])
-    
+
     @patch("src.ssl.ensemble.Ensemble.predict_one_classifier")
     @patch("src.ssl.ensemble.accuracy_score")
     def test_measure_ensemble_should_return_base_classifier_(self, accuracy_score, predict):  # NOQA
@@ -120,7 +121,7 @@ class TestEnsemble(TestCase):
             self.ensemble.ssl_algorithm.return_value = cl
             self.ensemble.add_classifier(cl)
 
-        self.ensemble.swap(exchanged_classifiers, [3,1,2,0])
+        self.ensemble.swap(exchanged_classifiers, [3, 1, 2, 0])
 
         self.assertListEqual(
             self.ensemble.ensemble,

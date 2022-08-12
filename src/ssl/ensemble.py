@@ -11,7 +11,7 @@ class Ensemble:
     seus métodos
     """
 
-    def __init__(self, ssl_algorithm: callable, ssl_params = None):
+    def __init__(self, ssl_algorithm: callable, ssl_params=None):
         if ssl_params is None:
             ssl_params = {}
         self.ensemble = []
@@ -77,9 +77,15 @@ class Ensemble:
         try:
             self.ensemble.remove(classifier)
         except ValueError as err:
-            raise ValueError(f'Classificador não existe no comitê', err)
+            raise ValueError(
+                f'Classificador não existe no comitê.\nErro: {err}'
+            ) from err
 
-    def measure_ensemble(self, instances: np.ndarray, classes: np.ndarray) -> List[float]:
+    def measure_ensemble(
+        self,
+        instances: np.ndarray,
+        classes: np.ndarray
+    ) -> List[float]:
         """
         Calcula a acurácia dos classificadores base do comitê.
 
@@ -153,7 +159,7 @@ class Ensemble:
         self,
         classifier,
         instances: np.ndarray
-        ) -> List[int]:
+    ) -> List[int]:
         """
         Realiza a predição de um único classificador a partir de um
         grupo de instâncias.=

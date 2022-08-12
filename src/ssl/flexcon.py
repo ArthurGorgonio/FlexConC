@@ -1,5 +1,5 @@
 from abc import abstractmethod
-from typing import Dict, List, Optional, Tuple, Union
+from typing import Dict, List, Optional, Union
 
 import numpy as np
 from sklearn.base import clone
@@ -340,7 +340,7 @@ class BaseFlexConC(SelfTrainingClassifier):
         Seleciona todas as instâncias cuja a classe diverge entre as
         predições E uma das taxas de confiança é maior que o valor do
         limiar ~`BaseFlexConC.threshold` atual. A decisão do rótulo é
-        dada pela memória de classificação `cl_memory` das instâncias 
+        dada pela memória de classificação `cl_memory` das instâncias
         ~`BaseFlexConC.remember()`.
 
         Returns
