@@ -1,6 +1,8 @@
-from typing import Callable, Dict, NoReturn
+from time import time
+from typing import Callable, Dict
 
 from numpy import ndarray
+from sklearn.metrics import confusion_matrix
 from skmultiflow.data import DataStream
 from skmultiflow.trees import HoeffdingAdaptiveTreeClassifier as HT
 
@@ -9,6 +11,7 @@ from src.detection.interfaces.idrift_detector import IDriftDetector
 from src.reaction.exchange import Exchange
 from src.reaction.interfaces.ireaction import IReaction
 from src.ssl.ensemble import Ensemble
+from src.utils import Log
 
 
 class Core:
@@ -32,19 +35,19 @@ class Core:
     def __init__(
         self,
         ensemble: Ensemble = None,
-        detect: IDriftDetector = None,
-        react: IReaction = None,
+        detector: IDriftDetector = None,
+        reactor: IReaction = None,
         chunk_size: int = 500
     ):
         if ensemble is None:
             ensemble = Ensemble
-        if detect is None:
-            detect = FixedThreshold
-        if react is None:
-            react = Exchange
+        if detector is None:
+            detector = FixedThreshold
+        if reactor is None:
+            reactor = Exchange
         self.ensemble = ensemble
-        self.detect = detect
-        self.react = react
+        self.detector = detector
+        self.reactor = reactor
         self.chunk_size = chunk_size
         self.metrics_calls = {}
         self.metrics = {}
@@ -74,10 +77,10 @@ class Core:
             parâmetros necessários para , por default None
         """
         self.ensemble = self.ensemble(ssl_algorithm, params_ssl_algorithm)
-        self.detect = self.detect(**params_detector)
-        self.react = self.react(**params_reactor)
+        self.detector = self.detector(**params_detector or {})
+        self.reactor = self.reactor(**params_reactor or {})
 
-    def configure_classifier(self, base_classifiers: list) -> NoReturn:
+    def configure_classifier(self, base_classifiers: list) -> None:
         """
         Função para configurar o comitê básico
 
@@ -108,13 +111,16 @@ class Core:
         """
         instances, classes = chunk.next_sample(self.chunk_size)
         self.run_first_it(instances, classes)
+        start = time()
+        y_pred = self.ensemble.predict(instances)
 
-        y_pred = self.ensemble.predict(chunk)
+        if self.detector.detect(y_pred):
+            self.reactor.react()
 
-        if self.detect.detect():
-            self.react.react()
+        enlapsed_time = time() - start
 
-        self.log_iteration_info()
+        hits = confusion_matrix(classes, y_pred)
+        self.log_iteration_info(hits, chunk.sample_idx, enlapsed_time)
 
     def run_first_it(self, instances: ndarray, classes: ndarray):
         """
@@ -165,5 +171,18 @@ class Core:
             metric = self.metrics_calls.get(func_name)
             self.metrics[func_name].append(metric(y_true, y_pred))
 
-    def log_iteration_info(self, ):
-        ...
+    def log_iteration_info(self, hits, processed, enlapsed_time):
+        # version = self.detector.__class__
+        iteration_info = {
+            'ensemble_size': len(self.ensemble.ensemble),
+            'ensemble_hits': hits,
+            'drift_detected': self.detector.drift,
+            'instances': processed,
+            'enlapsed_time': enlapsed_time,
+            'metrics': {
+                'acc': self.metrics['acc'][-1],
+                'f1': self.metrics['f1'][-1],
+                'kappa': self.metrics['kappa'][-1],
+            },
+        }
+        Log().write_archive_output(iteration_info)

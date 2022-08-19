@@ -7,17 +7,28 @@ from src.ssl.self_flexcon import SelfFlexCon
 
 
 class EnsembleMock(Mock):
+    def __init__(self,):
+        super().__init__()
+        self.ensemble = []
+
     def add_classifier(self, classifier, need_train):
+        ...
+
+    def predict(self, chunk):
         ...
 
 
 class DetectorMock(Mock):
-    def detector(self, params_detector):
-        ...
+    def __init__(self, drift = False):
+        super().__init__()
+        self.drift = drift
+
+    def detect(self, y_pred):
+        return self.drift
 
 
 class ReactorMock(Mock):
-    def reactor(self, params_reactor):
+    def react(self, params_reactor):
         ...
 
 
@@ -28,6 +39,14 @@ class MetricsMock(Mock):
     def f1_score(self, y_true, y_pred):
         return 1.0
 
+    def kappa(self, y_true, y_pred):
+        return 1.0
+
+
+class DateStreamMock(Mock):
+    def next_sample(self, size):
+        return [], []
+
 
 class TestCore(TestCase):
     def setUp(self):
@@ -37,8 +56,8 @@ class TestCore(TestCase):
         self.assertEqual(
             [
                 self.core.ensemble,
-                self.core.detect,
-                self.core.react,
+                self.core.detector,
+                self.core.reactor,
                 self.core.chunk_size,
                 self.core.metrics,
                 self.core.metrics_calls
@@ -93,10 +112,10 @@ class TestCore(TestCase):
                     'threshold': core.ensemble.ssl_params["threshold"]
                 },
                 'detector': {
-                    'threshold': core.detect.detection_threshold
+                    'threshold': core.detector.detection_threshold
                 },
                 'reaction': {
-                    'threshold': core.react.thr
+                    'threshold': core.reactor.thr
                 }
             },
             expected_output
@@ -146,3 +165,36 @@ class TestCore(TestCase):
         self.core.evaluate_metrics(y_true, y_pred)
 
         self.assertEqual(self.core.metrics, {'acc': [1.0], 'f1': [1.0]})
+
+    @patch("src.core.core.confusion_matrix")
+    @patch("src.core.Core.run_first_it")
+    @patch("src.core.Core.log_iteration_info")
+    def test_run_should_call_log_iteration_info_each_iteration(
+        self,
+        logger,
+        first_it,
+        cm,
+    ):
+        cm.return_value = 100
+        self.core = Core(EnsembleMock(), DetectorMock(), ReactorMock())
+        self.core.run(DateStreamMock())
+
+        logger.assert_called_once()
+        first_it.assert_called_once()
+
+    @patch("src.core.core.Log.write_archive_output")
+    def test_log(self, logger):
+        self.core = Core(EnsembleMock(), DetectorMock(), ReactorMock())
+        metrics = MetricsMock()
+        self.core.add_metrics("acc", metrics.accuracy_score)
+        self.core.add_metrics("f1", metrics.f1_score)
+        self.core.add_metrics("kappa", metrics.kappa)
+
+        y_true = [1, 1, 0, 0, 0, 1]
+        y_pred = [1, 1, 0, 0, 0, 1]
+
+        self.core.evaluate_metrics(y_true, y_pred)
+
+        self.core.log_iteration_info(600, 1000, 0.2321)
+
+        logger.assert_called_once()
