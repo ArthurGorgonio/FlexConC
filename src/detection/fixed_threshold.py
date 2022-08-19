@@ -11,9 +11,11 @@ class FixedThreshold(IChunk):
     def detect(self, chunk: float) -> bool:
         if chunk < self.detection_threshold:
             self.increase_counter()
+            self.drift = True
 
-            return True
-        return False
+            return self.drift
+        self.drift = False
+        return self.drift
 
     def reset_params(self):
         ...

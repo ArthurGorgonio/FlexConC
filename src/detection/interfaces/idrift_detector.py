@@ -11,6 +11,7 @@ class IDriftDetector(ABC):
     """
     def __init__(self):
         self.drift_counter = 0
+        self.drift = False
 
     @abstractmethod
     def detect(self, chunk: Union[ndarray, float]) -> bool:
