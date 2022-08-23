@@ -252,7 +252,6 @@ class BaseFlexConC(SelfTrainingClassifier):
         self.init_labeled_ = has_label.copy()
 
         base_estimator_init = clone(self.base_estimator)
-
         # L0 - MODELO TREINADO E CLASSIFICADO COM L0
         base_estimator_init.fit(
             X[safe_mask(X, has_label)], self.transduction_[has_label]
@@ -263,21 +262,6 @@ class BaseFlexConC(SelfTrainingClassifier):
             y[self.init_labeled_],
             base_estimator_init,
         )
-
-        if option == 'Naive' or option == '1':
-            with open('Comite_Naive.txt', 'a') as f:
-                f.write(f"\nAcurácia do novo classificador: {init_acc}")
-
-        elif option == 'Tree' or option == '2':
-            with open('Comite_Tree.txt', 'a') as f:
-                f.write(f"\nAcurácia do novo classificador: {init_acc}")
-
-        elif option == 'KNN' or option == '3':
-            with open('Comite_KNN.txt', 'a') as f:
-                f.write(f"\nAcurácia do novo classificador: {init_acc}")
-        elif option == 'COMITE HETEROGENEO' or option == '4':
-            with open('Comite_Heterogeneo.txt', 'a') as f:
-                f.write(f"\nAcurácia do novo classificador: {init_acc}")
 
         return init_acc
 

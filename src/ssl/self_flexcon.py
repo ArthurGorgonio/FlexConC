@@ -42,7 +42,6 @@ class SelfFlexCon(BaseFlexConC):
 
         if np.all(has_label):
             raise ValueError("y contains no unlabeled sample")
-
         init_acc = self.train_new_classifier(has_label, X, y, option)
         old_selected = []
         self.n_iter_ = 0
