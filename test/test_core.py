@@ -1,10 +1,16 @@
 from unittest import TestCase
 
-from mock import Mock, patch
+from unittest.mock import MagicMock, Mock, patch
+
+from isort import stream
 
 from src.core.core import Core
-from src.ssl.self_flexcon import SelfFlexCon
 
+
+class SelfFlexConMock(Mock):
+    def __init__(self, cr, threshold):
+        self.cr = cr
+        self.threshold = threshold
 
 class EnsembleMock(Mock):
     def __init__(self,):
@@ -43,9 +49,17 @@ class MetricsMock(Mock):
         return 1.0
 
 
-class DateStreamMock(Mock):
+class DateStreamMock(MagicMock):
+    def __init__(self):
+        super().__init__()
+        self.instances = [True, True, False]
+
     def next_sample(self, size):
         return [], []
+
+    def has_more_samples(self):
+        for i, value in enumerate(self.instances):
+            yield self.instances[i]
 
 
 class TestCore(TestCase):
@@ -100,7 +114,7 @@ class TestCore(TestCase):
         }
         core = Core()
         core.configure_params(
-            SelfFlexCon,
+            SelfFlexConMock,
             ssl_params,
             detector_params,
             reactor_params
@@ -166,6 +180,7 @@ class TestCore(TestCase):
 
         self.assertEqual(self.core.metrics, {'acc': [1.0], 'f1': [1.0]})
 
+    @patch("test.test_core.DateStreamMock.has_more_samples")
     @patch("src.core.core.confusion_matrix")
     @patch("src.core.Core.run_first_it")
     @patch("src.core.Core.log_iteration_info")
@@ -174,15 +189,20 @@ class TestCore(TestCase):
         logger,
         first_it,
         cm,
+        has_more_samples,
     ):
         cm.return_value = 100
         self.core = Core(EnsembleMock(), DetectorMock(), ReactorMock())
-        self.core.run(DateStreamMock())
+        stream_data = DateStreamMock()
+        has_more_samples.return_value = False
+        self.core.run(stream_data)
 
         logger.assert_called_once()
         first_it.assert_called_once()
 
-    @patch("src.core.core.Log.write_archive_output")
+        # has_more_samples.assert_called()
+
+    @patch("src.utils.Log.write_archive_output")
     def test_log(self, logger):
         self.core = Core(EnsembleMock(), DetectorMock(), ReactorMock())
         metrics = MetricsMock()

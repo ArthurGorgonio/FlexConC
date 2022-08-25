@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from mock import Mock, patch
+from unittest.mock import Mock, patch
 
 from src.ssl.ensemble import Ensemble
 

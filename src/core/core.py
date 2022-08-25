@@ -2,7 +2,7 @@ from time import time
 from typing import Callable, Dict
 
 from numpy import ndarray
-from sklearn.metrics import confusion_matrix
+from sklearn.metrics import accuracy_score, confusion_matrix
 from skmultiflow.data import DataStream
 from skmultiflow.trees import HoeffdingAdaptiveTreeClassifier as HT
 
@@ -111,16 +111,21 @@ class Core:
         """
         instances, classes = chunk.next_sample(self.chunk_size)
         self.run_first_it(instances, classes)
-        start = time()
-        y_pred = self.ensemble.predict(instances)
 
-        if self.detector.detect(y_pred):
-            self.reactor.react()
+        while chunk.has_more_samples():
+            start = time()
+            instances, classes = chunk.next_sample(self.chunk_size)
+            y_pred = self.ensemble.predict_ensemble(instances)
+            thr = accuracy_score(classes, y_pred)
+            if self.detector.detect(thr):
+                self.reactor.react()
 
-        enlapsed_time = time() - start
+            enlapsed_time = time() - start
 
-        hits = confusion_matrix(classes, y_pred)
-        self.log_iteration_info(hits, chunk.sample_idx, enlapsed_time)
+            hits = confusion_matrix(classes, y_pred)
+            self.log_iteration_info(hits, chunk.sample_idx, enlapsed_time)
+
+        return self
 
     def run_first_it(self, instances: ndarray, classes: ndarray):
         """
@@ -173,6 +178,7 @@ class Core:
 
     def log_iteration_info(self, hits, processed, enlapsed_time):
         # version = self.detector.__class__
+        print (self.metrics['acc'])
         iteration_info = {
             'ensemble_size': len(self.ensemble.ensemble),
             'ensemble_hits': hits,

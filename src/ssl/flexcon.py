@@ -1,5 +1,5 @@
 from abc import abstractmethod
-from typing import Dict, List, Optional, Union
+from typing import Dict, List, Optional, Tuple, Union
 
 import numpy as np
 from sklearn.base import clone
@@ -240,7 +240,7 @@ class BaseFlexConC(SelfTrainingClassifier):
 
         return memo
 
-    def rule_1(self) -> tuple[List[int], List[int]]:
+    def rule_1(self) -> Tuple[List[int], List[int]]:
         """
         Seleciona todas as instâncias cuja a classe diverge entre as
         predições E uma das taxas de confiança é maior que o valor do
@@ -250,7 +250,7 @@ class BaseFlexConC(SelfTrainingClassifier):
 
         Returns
         -------
-        tuple[List[int], List[int]]
+        Tuple[List[int], List[int]]
             O primeiro elemento da tupla é uma lista indicando as
             instâncias que foram selecionadas por essa regra de
             inserção. Por sua vez, o segundo parâmero da tupla indica
@@ -272,7 +272,7 @@ class BaseFlexConC(SelfTrainingClassifier):
 
         return selected, classes_selected
 
-    def rule_2(self) -> tuple[List[int], List[int]]:
+    def rule_2(self) -> Tuple[List[int], List[int]]:
         """
         Seleciona todas as instâncias cuja a classe são iguais entre as
         predições E uma das taxas de confiança é maior que o valor do
@@ -282,7 +282,7 @@ class BaseFlexConC(SelfTrainingClassifier):
 
         Returns
         -------
-        tuple[List[int], List[int]]
+        Tuple[List[int], List[int]]
             O primeiro elemento da tupla é uma lista indicando as
             instâncias que foram selecionadas por essa regra de
             inserção. Por sua vez, o segundo parâmero da tupla indica
@@ -305,7 +305,7 @@ class BaseFlexConC(SelfTrainingClassifier):
 
         return selected, classes_selected
 
-    def rule_3(self) -> tuple[List[int], List[int]]:
+    def rule_3(self) -> Tuple[List[int], List[int]]:
         """
         Seleciona todas as instâncias cuja a classe diverge entre as
         predições E ambas taxas de confiança são maiores que o valor do
@@ -315,7 +315,7 @@ class BaseFlexConC(SelfTrainingClassifier):
 
         Returns
         -------
-        tuple[List[int], List[int]]
+        Tuple[List[int], List[int]]
             O primeiro elemento da tupla é uma lista indicando as
             instâncias que foram selecionadas por essa regra de
             inserção. Por sua vez, o segundo parâmero da tupla indica
@@ -335,7 +335,7 @@ class BaseFlexConC(SelfTrainingClassifier):
 
         return selected, self.remember(selected)
 
-    def rule_4(self) -> tuple[List[int], List[int]]:
+    def rule_4(self) -> Tuple[List[int], List[int]]:
         """
         Seleciona todas as instâncias cuja a classe diverge entre as
         predições E uma das taxas de confiança é maior que o valor do
@@ -345,7 +345,7 @@ class BaseFlexConC(SelfTrainingClassifier):
 
         Returns
         -------
-        tuple[List[int], List[int]]
+        Tuple[List[int], List[int]]
             O primeiro elemento da tupla é uma lista indicando as
             instâncias que foram selecionadas por essa regra de
             inserção. Por sua vez, o segundo parâmero da tupla indica
@@ -435,7 +435,7 @@ class BaseFlexConC(SelfTrainingClassifier):
 
     def select_instances_by_rules(
         self
-    ) -> tuple[np.ndarray, Union[List[int], str]]:
+    ) -> Tuple[np.ndarray, Union[List[int], str]]:
         """
         Função responsável por executa as chamadas de todas as regras
         de inclusão do método.

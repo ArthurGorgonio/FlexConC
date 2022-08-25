@@ -1,7 +1,5 @@
 from unittest import TestCase
 
-from mock import Mock, patch
-
 from src.detection.fixed_threshold import FixedThreshold
 
 
