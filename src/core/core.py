@@ -117,11 +117,16 @@ class Core:
             instances, classes = chunk.next_sample(self.chunk_size)
             y_pred = self.ensemble.predict_ensemble(instances)
             thr = accuracy_score(classes, y_pred)
+            print(f"\n\n\n{thr}\n\n\n")
             if self.detector.detect(thr):
-                self.reactor.react()
+                self.reactor.react(
+                    self.ensemble,
+                    instances,
+                    classes
+                )
 
             enlapsed_time = time() - start
-
+            self.evaluate_metrics(classes, y_pred)
             hits = confusion_matrix(classes, y_pred)
             self.log_iteration_info(hits, chunk.sample_idx, enlapsed_time)
 
@@ -191,4 +196,4 @@ class Core:
                 'kappa': self.metrics['kappa'][-1],
             },
         }
-        Log().write_archive_output(iteration_info)
+        Log().write_archive_output(**iteration_info)

@@ -41,7 +41,9 @@ for dataset in datasets:
         name=None,
         allow_nan=True,
     )
-
+    dydasl.add_metrics("acc", accuracy_score)
+    dydasl.add_metrics("f1", f1_score)
+    dydasl.add_metrics("kappa", kappa)
     dydasl.run(stream)
 
 # print(

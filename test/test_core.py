@@ -1,8 +1,5 @@
 from unittest import TestCase
-
 from unittest.mock import MagicMock, Mock, patch
-
-from isort import stream
 
 from src.core.core import Core
 
@@ -20,7 +17,7 @@ class EnsembleMock(Mock):
     def add_classifier(self, classifier, need_train):
         ...
 
-    def predict(self, chunk):
+    def predict_ensemble(self, chunk):
         ...
 
 
@@ -180,6 +177,7 @@ class TestCore(TestCase):
 
         self.assertEqual(self.core.metrics, {'acc': [1.0], 'f1': [1.0]})
 
+    @patch("src.core.core.accuracy_score")
     @patch("test.test_core.DateStreamMock.has_more_samples")
     @patch("src.core.core.confusion_matrix")
     @patch("src.core.Core.run_first_it")
@@ -190,16 +188,16 @@ class TestCore(TestCase):
         first_it,
         cm,
         has_more_samples,
+        acc,
     ):
         cm.return_value = 100
+        acc.return_value = 1.0
         self.core = Core(EnsembleMock(), DetectorMock(), ReactorMock())
         stream_data = DateStreamMock()
         has_more_samples.return_value = False
         self.core.run(stream_data)
 
-        logger.assert_called_once()
         first_it.assert_called_once()
-
         # has_more_samples.assert_called()
 
     @patch("src.utils.Log.write_archive_output")

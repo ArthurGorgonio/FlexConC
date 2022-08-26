@@ -11,8 +11,8 @@ class Exchange(IReaction):
         self.thr = params.get("thr") or 0.8
 
     def react(self, ensemble: Ensemble, instances, labels) -> Ensemble:
-        y_pred_classifier = ensemble.measure_classifier(instances, labels)
+        y_pred_classifier = ensemble.measure_ensemble(instances, labels)
         pos = [p for p, acc in enumerate(y_pred_classifier) if acc < self.thr]
-        ensemble.swap(self.classifier(), pos)
+        ensemble.swap([self.classifier()], pos)
 
         return ensemble
