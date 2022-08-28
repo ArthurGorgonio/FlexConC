@@ -1,5 +1,3 @@
-from typing import NoReturn
-
 from numpy import ndarray
 
 from src.detection.interfaces.idrift_detector import IDriftDetector
@@ -21,6 +19,7 @@ class IChunk(IDriftDetector):
         self.detection_threshold = threshold
         self.last_chunk = None
         self.actual_chunk = None
+        self.detector_type = 'metric'
 
     def update_chunks(self, labels: ndarray) -> None:
         """

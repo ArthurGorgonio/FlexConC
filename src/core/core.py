@@ -116,19 +116,28 @@ class Core:
             start = time()
             instances, classes = chunk.next_sample(self.chunk_size)
             y_pred = self.ensemble.predict_ensemble(instances)
-            thr = accuracy_score(classes, y_pred)
-            print(f"\n\n\n{thr}\n\n\n")
-            if self.detector.detect(thr):
+            drift = self._detect_by_type(
+                instances,
+                classes,
+                y_pred,
+                self.detector.detector_type
+            )
+            if drift:
                 self.reactor.react(
                     self.ensemble,
                     instances,
                     classes
                 )
-
             enlapsed_time = time() - start
-            self.evaluate_metrics(classes, y_pred)
+            self._evaluate_metrics(classes, y_pred)
             hits = confusion_matrix(classes, y_pred)
-            self.log_iteration_info(hits, chunk.sample_idx, enlapsed_time)
+            self._log_iteration_info(
+                sum(hits.diagonal()),
+                chunk.sample_idx,
+                enlapsed_time
+            )
+            if len(self.ensemble.ensemble) < 10:
+                self.run_first_it(instances, classes)
 
         return self
 
@@ -146,9 +155,25 @@ class Core:
             Rótulos das instâncias.
         """
         self.ensemble.add_classifier(HT(), need_train=False)
-        self.ensemble.fit_ensemble(instances, classes)
+        self.ensemble.fit_single_classifier(
+            self.ensemble.ensemble[-1],
+            instances,
+            classes
+        )
 
         return self
+
+    def _detect_by_type(
+        self,
+        instances: ndarray,
+        classes: ndarray,
+        y_pred: ndarray,
+        is_metric_value: str,
+    ) -> bool:
+        if is_metric_value == 'metric':
+            thr = accuracy_score(classes, y_pred)
+            return self.detector.detect(thr)
+        return self.detector.detect(instances)
 
     def add_metrics(self, metric_name: str, metric_func: Callable) -> None:
         """
@@ -165,7 +190,7 @@ class Core:
         self.metrics_calls[metric_name] = metric_func
         self.metrics[metric_name] = []
 
-    def evaluate_metrics(self, y_true: ndarray, y_pred: ndarray):
+    def _evaluate_metrics(self, y_true: ndarray, y_pred: ndarray):
         """
         Computa cada uma das métricas adicionadas a partir do valor
         predito pelo comitê.
@@ -181,9 +206,8 @@ class Core:
             metric = self.metrics_calls.get(func_name)
             self.metrics[func_name].append(metric(y_true, y_pred))
 
-    def log_iteration_info(self, hits, processed, enlapsed_time):
+    def _log_iteration_info(self, hits, processed, enlapsed_time):
         # version = self.detector.__class__
-        print (self.metrics['acc'])
         iteration_info = {
             'ensemble_size': len(self.ensemble.ensemble),
             'ensemble_hits': hits,
