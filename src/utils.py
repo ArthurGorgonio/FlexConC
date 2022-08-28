@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Any, Dict
 
 
@@ -20,7 +21,18 @@ class Log():
         instâncias da classe.
     """
     _instance = None
-    filename = 'output.txt'
+    __pattern = '%Y-%m-%d-%H-%M_%S'
+
+    @property
+    def filename(self):
+        return self.__filename
+
+    @filename.setter
+    def filename(self, data_name: str):
+        actual_time = datetime.utcnow().strftime(self.__pattern)
+
+        self.__data_name = data_name
+        self.__filename = f"{actual_time}_{self.__data_name}.txt"
 
     def __new__(cls):
         if cls._instance is None:
@@ -29,7 +41,7 @@ class Log():
 
     def write_archive_header(self):
         """Função para escrever os cabeçalhos dos arquivos"""
-        infos = [f'info0{i}'.rjust(10) for i in range(1,9)]
+        infos = [f'info0{i}'.rjust(10) for i in range(1, 9)]
         header = (
             'In each iteration, info means:\n'
             'info01: ensemble size;\n'
@@ -79,10 +91,10 @@ class Log():
             + f"{kargs['ensemble_hits']}".rjust(11)
             + f"{kargs['drift_detected']}".rjust(11)
             + f"{kargs['instances']}".rjust(11)
-            + f"{kargs['metrics']['acc']}".rjust(11)
-            + f"{kargs['metrics']['f1']}".rjust(11)
-            + f"{kargs['metrics']['kappa']}".rjust(11)
-            + f"{kargs['enlapsed_time']}".rjust(11)
+            + f"{round(kargs['metrics']['acc'], 4)}".rjust(11)
+            + f"{round(kargs['metrics']['f1'], 4)}".rjust(11)
+            + f"{round(kargs['metrics']['kappa'], 4)}".rjust(11)
+            + f"{round(kargs['enlapsed_time'], 4)}".rjust(11)
             + "\n"
         )
 
