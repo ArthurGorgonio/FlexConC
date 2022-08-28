@@ -210,7 +210,14 @@ class Ensemble:
 
         return y_pred
 
-    def swap(self, classifier: List, pos: List[int]) -> None:
+    def swap(
+        self,
+        classifier: List,
+        pos: List[int],
+        instances,
+        classes,
+        retrain: bool = False
+    ) -> None:
         """
         Função para trocar um classificador do comitê por outro já
         treinado.
@@ -226,10 +233,16 @@ class Ensemble:
         """
         if len(pos) == len(classifier):
             for i, j in enumerate(pos):
-                self.ensemble[i] = classifier[j]
+                if retrain:
+                    self.ensemble[i].partial_fit(instances, classes)
+                else:
+                    self.ensemble[i] = classifier[j]
         else:
             for i in pos:
-                self.ensemble[i] = classifier
+                if retrain:
+                    self.ensemble[i].partial_fit(instances, classes)
+                else:
+                    self.ensemble[i] = classifier[0]
 
     def partial_fit(
         self,
