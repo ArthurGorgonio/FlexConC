@@ -2,3 +2,5 @@ flexconC/
 __pycache__/
 piton/
 venv/
+*.txt
+result/
