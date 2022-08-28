@@ -7,7 +7,7 @@ from src.utils import Log
 class LoggerTest(TestCase):
     def setUp(self) -> None:
         self.logger = Log()
-    
+
     def test_singleton_creation(self):
         self.logger.filename = 'testes.txt'
 

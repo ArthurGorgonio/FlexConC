@@ -1,5 +1,4 @@
 from unittest import TestCase
-
 from unittest.mock import Mock, patch
 
 from src.ssl.ensemble import Ensemble
@@ -121,7 +120,7 @@ class TestEnsemble(TestCase):
             self.ensemble.ssl_algorithm.return_value = cl
             self.ensemble.add_classifier(cl)
 
-        self.ensemble.swap(exchanged_classifiers, [3, 1, 2, 0])
+        self.ensemble.swap(exchanged_classifiers, [3, 1, 2, 0], [], [], False)
 
         self.assertListEqual(
             self.ensemble.ensemble,
