@@ -1,11 +1,13 @@
 import warnings
-from pprint import pprint
+from datetime import datetime
+
 import numpy as np
 import pandas as pd
-
-from sklearn.metrics import accuracy_score
-from sklearn.metrics import cohen_kappa_score as kappa
-from sklearn.metrics import f1_score
+from sklearn.metrics import (
+    accuracy_score,
+    cohen_kappa_score as kappa,
+    f1_score,
+)
 from skmultiflow.data import DataStream
 
 from src.core.core import Core
@@ -13,6 +15,7 @@ from src.detection.fixed_threshold import FixedThreshold
 from src.reaction.exchange import Exchange
 from src.ssl.ensemble import Ensemble
 from src.ssl.self_flexcon import SelfFlexCon
+from src.utils import Log
 
 warnings.simplefilter("ignore")
 # ssl = FlexConC(Naive(), verbose=True)
@@ -25,6 +28,7 @@ datasets = ["electricity.csv"]
 
 for dataset in datasets:
     dataframe = pd.read_csv(dataset)
+    Log().filename = dataset.split('.')[0]
     # depende do dataset
     dim = dataframe.shape
     array = dataframe.values
@@ -44,6 +48,7 @@ for dataset in datasets:
     dydasl.add_metrics("acc", accuracy_score)
     dydasl.add_metrics("f1", f1_score)
     dydasl.add_metrics("kappa", kappa)
+    Log().write_archive_header()
     dydasl.run(stream)
 
 # print(
