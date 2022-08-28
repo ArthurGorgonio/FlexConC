@@ -1,6 +1,8 @@
 from unittest import TestCase
 from unittest.mock import MagicMock, Mock, patch
 
+from numpy import array
+
 from src.core.core import Core
 
 
@@ -8,6 +10,7 @@ class SelfFlexConMock(Mock):
     def __init__(self, cr, threshold):
         self.cr = cr
         self.threshold = threshold
+
 
 class EnsembleMock(Mock):
     def __init__(self,):
@@ -22,9 +25,10 @@ class EnsembleMock(Mock):
 
 
 class DetectorMock(Mock):
-    def __init__(self, drift = False):
+    def __init__(self, drift=False):
         super().__init__()
         self.drift = drift
+        self.detector_type = 'metric'
 
     def detect(self, y_pred):
         return self.drift
@@ -50,13 +54,14 @@ class DateStreamMock(MagicMock):
     def __init__(self):
         super().__init__()
         self.instances = [True, True, False]
+        self.i = -1
 
     def next_sample(self, size):
         return [], []
 
     def has_more_samples(self):
-        for i, value in enumerate(self.instances):
-            yield self.instances[i]
+        self.i += 1
+        return self.instances[self.i]
 
 
 class TestCore(TestCase):
@@ -173,32 +178,32 @@ class TestCore(TestCase):
         y_true = [1, 1, 0, 0, 0, 1]
         y_pred = [1, 1, 0, 0, 0, 1]
 
-        self.core.evaluate_metrics(y_true, y_pred)
+        self.core._evaluate_metrics(y_true, y_pred)
 
         self.assertEqual(self.core.metrics, {'acc': [1.0], 'f1': [1.0]})
 
     @patch("src.core.core.accuracy_score")
-    @patch("test.test_core.DateStreamMock.has_more_samples")
     @patch("src.core.core.confusion_matrix")
     @patch("src.core.Core.run_first_it")
-    @patch("src.core.Core.log_iteration_info")
+    @patch("src.core.Core._log_iteration_info")
     def test_run_should_call_log_iteration_info_each_iteration(
         self,
         logger,
         first_it,
         cm,
-        has_more_samples,
         acc,
     ):
-        cm.return_value = 100
+        cm.return_value = array([[50, 0], [0, 50]])
         acc.return_value = 1.0
         self.core = Core(EnsembleMock(), DetectorMock(), ReactorMock())
         stream_data = DateStreamMock()
-        has_more_samples.return_value = False
+        stream_data.sample_idx = []
         self.core.run(stream_data)
 
-        first_it.assert_called_once()
-        # has_more_samples.assert_called()
+        self.assertEqual(first_it.call_count, 3)
+        self.assertEqual(acc.call_count, 2)
+        self.assertEqual(cm.call_count, 2)
+        self.assertEqual(logger.call_count, 2)
 
     @patch("src.utils.Log.write_archive_output")
     def test_log(self, logger):
@@ -211,8 +216,8 @@ class TestCore(TestCase):
         y_true = [1, 1, 0, 0, 0, 1]
         y_pred = [1, 1, 0, 0, 0, 1]
 
-        self.core.evaluate_metrics(y_true, y_pred)
+        self.core._evaluate_metrics(y_true, y_pred)
 
-        self.core.log_iteration_info(600, 1000, 0.2321)
+        self.core._log_iteration_info(600, 1000, 0.2321)
 
         logger.assert_called_once()
