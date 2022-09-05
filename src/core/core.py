@@ -126,7 +126,8 @@ class Core:
                 self.reactor.react(
                     self.ensemble,
                     instances,
-                    classes
+                    classes,
+                    self.detector.detection_threshold
                 )
             enlapsed_time = time() - start
             self._evaluate_metrics(classes, y_pred)
@@ -204,7 +205,11 @@ class Core:
         """
         for func_name in self.metrics_calls.keys():
             metric = self.metrics_calls.get(func_name)
-            self.metrics[func_name].append(metric(y_true, y_pred))
+            if func_name == 'f1':
+                self.metrics[func_name].append(
+                        metric(y_true, y_pred, average='macro'))
+            else:
+                self.metrics[func_name].append(metric(y_true, y_pred))
 
     def _log_iteration_info(self, hits, processed, enlapsed_time):
         # version = self.detector.__class__
@@ -221,3 +226,7 @@ class Core:
             },
         }
         Log().write_archive_output(**iteration_info)
+
+    def reset(self):
+        self.detector.reset_params()
+        self.ensemble.drop_ensemble()

@@ -18,7 +18,4 @@ class FixedThreshold(IChunk):
         return self.drift
 
     def reset_params(self):
-        ...
-
-    def __reset_all(self):
-        self.drift_counter = 0
+        return super().reset_params()

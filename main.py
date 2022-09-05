@@ -1,6 +1,5 @@
-import warnings
-
 from glob import glob
+
 import numpy as np
 import pandas as pd
 from sklearn.metrics import (
@@ -19,27 +18,29 @@ from src.utils import Log
 
 dydasl = Core(Ensemble, FixedThreshold, Exchange)
 dydasl.configure_params(SelfFlexCon)
-dydasl.add_metrics('acc', accuracy_score)
-dydasl.add_metrics('f1', f1_score)
-dydasl.add_metrics('kappa', kappa)
+dydasl.add_metrics("acc", accuracy_score)
+dydasl.add_metrics("f1", f1_score)
+dydasl.add_metrics("kappa", kappa)
 # datasets = glob('datasets/*.csv')
 # datasets.sort()
 datasets = [
-    'Connect-4.csv',
-    'Electricity.csv',
-    'Fars.csv',
-    'ForestCover.csv',
-    'GEARS2C2D.csv',
-    'Poker.csv',
-    'Shuttle.csv',
-    'UG2C3D.csv',
+    "Connect-4.csv",
+    "Electricity.csv",
+    "Fars.csv",
+    "ForestCover.csv",
+    "GEARS2C2D.csv",
+    "Poker.csv",
+    "Shuttle.csv",
+    "UG2C3D.csv",
 ]
 
 for dataset in datasets:
+    dydasl.reset()
+    print(dataset)
     dataframe = pd.read_csv(
-        dataset if 'datasets/' in dataset else 'datasets/' + dataset
+        dataset if "datasets/" in dataset else "datasets/" + dataset
     )
-    Log().filename = dataset.split('.')[0].split('/')[-1]
+    Log().filename = dataset.split(".")[0].split("/")[-1]
     # depende do dataset
     dim = dataframe.shape
     array = dataframe.values

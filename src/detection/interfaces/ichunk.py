@@ -17,6 +17,7 @@ class IChunk(IDriftDetector):
     def __init__(self, threshold: float = 0.8):
         super().__init__()
         self.detection_threshold = threshold
+        self.default_threshold = threshold
         self.last_chunk = None
         self.actual_chunk = None
         self.detector_type = 'metric'
@@ -38,3 +39,11 @@ class IChunk(IDriftDetector):
         msg = super().__str__()
         msg += f'Threshold é de {self.detection_threshold}.\n'
         return msg
+
+    def reset_params(self):
+        super().reset_params()
+        self.detection_threshold = self.default_threshold
+        self.last_chunk = None
+        self.actual_chunk = None
+
+        return self

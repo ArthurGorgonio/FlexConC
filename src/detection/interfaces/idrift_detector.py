@@ -41,21 +41,17 @@ class IDriftDetector(ABC):
         """
         raise NotImplementedError("Método necessário não implementado!")
 
-    @abstractmethod
     def reset_params(self):
-        """
-        Retorna os parâmetros para o valor default.
+        """Retorna os parâmetros para o valor default."""
+        self.drift_counter = 0
+        self.drift = False
 
-        Raises
-        ------
-        NotImplementedError
-            Requer sobreescrita nas classes filhas.
-        """
-        raise NotImplementedError("Método necessário não implementado!")
+        return self
 
     def increase_counter(self):
         self.drift_counter += 1
 
     def __str__(self) -> str:
         msg = f'\nIdentificados {self.drift_counter} drifts na stream.\n'
+
         return msg

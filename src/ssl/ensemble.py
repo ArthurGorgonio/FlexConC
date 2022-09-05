@@ -216,7 +216,7 @@ class Ensemble:
         pos: List[int],
         instances,
         classes,
-        retrain: bool = False
+        retrain: bool = True,
     ) -> None:
         """
         Função para trocar um classificador do comitê por outro já
@@ -249,7 +249,7 @@ class Ensemble:
         instances: np.ndarray,
         classes: np.ndarray,
         labels=None,
-        sample_weight=None
+        sample_weight=None,
     ):
         """
         Função que realiza um treinamento parcial dos classificadores
@@ -265,14 +265,12 @@ class Ensemble:
         for model in self.ensemble:
             model.partial_fit(instances, classes, labels, sample_weight)
 
-        return self
-
     def fit(
         self,
         instances: np.ndarray,
         classes: np.ndarray,
         labels=None,
-        sample_weight=None
+        sample_weight=None,
     ):
         """
         Função para fazer o treinamento dos classificadores do comitê.
