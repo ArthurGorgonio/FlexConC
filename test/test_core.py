@@ -28,7 +28,7 @@ class DetectorMock(Mock):
     def __init__(self, drift=False):
         super().__init__()
         self.drift = drift
-        self.detector_type = 'metric'
+        self.detector_type = "metric"
 
     def detect(self, y_pred):
         return self.drift
@@ -43,7 +43,7 @@ class MetricsMock(Mock):
     def accuracy_score(self, y_true, y_pred):
         return 1.0
 
-    def f1_score(self, y_true, y_pred):
+    def f1_score(self, y_true, y_pred, average=""):
         return 1.0
 
     def kappa(self, y_true, y_pred):
@@ -61,6 +61,7 @@ class DateStreamMock(MagicMock):
 
     def has_more_samples(self):
         self.i += 1
+
         return self.instances[self.i]
 
 
@@ -76,7 +77,7 @@ class TestCore(TestCase):
                 self.core.reactor,
                 self.core.chunk_size,
                 self.core.metrics,
-                self.core.metrics_calls
+                self.core.metrics_calls,
             ],
             [
                 EnsembleMock,
@@ -89,31 +90,26 @@ class TestCore(TestCase):
         )
 
     def test_configure_param_should_return_valid_configurations_when_args_are_valid(  # NOQA
-        self
+        self,
     ):
         expected_output = {
-            'ssl': {
-                'cr': 0.05,
-                'threshold': 0.95
+            "ssl": {
+                "cr": 0.05,
+                "threshold": 0.95
             },
-            'detector': {
-                'threshold': 0.2
+            "detector": {
+                "threshold": 0.2
             },
-            'reaction': {
-                'threshold': 0.5
-            }
         }
 
         ssl_params = {
-            'cr': 0.05,
-            'threshold': 0.95
+            "cr": 0.05,
+            "threshold": 0.95
         }
         detector_params = {
-            'threshold': 0.2
+            "threshold": 0.2
         }
-        reactor_params = {
-            'thr': 0.5
-        }
+        reactor_params = {}
         core = Core()
         core.configure_params(
             SelfFlexConMock,
@@ -123,16 +119,13 @@ class TestCore(TestCase):
         )
         self.assertEqual(
             {
-                'ssl': {
-                    'cr': core.ensemble.ssl_params["cr"],
-                    'threshold': core.ensemble.ssl_params["threshold"]
+                "ssl": {
+                    "cr": core.ensemble.ssl_params["cr"],
+                    "threshold": core.ensemble.ssl_params["threshold"]
                 },
-                'detector': {
-                    'threshold': core.detector.detection_threshold
+                "detector": {
+                    "threshold": core.detector.detection_threshold
                 },
-                'reaction': {
-                    'threshold': core.reactor.thr
-                }
             },
             expected_output
         )
@@ -170,7 +163,9 @@ class TestCore(TestCase):
             }
         )
 
-    def test_evaluate_metrics_should_return_two_values_when_two_metrics_are_used(self):  # NOQA
+    def test_evaluate_metrics_should_return_two_values_when_two_metrics_are_used(  # NOQA
+        self,
+    ):
         evaluate = MetricsMock()
         self.core.add_metrics("acc", evaluate.accuracy_score)
         self.core.add_metrics("f1", evaluate.f1_score)
@@ -180,7 +175,7 @@ class TestCore(TestCase):
 
         self.core._evaluate_metrics(y_true, y_pred)
 
-        self.assertEqual(self.core.metrics, {'acc': [1.0], 'f1': [1.0]})
+        self.assertEqual(self.core.metrics, {"acc": [1.0], "f1": [1.0]})
 
     @patch("src.core.core.accuracy_score")
     @patch("src.core.core.confusion_matrix")
