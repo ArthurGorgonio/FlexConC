@@ -1,9 +1,9 @@
 from typing import Any, Dict
 
-from src.detection.interfaces.ichunk import IChunk
+from src.detection.interfaces.threshold import Threshold
 
 
-class FixedThreshold(IChunk):
+class FixedThreshold(Threshold):
     """Classe de detecção de drift com treshold fixo"""
     def __init__(self, **params: Dict[str, Any]):
         super().__init__(**params)

@@ -7,7 +7,7 @@ from skmultiflow.data import DataStream
 from skmultiflow.trees import HoeffdingAdaptiveTreeClassifier as HT
 
 from src.detection.fixed_threshold import FixedThreshold
-from src.detection.interfaces.idrift_detector import IDriftDetector
+from src.detection.interfaces.drift_detector import DriftDetector
 from src.reaction.exchange import Exchange
 from src.reaction.interfaces.ireaction import IReaction
 from src.ssl.ensemble import Ensemble
@@ -35,7 +35,7 @@ class Core:
     def __init__(
         self,
         ensemble: Ensemble = None,
-        detector: IDriftDetector = None,
+        detector: DriftDetector = None,
         reactor: IReaction = None,
         chunk_size: int = 500
     ):
@@ -174,6 +174,8 @@ class Core:
         if is_metric_value == 'metric':
             thr = accuracy_score(classes, y_pred)
             return self.detector.detect(thr)
+        if is_metric_value == 'classes':
+            return self.detector.detect(classes)
         return self.detector.detect(instances)
 
     def add_metrics(self, metric_name: str, metric_func: Callable) -> None:
