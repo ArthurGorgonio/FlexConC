@@ -1,3 +1,4 @@
-from .ichunk import IChunk
-from .idrift_detector import IDriftDetector
-from .istatisticaltest import IStatisticalTest
+from .chunk import Chunk
+from .drift_detector import DriftDetector
+from .threshold import Threshold
+from .statisticaltest import StatisticalTest

@@ -4,7 +4,7 @@ from typing import Union
 from numpy import ndarray
 
 
-class IDriftDetector(ABC):
+class DriftDetector(ABC):
     """
     Interface para a criação de classes responsáveis pela detecção do
     drift em grupos de instâncias.
