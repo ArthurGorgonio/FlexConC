@@ -1,130 +1,92 @@
 import warnings
 
-import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+
+import src.utils as ut
+
 from os import listdir
 from os.path import isfile, join
-from sklearn import datasets
-from sklearn.metrics import accuracy_score, f1_score
-from sklearn.model_selection import RepeatedStratifiedKFold, StratifiedKFold
-from sklearn.naive_bayes import GaussianNB as Naive
-from sklearn.neighbors import KNeighborsClassifier as KNN
-from sklearn.tree import DecisionTreeClassifier as Tree
 
-from src.detection.weighted_statistical import WeightedStatistical
+from sklearn import datasets
+from sklearn.model_selection import StratifiedKFold
+from sklearn.naive_bayes import GaussianNB as Naive
+
 from src.ssl.ensemble import Ensemble
 from src.ssl.self_flexcon import SelfFlexCon
 
 warnings.simplefilter("ignore")
 
-# LISTA DE CLASSIFICADORES
-list_tree_het = [
-    Tree(criterion="entropy"), Tree(), 
-    Tree(criterion="entropy", max_features="log2"),
-    Tree(criterion="entropy", max_features='auto'), Tree(max_features='auto')]
-
-list_knn_het = [
-    KNN(n_neighbors=11),KNN(n_neighbors=12),
-    KNN(n_neighbors=13),KNN(n_neighbors=14),
-    KNN(n_neighbors=15)]
-
-list_tree = [
-    Tree(criterion="entropy"), Tree(), 
-    Tree(criterion="entropy", max_features=1), Tree(max_features=1),
-    Tree(criterion="entropy", max_features="log2"),
-    Tree(criterion="entropy", max_features='auto'), Tree(max_features='auto'),
-    Tree(splitter="random"), Tree(criterion="entropy",splitter="random")]
-
-list_knn= [
-    KNN(n_neighbors=10, weights='distance'),KNN(n_neighbors=11, weights='distance'),
-    KNN(n_neighbors=12, weights='distance'),KNN(n_neighbors=13, weights='distance'),
-    KNN(n_neighbors=14, weights='distance'),KNN(n_neighbors=11),KNN(n_neighbors=12),
-    KNN(n_neighbors=13),KNN(n_neighbors=14)]
-
 comite = Ensemble(SelfFlexCon)
 
-# iris = datasets.load_iris()
-# wine = datasets.load_wine()
-# digits = datasets.load_digits()
-
-#digits_target_unlabelled = digits.target.copy()
-#datasets = path.list('datasets/')
-datasets = [f for f in listdir('datasets_bck/') if isfile(join('datasets_bck/', f))]
+# datasets = path.list('datasets/')
+# datasets = [f for f in listdir('datasets_bck/') if isfile(join('datasets_bck/', f))]
+datasets = [f for f in listdir('datasets/') if isfile(join('datasets/', f))]
 init_labelled = [0.05, 0.1, 0.15, 0.2]
 
 for dataset in datasets:
     for labelled_level in init_labelled:
-        df = pd.read_csv('datasets_bck/'+dataset, header=0)
+        # df = pd.read_csv('datasets_bck/'+dataset, header=0)
+        df = pd.read_csv('datasets/'+dataset, header=0)
         kfold = StratifiedKFold(n_splits=10)
+        fold = 1
         _instances = df.iloc[:,:-1].values #X
         _target_unlabelled = df.iloc[:,-1].values #Y
-        _target_unlabelled_copy = _target_unlabelled.copy()
+        # _target_unlabelled_copy = _target_unlabelled.copy()
 
-        # classifica as instâncias
-
+        # DISPLAY QUE INFORMA PARA O USUÁRIO COMO PROCEDER
+        print(f"\n\nO sistema irá selecionar instâncias da base {dataset}. Para o treinamento, será usado {round(labelled_level, 4) * 100}% das instâncias rotuladas de um total de {len(_instances)}.\n\n")
+        print("Logo abaixo selecione qual classificador irá ser utilizado para criação do modelo preditivo.\n\n")
         print("Classificadores disponíveis:\n\n\t(1) Naive\n\t(2) Tree\n\t(3) KNN\n\t(4) Comite Heterogeneo\n\t(0) Sair\n\n")
         option = input('Informe o classificador: ')
         print('\nExecutando o treinamento...\n\n')
         for train, test in kfold.split(_instances, _target_unlabelled):
             X_train, X_test = _instances[train], _instances[test]
             y_train, y_test = _target_unlabelled[train], _target_unlabelled[test]
-            labelled_instances = int(len(X_train)*labelled_level)
-            
+            labelled_instances = round(len(X_train)*labelled_level)
 
             if option == 'Sair' or option == '0':
                 print('\nEncerrando...\n')
                 exit()
+            
             elif option == 'Naive' or option == '1':
-                with open('Comite_Naive.txt', 'a') as f:
-                    f.write('Naive Bayes selecionado...\n\n')
-                    f.write(
-                        f"Instâncias rotuladas: {labelled_instances}\n" 
-                        f"Usando: {round(labelled_level, 4) * 100}% das instâncias rotuladas\n"
-                    )
+                if(fold == 1):
+                    fold += 1
+                    with open(f'Comite_Naive_{round(labelled_level, 4) * 100}.txt', 'a') as f:
+                        f.write(
+                            f"Instâncias rotuladas: {labelled_instances}\n" 
+                            f"Usando: {round(labelled_level, 4) * 100}% das instâncias rotuladas\n"
+                        )
+                y = ut.select_labels(y_train, X_train, labelled_instances)
                 for i in range(9):
-                    print(i)
-                    flexCon = SelfFlexCon(Naive(var_smoothing=float(f'1e-{i}')))
-                    #TODO: É PROVAVEL ESTAR SELECIONANDO TODAS AS INSTANCIAS DE UMA CLASSE SÓ
-                    # SERIA INTERESSANTE APLICAR UM RANDOM COM PELO MENOS UMA INSTANCIA DIFERENTE DE CADA CLASSE
-                    random_unlabeled_points = np.random.choice(len(X_train), labelled_instances, replace=False)
-                    mask = np.ones(len(X_train), np.bool)
-                    mask[random_unlabeled_points] = 0
-                    y_train[mask] = -1
-                    #y_train[random_unlabeled_points] = -1
-                    X = X_train
-                    y = y_train
-                    comite.add_model(flexCon.fit(X, y, option))
+                    comite.add_classifier(Naive(var_smoothing=float(f'1e-{i}')))
+                comite.fit_ensemble(X_train, y)
 
             elif option == 'Tree' or option == '2':
-                with open('Comite_Tree.txt', 'a') as f:
-                    f.write('Decision Tree selecionado...\n\n')
-                    f.write(
-                        f"Instâncias rotuladas: {labelled_instances}\n" 
-                        f"Usando: {round(labelled_level, 4) * 100}% das instâncias rotuladas\n"
-                    )
-                for i in list_tree:
-                    flexCon = SelfFlexCon(i)
-                    random_unlabeled_points = np.random.choice(len(X_train), labelled_instances, replace=False)
-                    y_train[random_unlabeled_points] = -1
-                    X = X_train
-                    y = y_train
-                    comite.add_model(flexCon.fit(X, y, option))
+                if(fold == 1):
+                    fold += 1
+                    with open(f'Comite_Tree_{round(labelled_level, 4) * 100}.txt', 'a') as f:
+                        f.write(
+                            f"Instâncias rotuladas: {labelled_instances}\n" 
+                            f"Usando: {round(labelled_level, 4) * 100}% das instâncias rotuladas\n"
+                        )
+                y = ut.select_labels(y_train, X_train, labelled_instances)
+                for i in ut.list_tree:
+                    comite.add_classifier(i)
+                comite.fit_ensemble(X_train, y)
 
             elif option == 'KNN' or option == '3':
-                with open('Comite_KNN.txt', 'a') as f:
-                    f.write('\n\nKNN selecionado...\n\n')
-                    f.write(
-                        f"Instâncias rotuladas: {labelled_instances}\n" 
-                        f"Usando: {round(labelled_level, 4) * 100}% das instâncias rotuladas\n"
-                    )
-                for i in list_knn:
-                    flexCon = SelfFlexCon(i)
-                    random_unlabeled_points = np.random.choice(len(X_train), labelled_instances, replace=False)
-                    y_train[random_unlabeled_points] = -1
-                    X = X_train
-                    y = y_train
-                    comite.add_model(flexCon.fit(X, y, option))
+                if(fold == 1):
+                    fold += 1
+                    with open(f'Comite_KNN_{round(labelled_level, 4) * 100}.txt', 'a') as f:
+                        f.write(
+                            f"Instâncias rotuladas: {labelled_instances}\n" 
+                            f"Usando: {round(labelled_level, 4) * 100}% das instâncias rotuladas\n"
+                        )
+                y = ut.select_labels(y_train, X_train, labelled_instances)
+                for i in ut.list_knn:
+                    comite.add_classifier(i)
+                comite.fit_ensemble(X_train, y)
 
             elif option == 'Comite Heterogeneo' or option == '4':
                 with open('Comite_Heterogeneo.txt', 'a') as f:
@@ -140,74 +102,30 @@ for dataset in datasets:
                     y_train[random_unlabeled_points] = -1
                     X = X_train 
                     y = y_train
-                    comite.add_model(flexCon.fit(X, y, option))
+                    comite.add_model(flexCon.fit(X, y))
                 with open('Comite_Heterogeneo.txt', 'a') as f:
                     f.write('\n\nExecutando com Decision Tree...\n\n')
-                for i in list_tree_het:
+                for i in ut.list_tree_het:
                     flexCon = SelfFlexCon(i)
                     random_unlabeled_points = np.random.choice(len(X_train), labelled_instances, replace=False)
                     y_train[random_unlabeled_points] = -1
                     X = X_train
                     y = y_train
-                    comite.add_model(flexCon.fit(X, y, option))
+                    comite.add_model(flexCon.fit(X, y))
                 with open('Comite_Heterogeneo.txt', 'a') as f:
                     f.write('\n\nExecutando com KNN...\n\n')
-                for i in list_knn_het:
+                for i in ut.list_knn_het:
                     flexCon = SelfFlexCon(i)
                     random_unlabeled_points = np.random.choice(len(X_train), labelled_instances, replace=False)
                     y_train[random_unlabeled_points] = -1
                     X = X_train
                     y = y_train
-                    comite.add_model(flexCon.fit(X, y, option))
+                    comite.add_model(flexCon.fit(X, y))
 
             else:
-                print('Classificador não disponível! Insira outro...\n')
-                print("Classificadores disponíveis:\n\n\t(1) Naive\n\t(2) Tree\n\t(3) KNN\n\t(4) Comite Heterogeneo\n\t(0) Sair\n\n")
-                option = input('Informe o classificador: ')
+                print('Opção inválida! Escolha corretamente...\n')
+                exit()
             
-            y_pred = comite.predict(_instances[random_unlabeled_points, :])
-            y_true = _target_unlabelled_copy[random_unlabeled_points]
+            y_pred = comite.predict(X_test)
 
-            if option == 'Naive' or option == '1':
-                print('Salvando os resultados em um arquivo Comite_Naive.txt\n\n')
-                print('Finalizando...')
-                with open('Comite_Naive.txt', 'a') as f:
-                    f.write(
-                        f"\n\nACC: {round(accuracy_score(y_true, y_pred), 4) * 100}%\n"
-                        f'F1-Score: {round(f1_score(y_true, y_pred, average="macro"), 4) * 100}%\n'
-                        f"Motivo da finalização: {comite.ensemble[0].termination_condition_}\n"
-                        # f"Valor do teste estatístico é de {alpha}, significante? {alpha <= 0.05}\n"
-                    )
-
-            elif option == 'Tree' or option == '2':
-                print('Salvando os resultados em um arquivo Comite_Tree.txt\n\n')
-                print('Finalizando...')
-                with open('Comite_Tree.txt', 'a') as f:
-                    f.write(
-                        f"\n\nACC: {round(accuracy_score(y_true, y_pred), 4) * 100}%\n"
-                        f'F1-Score: {round(f1_score(y_true, y_pred, average="macro"), 4) * 100}%\n'
-                        f"Motivo da finalização: {comite.ensemble[0].termination_condition_}\n"
-                        # f"Valor do teste estatístico é de {alpha}, significante? {alpha <= 0.05}\n"
-                    )
-
-            elif option == 'KNN' or option == '3':
-                print('Salvando os resultados em um arquivo Comite_KNN.txt\n\n')
-                print('Finalizando...')
-                with open('Comite_KNN.txt', 'a') as f:
-                    f.write(
-                        f"\n\nACC: {round(accuracy_score(y_true, y_pred), 4) * 100}%\n"
-                        f'F1-Score: {round(f1_score(y_true, y_pred, average="macro"), 4) * 100}%\n'
-                        f"Motivo da finalização: {comite.ensemble[0].termination_condition_}\n"
-                        # f"Valor do teste estatístico é de {alpha}, significante? {alpha <= 0.05}\n"
-                    )
-
-            elif option == 'Comite Heterogeneo' or option == '4':
-                print('Salvando os resultados em um arquivo Comite_Heterogeneo.txt\n\n')
-                print('Finalizando...')
-                with open('Comite_Heterogeneo.txt', 'a') as f:
-                    f.write(
-                        f"\n\nACC: {round(accuracy_score(y_true, y_pred), 4) * 100}%\n"
-                        f'F1-Score: {round(f1_score(y_true, y_pred, average="macro"), 4) * 100}%\n'
-                        f"Motivo da finalização: {comite.ensemble[0].termination_condition_}\n"
-                        # f"Valor do teste estatístico é de {alpha}, significante? {alpha <= 0.05}\n"
-                    )
+            ut.result(option, y_test, y_pred, comite, labelled_level)
