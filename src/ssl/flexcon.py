@@ -32,16 +32,9 @@ class BaseFlexConC(SelfTrainingClassifier):
         self.termination_condition_ = ""
         self.pred_x_it: Dict = {}
         self.cl_memory: List = []
+        self.size_y: 0
         self.base_estimator_ = clone(self.base_estimator)
         self.base_estimator_select_ = clone(self.base_estimator)
-
-    def __str__(self):
-        return (
-            f"Classificador {self.base_estimator}\n"
-            f"Outros Parâmetro:"
-            f" CR: {self.cr}\t Threshold: {self.threshold}"
-            f" Máximo IT: {self.max_iter}"
-        )
 
     @abstractmethod
     def fit(self, X, y):
@@ -232,7 +225,7 @@ class BaseFlexConC(SelfTrainingClassifier):
 
         return selected, self.remember(selected)
 
-    def train_new_classifier(self, has_label, X, y, option):
+    def train_new_classifier(self, has_label, X, y):
         """
         Responsável por treinar um classificador e mensurar
             a sua acertividade

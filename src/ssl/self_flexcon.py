@@ -7,8 +7,22 @@ from src.ssl.flexcon import BaseFlexConC
 class SelfFlexCon(BaseFlexConC):
     def __init__(self, base_estimator):
         super().__init__(base_estimator=base_estimator)
+        self.n_iter_ = 0
 
-    def fit(self, X, y, option):
+    def __str__(self):
+        msg = super().__str__()
+        msg += (
+            f"\nClassificador {self.base_estimator}\n"
+            f"Outros Parâmetro:\n"
+            f"CR: {self.cr}\t Threshold: {self.threshold}\n"
+            f"Máximo IT: {self.max_iter}\n"
+            f"Quantidade de iterações: {self.n_iter_}\n"
+            f"Classes: {len(self.classes_)}\n"
+            f"Instâncias selecionadas: {self.size_y}\n"
+        )
+        return msg
+
+    def fit(self, X, y):
         """
         Fit self-training classifier using `X`, `y` as training data.
         Parameters
@@ -38,11 +52,12 @@ class SelfFlexCon(BaseFlexConC):
             )
 
         has_label = y != -1
+        self.size_y = len(y)
         self.cl_memory = [[0] * np.unique(y[has_label]) for _ in range(len(X))]
 
         if np.all(has_label):
             raise ValueError("y contains no unlabeled sample")
-        init_acc = self.train_new_classifier(has_label, X, y, option)
+        init_acc = self.train_new_classifier(has_label, X, y)
         old_selected = []
         self.n_iter_ = 0
 
@@ -92,7 +107,7 @@ class SelfFlexCon(BaseFlexConC):
             # Add newly labeled confident predictions to the dataset
             has_label[selected_full] = True
             self.add_new_labeled(selected_full, selected, pred)
-            self.update_memory(np.nonzero(~has_label)[0], pred[selected])
+            self.update_memory(np.nonzero(~has_label)[0], pred)
             # Predict on the labeled samples
             try:
                 if old_selected:
