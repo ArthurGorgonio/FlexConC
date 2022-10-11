@@ -12,9 +12,9 @@ list_tree_het = [
     Tree(criterion="entropy", max_features='auto'), Tree(max_features='auto')]
 
 list_knn_het = [
-    KNN(n_neighbors=11),KNN(n_neighbors=12),
-    KNN(n_neighbors=13),KNN(n_neighbors=14),
-    KNN(n_neighbors=15)]
+    KNN(n_neighbors=1, weights='distance'),KNN(n_neighbors=1),
+    KNN(n_neighbors=2, weights='distance'),KNN(n_neighbors=2),
+    KNN(n_neighbors=3, weights='distance')]
 
 list_tree = [
     Tree(criterion="entropy"), Tree(), 
