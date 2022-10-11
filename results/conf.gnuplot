@@ -8,7 +8,7 @@ set style fill solid
 set term png
 set key outside
 set output "comite_resultado.png"
-plot "ensemble.dat"using 3:xtic(2) title "Naive Bayes" with histograms, \
-     "" using 4 title "Knn" with histograms, \
-     "" using 5 title "Tree" with histograms, \
+plot filename using 3:xtic(2) title "Naive Bayes" with histograms, \
+     "" using 4 title "Tree" with histograms, \
+     "" using 5 title "Knn" with histograms, \
      "" using 6 title "Heterogeneo" with histograms
