@@ -89,38 +89,25 @@ for dataset in datasets:
                 comite.fit_ensemble(X_train, y)
 
             elif option == 'Comite Heterogeneo' or option == '4':
-                with open('Comite_Heterogeneo.txt', 'a') as f:
-                    f.write(
-                        f"Instâncias rotuladas: {labelled_instances}\n" 
-                        f"Usando: {round(labelled_level, 4) * 100}% das instâncias rotuladas\n"
-                    )
-                    f.write('Comite heterogêneo selecionado...\n\n'
-                            'Executando com Naive Bayes...\n\n')
+                if(fold == 1):
+                    fold += 1
+                    with open(f'Comite_Heterogeneo_{round(labelled_level, 4) * 100}.txt', 'a') as f:
+                        f.write(
+                            f"Instâncias rotuladas: {labelled_instances}\n" 
+                            f"Usando: {round(labelled_level, 4) * 100}% das instâncias rotuladas\n"
+                        )
+                y = ut.select_labels(y_train, X_train, labelled_instances)
                 for i in range(5):
-                    flexCon = SelfFlexCon(Naive(var_smoothing=float(f'1e-{i}')))
-                    random_unlabeled_points = np.random.choice(len(X_train), labelled_instances, replace=False)
-                    y_train[random_unlabeled_points] = -1
-                    X = X_train 
-                    y = y_train
-                    comite.add_model(flexCon.fit(X, y))
-                with open('Comite_Heterogeneo.txt', 'a') as f:
-                    f.write('\n\nExecutando com Decision Tree...\n\n')
+                    comite.add_classifier(Naive(var_smoothing=float(f'1e-{i}')))
+                comite.fit_ensemble(X_train, y)
+                y = ut.select_labels(y_train, X_train, labelled_instances)
                 for i in ut.list_tree_het:
-                    flexCon = SelfFlexCon(i)
-                    random_unlabeled_points = np.random.choice(len(X_train), labelled_instances, replace=False)
-                    y_train[random_unlabeled_points] = -1
-                    X = X_train
-                    y = y_train
-                    comite.add_model(flexCon.fit(X, y))
-                with open('Comite_Heterogeneo.txt', 'a') as f:
-                    f.write('\n\nExecutando com KNN...\n\n')
+                    comite.add_classifier(i)
+                comite.fit_ensemble(X_train, y)
+                y = ut.select_labels(y_train, X_train, labelled_instances)
                 for i in ut.list_knn_het:
-                    flexCon = SelfFlexCon(i)
-                    random_unlabeled_points = np.random.choice(len(X_train), labelled_instances, replace=False)
-                    y_train[random_unlabeled_points] = -1
-                    X = X_train
-                    y = y_train
-                    comite.add_model(flexCon.fit(X, y))
+                    comite.add_classifier(i)
+                comite.fit_ensemble(X_train, y)
 
             else:
                 print('Opção inválida! Escolha corretamente...\n')
