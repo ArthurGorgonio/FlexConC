@@ -1,3 +1,4 @@
+from nis import match
 import numpy as np
 from sklearn.model_selection import StratifiedKFold
 from sklearn.metrics import accuracy_score, f1_score
@@ -77,20 +78,21 @@ def select_labels(y_train, X_train, labelled_instances):
     y_train[mask] = -1
     return y_train
 
-def result(option, y_test, y_pred, comite, labelled_level):
+def result(option, dataset, y_test, y_pred, comite, labelled_level):
     """
     Responsável por salvar os outputs dos cômites em arquivos
     Args:
         option (int): Opção de escolha do usuário
+        dataset (string): Base de dados nome
         y_test (Array): Rótulos usadas para testes
         y_pred (Array): Rótulos predizidos pelo modelo
         comite (): Cômite de classificadores
         labelled_level (float): % que foi selecionada na iteração
     """
-    if option == 'Naive' or option == '1':
-        print(f'Salvando os resultados em um arquivo Comite_Naive_{round(labelled_level, 4) * 100}.txt\n\n')
+    if option == 1:
+        print(f'Salvando os resultados em um arquivo Comite_Naive_{round(labelled_level, 4) * 100} ({dataset}).txt\n\n')
         print('Finalizando...')
-        with open(f'Comite_Naive_{round(labelled_level, 4) * 100}.txt', 'a') as f:
+        with open(f'Comite_Naive_{round(labelled_level, 4) * 100} ({dataset}).txt', 'a') as f:
             f.write(
                 f"\n\nACC: {round(accuracy_score(y_test, y_pred), 4) * 100}%\n"
                 f'F1-Score: {round(f1_score(y_test, y_pred, average="macro"), 4) * 100}%\n'
@@ -98,10 +100,10 @@ def result(option, y_test, y_pred, comite, labelled_level):
                 # f"Valor do teste estatístico é de {alpha}, significante? {alpha <= 0.05}\n"
             )
 
-    elif option == 'Tree' or option == '2':
-        print(f'Salvando os resultados em um arquivo Comite_Tree_{round(labelled_level, 4) * 100}.txt\n\n')
+    elif option == 2:
+        print(f'Salvando os resultados em um arquivo Comite_Tree_{round(labelled_level, 4) * 100} ({dataset}).txt\n\n')
         print('Finalizando...')
-        with open(f'Comite_Tree_{round(labelled_level, 4) * 100}.txt', 'a') as f:
+        with open(f'Comite_Tree_{round(labelled_level, 4) * 100} ({dataset}).txt', 'a') as f:
             f.write(
                 f"\n\nACC: {round(accuracy_score(y_test, y_pred), 4) * 100}%\n"
                 f'F1-Score: {round(f1_score(y_test, y_pred, average="macro"), 4) * 100}%\n'
@@ -109,10 +111,10 @@ def result(option, y_test, y_pred, comite, labelled_level):
                 # f"Valor do teste estatístico é de {alpha}, significante? {alpha <= 0.05}\n"
             )
 
-    elif option == 'KNN' or option == '3':
-        print(f'Salvando os resultados em um arquivo Comite_KNN_{round(labelled_level, 4) * 100}.txt\n\n')
+    elif option == 3:
+        print(f'Salvando os resultados em um arquivo Comite_KNN_{round(labelled_level, 4) * 100} ({dataset}).txt\n\n')
         print('Finalizando...')
-        with open(f'Comite_KNN_{round(labelled_level, 4) * 100}.txt', 'a') as f:
+        with open(f'Comite_KNN_{round(labelled_level, 4) * 100} ({dataset}).txt', 'a') as f:
             f.write(
                 f"\n\nACC: {round(accuracy_score(y_test, y_pred), 4) * 100}%\n"
                 f'F1-Score: {round(f1_score(y_test, y_pred, average="macro"), 4) * 100}%\n'
@@ -120,10 +122,10 @@ def result(option, y_test, y_pred, comite, labelled_level):
                 # f"Valor do teste estatístico é de {alpha}, significante? {alpha <= 0.05}\n"
             )
 
-    elif option == 'Comite Heterogeneo' or option == '4':
-        print(f'Salvando os resultados em um arquivo Comite_Heterogeneo_{round(labelled_level, 4) * 100}.txt\n\n')
+    elif option == 4:
+        print(f'Salvando os resultados em um arquivo Comite_Heterogeneo_{round(labelled_level, 4) * 100} ({dataset}).txt\n\n')
         print('Finalizando...')
-        with open(f'Comite_Heterogeneo_{round(labelled_level, 4) * 100}.txt', 'a') as f:
+        with open(f'Comite_Heterogeneo_{round(labelled_level, 4) * 100} ({dataset}).txt', 'a') as f:
             f.write(
                 f"\n\nACC: {round(accuracy_score(y_test, y_pred), 4) * 100}%\n"
                 f'F1-Score: {round(f1_score(y_test, y_pred, average="macro"), 4) * 100}%\n'
