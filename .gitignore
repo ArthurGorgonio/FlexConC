@@ -1,8 +1,9 @@
-flexconC/
 __pycache__/
-piton/
 venv/
-*.txt
+.venv/
 result/
+*.csv
 *.dat
 *.png
+*.txt
+*.zip
