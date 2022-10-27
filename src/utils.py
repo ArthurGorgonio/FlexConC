@@ -23,16 +23,19 @@ class Log():
     _instance = None
     __pattern = '%Y-%m-%d-%H-%M_%S'
 
+    def __time(self):
+        self._actual_time = datetime.utcnow().strftime(self.__pattern)
+
     @property
     def filename(self):
         return self.__filename
 
     @filename.setter
-    def filename(self, data_name: str):
-        actual_time = datetime.utcnow().strftime(self.__pattern)
-
-        self.__data_name = data_name
-        self.__filename = f"{actual_time}_{self.__data_name}.txt"
+    def filename(self, param: dict):
+        self.__time()
+        self.__data_name = param.get("data_name", None)
+        self.__method_name = param.get("method_name", None)
+        self.__filename = f"{self.__method_name}_{self.__data_name}.txt"
 
     def __new__(cls):
         if cls._instance is None:
@@ -43,21 +46,25 @@ class Log():
         """Função para escrever os cabeçalhos dos arquivos"""
         infos = [f'info0{i}'.rjust(10) for i in range(1, 9)]
         header = (
-            'In each iteration, info means:\n'
-            'info01: ensemble size;\n'
-            'info02: ensemble hits;\n'
-            'info03: ensemble detect a drift;\n'
-            'info04: Total processed instances;\n'
-            'info05: ensemble Acc;\n'
-            'info06: ensemble F-Measure;\n'
-            'info07: ensemble kappa statistics;\n'
-            'info08: Elapsed iteration time.\n'
-            + '-' * 88
-            + '\n'
-            + ' '.join(infos)
-            + '\n'
-            + '-' * 88
-            + '\n'
+            f"Method Name: {self.__method_name}\n"
+            + f"Dataset: {self.__data_name}\n"
+            + f"Start Time: {self._actual_time}\n"
+            + "-" * 88
+            + "In each iteration, info means:\n"
+            + "info01: ensemble size;\n"
+            + "info02: ensemble hits;\n"
+            + "info03: ensemble detect a drift;\n"
+            + "info04: Total processed instances;\n"
+            + "info05: ensemble Acc;\n"
+            + "info06: ensemble F-Measure;\n"
+            + "info07: ensemble kappa statistics;\n"
+            + "info08: Elapsed iteration time.\n"
+            + "-" * 88
+            + "\n"
+            + " ".join(infos)
+            + "\n"
+            + "-" * 88
+            + "\n"
         )
 
         self.write_archive(header)
@@ -73,7 +80,7 @@ class Log():
         ...     'ensemble_hits': 100,
         ...     'drift_detected': False,
         ...     'instances': 400,
-        ...     'enlapsed_time': 3213.321,
+        ...     'elapsed_time': 3213.321,
         ...     'metrics': {
         ...         'acc': 0.99,
         ...         'f1': 0.89,
@@ -94,7 +101,7 @@ class Log():
             + f"{round(kargs['metrics']['acc'], 4)}".rjust(11)
             + f"{round(kargs['metrics']['f1'], 4)}".rjust(11)
             + f"{round(kargs['metrics']['kappa'], 4)}".rjust(11)
-            + f"{round(kargs['enlapsed_time'], 4)}".rjust(11)
+            + f"{round(kargs['elapsed_time'], 4)}".rjust(11)
             + "\n"
         )
 

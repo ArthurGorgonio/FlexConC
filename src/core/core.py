@@ -127,15 +127,15 @@ class Core:
                     self.ensemble,
                     instances,
                     classes,
-                    self.detector.detection_threshold
+                    self.detector.detection_threshold or 0.8
                 )
-            enlapsed_time = time() - start
+            elapsed_time = time() - start
             self._evaluate_metrics(classes, y_pred)
             hits = confusion_matrix(classes, y_pred)
             self._log_iteration_info(
                 sum(hits.diagonal()),
                 chunk.sample_idx,
-                enlapsed_time
+                elapsed_time
             )
             if len(self.ensemble.ensemble) < 10:
                 self.run_first_it(instances, classes)
@@ -173,9 +173,12 @@ class Core:
     ) -> bool:
         if is_metric_value == 'metric':
             thr = accuracy_score(classes, y_pred)
+
             return self.detector.detect(thr)
+
         if is_metric_value == 'classes':
-            return self.detector.detect(classes)
+            return self.detector.detect(classes, y_pred)
+
         return self.detector.detect(instances)
 
     def add_metrics(self, metric_name: str, metric_func: Callable) -> None:
@@ -207,20 +210,24 @@ class Core:
         """
         for func_name in self.metrics_calls.keys():
             metric = self.metrics_calls.get(func_name)
+
             if func_name == 'f1':
                 self.metrics[func_name].append(
-                        metric(y_true, y_pred, average='macro'))
+                    metric(y_true, y_pred, average='macro')
+                )
             else:
-                self.metrics[func_name].append(metric(y_true, y_pred))
+                self.metrics[func_name].append(
+                    metric(y_true, y_pred)
+                )
 
-    def _log_iteration_info(self, hits, processed, enlapsed_time):
+    def _log_iteration_info(self, hits, processed, elapsed_time):
         # version = self.detector.__class__
         iteration_info = {
             'ensemble_size': len(self.ensemble.ensemble),
             'ensemble_hits': hits,
             'drift_detected': self.detector.drift,
             'instances': processed,
-            'enlapsed_time': enlapsed_time,
+            'elapsed_time': elapsed_time,
             'metrics': {
                 'acc': self.metrics['acc'][-1],
                 'f1': self.metrics['f1'][-1],

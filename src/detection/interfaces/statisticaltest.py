@@ -23,6 +23,6 @@ class StatisticalTest(Chunk):
         Raises
         ------
         NotImplementedError
-            Requer sobreescrita nas classes filhas.
+            Requer sobrescrita nas classes filhas.
         """
         raise NotImplementedError("Método necessário não implementado!")

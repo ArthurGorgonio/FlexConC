@@ -8,7 +8,7 @@ class FixedThreshold(Threshold):
     def __init__(self, **params: Dict[str, Any]):
         super().__init__(**params)
 
-    def detect(self, chunk: float) -> bool:
+    def detect(self, chunk, y_pred) -> bool:
         if chunk < self.detection_threshold:
             self.increase_counter()
             self.drift = True
@@ -16,6 +16,3 @@ class FixedThreshold(Threshold):
             return self.drift
         self.drift = False
         return self.drift
-
-    def reset_params(self):
-        return super().reset_params()
