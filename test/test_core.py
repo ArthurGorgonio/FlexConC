@@ -17,8 +17,11 @@ class EnsembleMock(Mock):
         super().__init__()
         self.ensemble = []
 
-    def add_classifier(self, classifier, need_train):
+    def fit_single_classifier(self, pos, x, y):
         ...
+
+    def add_classifier(self, classifier, need_train):
+        self.ensemble.append(classifier)
 
     def predict_ensemble(self, chunk):
         ...
@@ -29,13 +32,14 @@ class DetectorMock(Mock):
         super().__init__()
         self.drift = drift
         self.detector_type = "metric"
+        self.detection_threshold = 0.8
 
     def detect(self, y_pred):
         return self.drift
 
 
 class ReactorMock(Mock):
-    def react(self, params_reactor):
+    def react(self, ensemble, X, y, dt_thr):
         ...
 
 
@@ -51,9 +55,9 @@ class MetricsMock(Mock):
 
 
 class DateStreamMock(MagicMock):
-    def __init__(self):
+    def __init__(self, instances = [True, True, False]):
         super().__init__()
-        self.instances = [True, True, False]
+        self.instances = instances
         self.i = -1
 
     def next_sample(self, size):
@@ -131,7 +135,7 @@ class TestCore(TestCase):
         )
 
     @patch("src.core.core.Ensemble")
-    def test_configurae_ensemble_should_create_ensemble_when_all_in_configured_with_four_classifiers(  # NOQA
+    def test_configure_ensemble_should_create_ensemble_when_all_in_configured_with_four_classifiers(  # NOQA
         self,
         ensemble
     ):
@@ -190,7 +194,11 @@ class TestCore(TestCase):
     ):
         cm.return_value = array([[50, 0], [0, 50]])
         acc.return_value = 1.0
-        self.core = Core(EnsembleMock(), DetectorMock(), ReactorMock())
+        self.core = Core(
+            EnsembleMock(),
+            DetectorMock(drift=True),
+            ReactorMock()
+        )
         stream_data = DateStreamMock()
         stream_data.sample_idx = []
         self.core.run(stream_data)
@@ -199,6 +207,60 @@ class TestCore(TestCase):
         self.assertEqual(acc.call_count, 2)
         self.assertEqual(cm.call_count, 2)
         self.assertEqual(logger.call_count, 2)
+
+    @patch("src.core.core.accuracy_score")
+    @patch("src.core.core.confusion_matrix")
+    @patch("src.ssl.Ensemble.fit_single_classifier")
+    @patch("src.core.Core._log_iteration_info")
+    def test_run_should_call_classifier_addition_when_drift_is_detected(
+        self,
+        logger,
+        first_it,
+        cm,
+        acc,
+    ):
+        cm.return_value = array([[50, 0], [0, 50]])
+        acc.return_value = 1.0
+        self.core = Core(
+            EnsembleMock(),
+            DetectorMock(drift=False),
+            ReactorMock()
+        )
+        stream_data = DateStreamMock([True for _ in range(9)] + [False])
+        stream_data.sample_idx = []
+        self.core.run(stream_data)
+
+        self.assertEqual(len(self.core.ensemble.ensemble), 10)
+        self.assertEqual(acc.call_count, 9)
+        self.assertEqual(cm.call_count, 9)
+        self.assertEqual(logger.call_count, 9)
+
+    @patch("src.core.core.accuracy_score")
+    @patch("src.core.core.confusion_matrix")
+    @patch("src.ssl.Ensemble.fit_single_classifier")
+    @patch("src.core.Core._log_iteration_info")
+    def test_run_should_not_add_classifier_when_drift_is_not_detected(
+        self,
+        logger,
+        first_it,
+        cm,
+        acc,
+    ):
+        cm.return_value = array([[50, 0], [0, 50]])
+        acc.return_value = 1.0
+        self.core = Core(
+            EnsembleMock(),
+            DetectorMock(drift=False),
+            ReactorMock()
+        )
+        stream_data = DateStreamMock([True for _ in range(9)] + [False])
+        stream_data.sample_idx = []
+        self.core.run(stream_data, 'drift')
+
+        self.assertEqual(len(self.core.ensemble.ensemble), 1)
+        self.assertEqual(acc.call_count, 9)
+        self.assertEqual(cm.call_count, 9)
+        self.assertEqual(logger.call_count, 9)
 
     @patch("src.utils.Log.write_archive_output")
     def test_log(self, logger):

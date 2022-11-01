@@ -31,6 +31,7 @@ class Core:
     chunk_size : int
         Quantidade de instâncias que serão processadas de uma única vez
     """
+    MAX_SIZE = 10
 
     def __init__(
         self,
@@ -99,7 +100,7 @@ class Core:
                 "Utilize a função 'configure_params' para preparar o ambiente."
             ) from exc
 
-    def run(self, chunk: DataStream):
+    def run(self, chunk: DataStream, strategy: str = 'simple'):
         """
         Fluxo de execução do DyDaSL, loop para realizar a classificação
         de instâncias, enquanto houver instâncias disponíveis na stream
@@ -108,6 +109,8 @@ class Core:
         ----------
         chunk : DataStream
             stream a ser classificada.
+        strategy : str
+            Estratégia de adição de novos classificadores no comitê.
         """
         instances, classes = chunk.next_sample(self.chunk_size)
         self.run_first_it(instances, classes)
@@ -137,10 +140,38 @@ class Core:
                 chunk.sample_idx,
                 elapsed_time
             )
-            if len(self.ensemble.ensemble) < 10:
+            if self.ensemble_update(strategy, drift):
                 self.run_first_it(instances, classes)
 
         return self
+
+    def ensemble_update(
+        self,
+        selection: str = 'drift',
+        drift: bool = False
+    ) -> bool:
+        """Indica a forma que o comitê será atualizado.
+
+        Parameters
+        ----------
+        selection : str
+            Indica qual tipo de função será utilizada. Atualmente, só
+            existe suporte para `simple`, `drift`.
+        drift : bool
+            Indica a existência de um drift na iteração atual.
+
+        Returns
+        -------
+        bool
+            True, quando o comitê deve ser atualizado. False, caso
+            contrário.
+        """
+        solver = {
+            'simple': len(self.ensemble.ensemble) < self.MAX_SIZE,
+            'drift': len(self.ensemble.ensemble) < self.MAX_SIZE and drift,
+        }
+
+        return solver[selection]
 
     def run_first_it(self, instances: ndarray, classes: ndarray):
         """
