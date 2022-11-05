@@ -1,9 +1,9 @@
 from typing import Any, Dict
 
-from numpy import ndarray, where
 from scipy.stats import kstest
 
 from src.detection.interfaces.statisticaltest import StatisticalTest
+from src.utils import compare_labels
 
 
 class Statistical(StatisticalTest):
@@ -37,7 +37,7 @@ class Statistical(StatisticalTest):
         )
 
     def detect(self, chunk, y_pred) -> bool:
-        self.update_chunks(self.__compare_labels(chunk, y_pred))
+        self.update_chunks(compare_labels(chunk, y_pred))
         p_value = self.eval_test()
 
         if p_value <= self.alpha:
@@ -48,18 +48,3 @@ class Statistical(StatisticalTest):
         self.drift = False
 
         return self.drift
-
-    def __compare_labels(self, y_true: ndarray, y_pred: ndarray) -> ndarray:
-        """Função que computa quantos rótulos do chunk estão corretos.
-
-        Args:
-        ----
-            - y_true: rótulos verdadeiros.
-            - y_pred: rótulos preditos.
-
-        Returns:
-        -------
-            array preenchido com 1 quando as classes convergem e 0
-            quando divergem.
-        """
-        return where((y_true == y_pred), 1, 0)

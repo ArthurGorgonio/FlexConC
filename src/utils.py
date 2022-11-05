@@ -1,6 +1,23 @@
 from datetime import datetime
 from typing import Any, Dict
 
+from numpy import ndarray, where
+
+
+def compare_labels(y_true: ndarray, y_pred: ndarray) -> ndarray:
+    """Função que computa quantos rótulos do chunk estão corretos.
+
+    Args:
+    ----
+        - y_true: rótulos verdadeiros.
+        - y_pred: rótulos preditos.
+
+    Returns:
+    -------
+        array preenchido com 1 quando as classes convergem e 0
+        quando divergem.
+    """
+    return where((y_true == y_pred), 1, 0)
 
 def validate_estimator(estimator):
     """Make sure that an estimator implements the necessary methods."""

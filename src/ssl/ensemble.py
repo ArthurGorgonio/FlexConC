@@ -4,13 +4,14 @@ from typing import List
 import numpy as np
 from sklearn.metrics import accuracy_score
 
+from src.utils import compare_labels
+
 
 class Ensemble:
     """
-    Classe responsável por criar um cômite de classificadores e implementar
+    Classe responsável por criar um comitê de classificadores e implementar
     seus métodos
     """
-
     def __init__(self, ssl_algorithm: callable, ssl_params=None):
         if ssl_params is None:
             ssl_params = {}
@@ -25,7 +26,7 @@ class Ensemble:
 
         Parameters
         ----------
-        classifier : Classifer
+        classifier : Classifier
             Classificador a ser adicionado no comitê.
         need_train : bool, optional
             Flag para indicar se é necessário treinar o classificador
@@ -67,7 +68,7 @@ class Ensemble:
         Parameters
         ----------
         classifier : Classificador
-            Obejto classificador a ser removido do comitê.
+            Objeto classificador a ser removido do comitê.
 
         Raises
         ------
@@ -110,7 +111,7 @@ class Ensemble:
         return ensemble_metric
 
     def drop_ensemble(self):
-        """Esvazia o cômite de classificadores"""
+        """Esvazia o comitê de classificadores"""
         self.ensemble = []
 
     def fit_ensemble(self, instances: np.ndarray, classes: np.ndarray):
@@ -184,7 +185,7 @@ class Ensemble:
     def predict_ensemble(self, instances: np.ndarray) -> List[int]:
         """
         Realiza a predição de instâncias do comitê. A estratégia de
-        agragação é a votação simples.
+        agregação é a votação simples.
 
         Parameters
         ----------
@@ -286,3 +287,62 @@ class Ensemble:
             model.fit(instances, classes, labels, sample_weight)
 
         return self
+
+    def calcule_q_measure(
+        self,
+        instances: np.ndarray,
+        classes: np.ndarray
+    ) -> None:
+        similarity = []
+        ensemble_labels = self.predict_ensemble(instances)
+        ensemble_pred = compare_labels(classes, ensemble_labels)
+
+        for classifier in self.ensemble:
+            classifier_labels = self.predict_one_classifier(
+                classifier,
+                instances
+            )
+            classifier_pred = compare_labels(classes, classifier_labels)
+
+            similarity.append(
+                self._evaluate_similarity(ensemble_pred, classifier_pred)
+            )
+
+        return similarity
+
+    def _evaluate_similarity(
+        self,
+        ensemble_pred: np.ndarray,
+        classifier_pred: np.ndarray
+    ) -> float:
+        """
+        Calcula a similaridade entre o output do classificador com o
+        output do comitê para validar o nível de concordância.
+
+        Parameters
+        ----------
+        ensemble_pred : np.ndarray
+            Predição do comitê
+        classifier_pred : np.ndarray
+            Predição do classificador
+
+        Returns
+        -------
+        float
+            Valor da similaridade entre as duas predições.
+        """
+        n11, n10, n00, n01 = 0, 0, 0, 0
+
+        for ensemble_lab, class_lab in zip(ensemble_pred, classifier_pred):
+            if ensemble_lab == class_lab:
+                if ensemble_lab + class_lab:
+                    n11 += 1
+                else:
+                    n00 += 1
+            else:
+                if ensemble_lab > class_lab:
+                    n10 += 1
+                else:
+                    n01 += 1
+
+        return (n11*n00 - n01*n10) / (n11*n00 + n01*n10)
