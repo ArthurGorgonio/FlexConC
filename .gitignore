@@ -4,3 +4,5 @@ piton/
 datasets_bck/
 results/
 datasets/
+.vscode/
+.venv/

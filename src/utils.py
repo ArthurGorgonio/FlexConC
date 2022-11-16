@@ -1,10 +1,16 @@
 from nis import match
 import numpy as np
+# from pushbullet.pushbullet import PushBullet
 from sklearn.model_selection import StratifiedKFold
 from sklearn.metrics import accuracy_score, f1_score
 from sklearn.naive_bayes import GaussianNB as Naive
 from sklearn.neighbors import KNeighborsClassifier as KNN
 from sklearn.tree import DecisionTreeClassifier as Tree
+
+# CONEXÃO COM PUSHBULLET            
+# apiKey = "o.uV6lySsrOlDbTyo0OJg9Jzh6SOZcWCTz"
+# p = PushBullet(apiKey)
+# devices = p.getDevices()
 
 # LISTA DE CLASSIFICADORES
 list_tree_het = [
@@ -92,6 +98,8 @@ def result(option, dataset, y_test, y_pred, comite, labelled_level):
     if option == 1:
         print(f'Salvando os resultados em um arquivo Comite_Naive_{round(labelled_level, 4) * 100} ({dataset}).txt\n\n')
         print('Finalizando...')
+        # print('Enviando notificação push...')
+        # p.pushNote(devices[1]["iden"], f"ACC: {round(accuracy_score(y_test, y_pred), 4) * 100}%", f'Comite_Naive_{round(labelled_level, 4) * 100} ({dataset}).txt')
         with open(f'Comite_Naive_{round(labelled_level, 4) * 100} ({dataset}).txt', 'a') as f:
             f.write(
                 f"\n\nACC: {round(accuracy_score(y_test, y_pred), 4) * 100}%\n"
@@ -103,6 +111,8 @@ def result(option, dataset, y_test, y_pred, comite, labelled_level):
     elif option == 2:
         print(f'Salvando os resultados em um arquivo Comite_Tree_{round(labelled_level, 4) * 100} ({dataset}).txt\n\n')
         print('Finalizando...')
+        # print('Enviando notificação push...')
+        # p.pushNote(devices[1]["iden"], f"ACC: {round(accuracy_score(y_test, y_pred), 4) * 100}%", f'Comite_Tree_{round(labelled_level, 4) * 100} ({dataset}).txt')
         with open(f'Comite_Tree_{round(labelled_level, 4) * 100} ({dataset}).txt', 'a') as f:
             f.write(
                 f"\n\nACC: {round(accuracy_score(y_test, y_pred), 4) * 100}%\n"
@@ -114,6 +124,9 @@ def result(option, dataset, y_test, y_pred, comite, labelled_level):
     elif option == 3:
         print(f'Salvando os resultados em um arquivo Comite_KNN_{round(labelled_level, 4) * 100} ({dataset}).txt\n\n')
         print('Finalizando...')
+        print('Enviando notificação push...')
+        # TODO: FALTA PEGAR CADA RESULTADO PREENCHER UM ARRAY REALIZAR A MÉDIA E AI SIM ENVIAR A MSG
+        # p.pushNote(devices[1]["iden"], f"ACC: {round(accuracy_score(y_test, y_pred), 4) * 100}%", f'Comite_KNN_{round(labelled_level, 4) * 100} ({dataset}).txt')
         with open(f'Comite_KNN_{round(labelled_level, 4) * 100} ({dataset}).txt', 'a') as f:
             f.write(
                 f"\n\nACC: {round(accuracy_score(y_test, y_pred), 4) * 100}%\n"
@@ -125,6 +138,8 @@ def result(option, dataset, y_test, y_pred, comite, labelled_level):
     elif option == 4:
         print(f'Salvando os resultados em um arquivo Comite_Heterogeneo_{round(labelled_level, 4) * 100} ({dataset}).txt\n\n')
         print('Finalizando...')
+        # print('Enviando notificação push...')
+        # p.pushNote(devices[1]["iden"], f"ACC: {round(accuracy_score(y_test, y_pred), 4) * 100}%", f'Comite_KNN_{round(labelled_level, 4) * 100} ({dataset}).txt')
         with open(f'Comite_Heterogeneo_{round(labelled_level, 4) * 100} ({dataset}).txt', 'a') as f:
             f.write(
                 f"\n\nACC: {round(accuracy_score(y_test, y_pred), 4) * 100}%\n"

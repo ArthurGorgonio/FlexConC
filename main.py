@@ -1,7 +1,6 @@
 import warnings
 import argparse
 
-import numpy as np
 import pandas as pd
 
 import src.utils as ut
@@ -63,7 +62,6 @@ for dataset in datasets:
                     for i in range(9):
                         comite.add_classifier(Naive(var_smoothing=float(f'1e-{i}')))
                     comite.fit_ensemble(X_train, y)
-
                 elif args.classifier == 2:
                     if(fold == 1):
                         fold += 1

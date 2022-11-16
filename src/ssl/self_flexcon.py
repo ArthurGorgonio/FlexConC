@@ -9,18 +9,18 @@ class SelfFlexCon(BaseFlexConC):
         super().__init__(base_estimator=base_estimator)
         self.n_iter_ = 0
 
-    def __str__(self):
-        msg = super().__str__()
-        msg += (
-            f"\nClassificador {self.base_estimator}\n"
-            f"Outros Parâmetro:\n"
-            f"CR: {self.cr}\t Threshold: {self.threshold}\n"
-            f"Máximo IT: {self.max_iter}\n"
-            f"Quantidade de iterações: {self.n_iter_}\n"
-            f"Classes: {len(self.classes_)}\n"
-            f"Instâncias selecionadas: {self.size_y}\n"
-        )
-        return msg
+    # def __str__(self):
+    #     msg = super().__str__()
+    #     msg += (
+    #         f"\nClassificador {self.base_estimator}\n"
+    #         f"Outros Parâmetro:\n"
+    #         f"CR: {self.cr}\t Threshold: {self.threshold}\n"
+    #         f"Máximo IT: {self.max_iter}\n"
+    #         f"Quantidade de iterações: {self.n_iter_}\n"
+    #         f"Classes: {len(self.classes_)}\n"
+    #         f"Instâncias selecionadas: {self.size_y}\n"
+    #     )
+    #     return msg
 
     def fit(self, X, y):
         """
