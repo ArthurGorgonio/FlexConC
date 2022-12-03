@@ -34,7 +34,7 @@ class DetectorMock(Mock):
         self.detector_type = "metric"
         self.detection_threshold = 0.8
 
-    def detect(self, y_pred):
+    def detect(self, y_pred, second):
         return self.drift
 
 
