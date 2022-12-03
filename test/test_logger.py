@@ -9,8 +9,15 @@ class LoggerTest(TestCase):
         self.logger = Log()
 
     def test_singleton_creation(self):
-        self.logger.filename = {'data_name': 'testes', 'method_name': 'AAA'}
-
+        class Foo():
+            ...
+        class Bar():
+            ...
+        self.logger.filename = {
+            'data_name': 'testes',
+            'method_name': f'Tester_{type(Foo()).__name__}'
+            f'_{type(Bar()).__name__}',
+        }
         self.assertEqual(self.logger.filename, Log().filename)
         self.assertEqual(self.logger, Log())
 

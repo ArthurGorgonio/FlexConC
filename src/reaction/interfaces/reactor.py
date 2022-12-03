@@ -5,7 +5,7 @@ from numpy import ndarray
 from src.ssl.ensemble import Ensemble
 
 
-class IReaction:
+class Reactor:
     @abstractmethod
     def react(
         self,

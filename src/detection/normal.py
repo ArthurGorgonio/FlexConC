@@ -14,15 +14,14 @@ class Normal(Threshold):
         self.change_thr = False
 
     def detect(self, chunk, y_pred) -> bool:
-        self.__threshold_check()
+        self.drift = False
 
         if chunk < self.detection_threshold:
             self.increase_counter()
             self.drift = True
             self.change_thr = True
 
-            return self.drift
-        self.drift = False
+        self.__threshold_check(chunk)
 
         return self.drift
 

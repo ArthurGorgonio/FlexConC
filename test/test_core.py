@@ -39,7 +39,7 @@ class DetectorMock(Mock):
 
 
 class ReactorMock(Mock):
-    def react(self, ensemble, X, y, dt_thr):
+    def react(self, ensemble, X, y):
         ...
 
 

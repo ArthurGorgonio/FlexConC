@@ -1,1 +1,1 @@
-from .ireaction import IReaction
+from .reactor import Reactor

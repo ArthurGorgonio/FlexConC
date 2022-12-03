@@ -33,7 +33,7 @@ class Ensemble:
             com o algoritmo semissupervisionado, por default True.
         """
         if need_train:
-            self.ssl_params['base_estimator'] = classifier
+            self.ssl_params["base_estimator"] = classifier
             flexconc = self.ssl_algorithm(self.ssl_params)
         else:
             flexconc = classifier
@@ -79,7 +79,7 @@ class Ensemble:
             self.ensemble.remove(classifier)
         except ValueError as err:
             raise ValueError(
-                f'Classificador não existe no comitê.\nErro: {err}'
+                f"Classificador não existe no comitê.\nErro: {err}"
             ) from err
 
     def measure_ensemble(
@@ -154,6 +154,7 @@ class Ensemble:
             Classificador treinado e pronto para ser utilizado para
             predizer novas instâncias da base de dados.
         """
+
         return classifier.fit(instances, classes)
 
     def predict_one_classifier(
@@ -163,7 +164,7 @@ class Ensemble:
     ) -> List[int]:
         """
         Realiza a predição de um único classificador a partir de um
-        grupo de instâncias.=
+        grupo de instâncias.
 
         Parameters
         ----------
@@ -198,7 +199,7 @@ class Ensemble:
             Predição do comitê de classificadores, a partir de uma
             votação simples para decidir os rótulos das instâncias.
         """
-        y_pred = np.array([], dtype="int64")
+        y_pred = []
 
         for instance in instances:
             pred = []
@@ -207,9 +208,9 @@ class Ensemble:
                 pred.append(
                     classifier.predict(instance.reshape(1, -1)).tolist()[0]
                 )
-            y_pred = np.append(y_pred, mode(pred))
+            y_pred.append(mode(pred))
 
-        return y_pred
+        return np.array(y_pred, dtype="int64")
 
     def swap(
         self,
@@ -288,11 +289,106 @@ class Ensemble:
 
         return self
 
+    def compute_pareto_frontier(
+        self,
+        instances: np.ndarray,
+        classes: np.ndarray,
+        minimization: bool = False,
+    ):
+        """_summary_
+
+        Parameters
+        ----------
+        instances : np.ndarray
+            instâncias a serem comparadas.
+        classes : np.ndarray
+            classes das instâncias.
+        """
+        acc = self.measure_ensemble(instances, classes)
+        q_measure = (
+            1 - abs(self.calcule_q_measure(instances, classes))
+        ).tolist()
+        measures = [tuple((x, y)) for x, y in zip(acc, q_measure)]
+        ensemble_classifier = self.pareto_frontier(measures, minimization)
+        best_cls = list(set(measures).intersection(ensemble_classifier))
+        best_cls_pos = [measures.index(cl) for cl in best_cls]
+        new_ensemble = []
+
+        for cl in best_cls_pos:
+            new_ensemble.append(self.ensemble[cl])
+
+        self.ensemble = new_ensemble
+
+    def pareto_frontier(
+        self,
+        measures: List[tuple],
+        minimization: bool = False
+    ) -> List[tuple]:
+        """
+        TODO: realizar o 1 - abs(classifier_similarity()) e então
+            computar o Pareto disso. Ao computar o Pareto, manter
+            apenas as soluções que são não dominadas, ou seja, estão
+            na primeira fronteira de Pareto.
+        """
+
+        non_dominated = []
+        dominated = []
+        for x, y in measures:
+            if tuple((x, y)) not in dominated:
+                # calcula os pontos dominados pelo atual...
+
+                if self.check(
+                    (x, y), list(set(measures) - set(dominated)), minimization
+                ):
+                    dominated.append((x, y))
+                else:
+                    non_dominated.append((x, y))
+            else:
+                pass
+
+        return non_dominated
+
+    def check(
+        self,
+        dot: tuple,
+        data: List[tuple],
+        minimization: bool = False,
+    ) -> bool:
+        if dot in data:
+            data.remove(dot)
+
+        if minimization:
+            for x, y in data:
+                if x < dot[0] and y < dot[1]:
+                    return True
+
+            return False
+        else:
+            for x, y in data:
+                if x > dot[0] and y > dot[1]:
+                    return True
+
+            return False
+
     def calcule_q_measure(
         self,
         instances: np.ndarray,
         classes: np.ndarray
-    ) -> None:
+    ) -> np.ndarray:
+        """
+
+        Parameters
+        ----------
+        instances : np.ndarray
+            instâncias a serem comparadas.
+        classes : np.ndarray
+            classes das instâncias.
+
+        Returns
+        -------
+        List[float]
+            _description_
+        """
         similarity = []
         ensemble_labels = self.predict_ensemble(instances)
         ensemble_pred = compare_labels(classes, ensemble_labels)
@@ -308,12 +404,12 @@ class Ensemble:
                 self._evaluate_similarity(ensemble_pred, classifier_pred)
             )
 
-        return similarity
+        return np.array(similarity)
 
     def _evaluate_similarity(
         self,
         ensemble_pred: np.ndarray,
-        classifier_pred: np.ndarray
+        classifier_pred: np.ndarray,
     ) -> float:
         """
         Calcula a similaridade entre o output do classificador com o
@@ -345,4 +441,7 @@ class Ensemble:
                 else:
                     n01 += 1
 
-        return (n11*n00 - n01*n10) / (n11*n00 + n01*n10)
+        try:
+            return (n11*n00 - n01*n10) / (n11*n00 + n01*n10)
+        except ZeroDivisionError:
+            return 1

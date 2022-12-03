@@ -9,7 +9,7 @@ from skmultiflow.trees import HoeffdingAdaptiveTreeClassifier as HT
 from src.detection.fixed_threshold import FixedThreshold
 from src.detection.interfaces.drift_detector import DriftDetector
 from src.reaction.exchange import Exchange
-from src.reaction.interfaces.ireaction import IReaction
+from src.reaction.interfaces.reactor import Reactor
 from src.ssl.ensemble import Ensemble
 from src.utils import Log
 
@@ -26,7 +26,7 @@ class Core:
     detect : IDriftDetector
         O detector de drift que determina quando é necessário alterar a
         stream.
-    react : IReaction
+    react : Reactor
         O reator do drift.
     chunk_size : int
         Quantidade de instâncias que serão processadas de uma única vez
@@ -37,7 +37,7 @@ class Core:
         self,
         ensemble: Ensemble = None,
         detector: DriftDetector = None,
-        reactor: IReaction = None,
+        reactor: Reactor = None,
         chunk_size: int = 500
     ):
         if ensemble is None:
@@ -111,6 +111,7 @@ class Core:
             stream a ser classificada.
         strategy : str
             Estratégia de adição de novos classificadores no comitê.
+            Existe suporte para `simple`, `drift`.
         """
         instances, classes = chunk.next_sample(self.chunk_size)
         self.run_first_it(instances, classes)
@@ -130,7 +131,6 @@ class Core:
                     self.ensemble,
                     instances,
                     classes,
-                    self.detector.detection_threshold or 0.8
                 )
             elapsed_time = time() - start
             self._evaluate_metrics(classes, y_pred)
@@ -205,7 +205,7 @@ class Core:
         if is_metric_value == 'metric':
             thr = accuracy_score(classes, y_pred)
 
-            return self.detector.detect(thr)
+            return self.detector.detect(thr, None)
 
         if is_metric_value == 'classes':
             return self.detector.detect(classes, y_pred)

@@ -1,6 +1,8 @@
 from unittest import TestCase
 from unittest.mock import Mock, patch
 
+import numpy as np
+
 from src.ssl.ensemble import Ensemble
 
 
@@ -10,6 +12,10 @@ class ClassifierMock(Mock):
 
     def fit(self, instances, labels):
         ...
+
+    def __str__(self) -> str:
+        msg = f'Nome do classificador é: {self.cl_name}'
+        return msg
 
 
 class FlexConMock(Mock):
@@ -125,4 +131,131 @@ class TestEnsemble(TestCase):
         self.assertListEqual(
             self.ensemble.ensemble,
             ["cl_8", "cl_6", "cl_7", "cl_5"]
+        )
+
+    def test_pareto_frontier(self):
+        expected_minimization_output = [
+            (2, 3),  # A
+            (1, 5),  # B
+            (9, 1),  # C
+            (9, 2),  # F
+        ]
+        expected_maximization_output = [
+            (9, 1),  # C
+            (9, 2),  # F
+            (9, 4),  # G
+            (6, 6),  # H
+            (5, 7),  # I
+            (4, 8),  # J
+            (3, 9),  # K
+        ]
+
+        pts = [
+            (2, 3),  # A
+            (1, 5),  # B
+            (9, 1),  # C
+            (4, 6),  # D
+            (3, 7),  # E
+            (9, 2),  # F
+            (9, 4),  # G
+            (6, 6),  # H
+            (5, 7),  # I
+            (4, 8),  # J
+            (3, 9),  # K
+        ]
+
+        # pts = [
+        #     (.2, .3),
+        #     (.1, .5),
+        #     (.9, .1),
+        #     (.4, .6),
+        #     (.3, .7),
+        #     (.9, .2),
+        #     (.9, .4),
+        #     (.6, .6),
+        #     (.5, .7),
+        #     (.4, .8),
+        #     (.3, .9)
+        # ]
+
+        self.assertEqual(
+            self.ensemble.pareto_frontier(pts, True),
+            expected_minimization_output
+        )
+
+        self.assertEqual(
+            self.ensemble.pareto_frontier(pts),
+            expected_maximization_output
+        )
+
+    @patch('src.ssl.ensemble.Ensemble.calcule_q_measure')
+    @patch('src.ssl.ensemble.Ensemble.measure_ensemble')
+    def test_map_ensemble_pareto(self, acc, q_measure):
+        acc_result = [.2, .1, .9, .4, .3, .12, .9, .6, .5, .4, .3]
+
+        for i in range(len(acc_result)):
+            self.ensemble.add_classifier(ClassifierMock(), False)
+            self.ensemble.ensemble[-1].name = f'cl_{i}'
+
+        expected_classifier = ['cl_2', 'cl_6']
+
+        acc.return_value = acc_result
+        q_measure.return_value = np.array(
+            [.3, .5, .1, .6, .7, .2, .4, .6, .7, .8, .9]
+        )
+
+        self.ensemble.compute_pareto_frontier([], [])
+
+        ensemble_names = [cl.name for cl in self.ensemble.ensemble]
+
+        self.assertEqual(
+            ensemble_names,
+            expected_classifier
+        )
+
+    def test_similarity_calculation(self,):
+        ensemble = np.array([0, 0, 0, 1, 1, 1, 0, 0, 0, 1])
+        classifier = np.array([0, 1, 0, 1, 1, 0, 0, 1, 1, 0])
+
+        expected_similarity = 0.0
+
+        self.assertEqual(
+            self.ensemble._evaluate_similarity(ensemble, classifier),
+            expected_similarity
+        )
+
+    # @patch("src.ssl.ensemble.compare_labels")
+    @patch("src.ssl.ensemble.Ensemble.predict_one_classifier")
+    @patch("src.ssl.ensemble.Ensemble.predict_ensemble")
+    def test_q_similarity_calculation(self, ensemble, classifiers):
+        classes = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+        ensemble.return_value = np.array([0, 0, 0, 1, 1, 1, 0, 0, 0, 1])
+        classifiers.return_value = np.array([1, 1, 0, 1, 1, 0, 0, 1, 1, 0])
+
+        expected_output = [-.3333333333333333, -.3333333333333333]
+
+        for _ in range(2):
+            self.ensemble.add_classifier(ClassifierMock(), False)
+
+        self.assertListEqual(
+            self.ensemble.calcule_q_measure([], classes).tolist(),
+            expected_output
+        )
+
+    @patch("src.ssl.ensemble.Ensemble.predict_one_classifier")
+    @patch("src.ssl.ensemble.Ensemble.predict_ensemble")
+    def test_q_similarity_calculation_without_classifier_in_ensemble(
+        self,
+        ensemble,
+        classifiers
+    ):
+        classes = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+        ensemble.return_value = []
+        classifiers.return_value = []
+
+        expected_output = []
+
+        self.assertEqual(
+            self.ensemble.calcule_q_measure([], classes).tolist(),
+            expected_output
         )
