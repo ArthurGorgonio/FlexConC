@@ -15,8 +15,15 @@ from src.ssl.ensemble import Ensemble
 from src.ssl.self_flexcon import SelfFlexCon
 from src.utils import Log
 
-detectors = [Normal]
-reactors = [Exchange, Pareto]
+detectors = [
+    Statistical,
+    Normal,
+    FixedThreshold,
+]
+reactors = [
+    Pareto,
+    # Exchange,
+]
 
 # datasets = glob('datasets/*.csv')
 # datasets.sort()
@@ -27,52 +34,63 @@ datasets = [
     "ForestCover.csv",
     "GEARS2C2D.csv",
     "Poker.csv",
-    "Shuttle.csv",
-    "UG2C3D.csv",
+    # "Shuttle.csv",
+    # "UG2C3D.csv",
 ]
 
-# statistics = "drift"
-statistics = "simple"
+statistics_strategy = ["drift", "simple"]
 
-for dataset in datasets:
-    for reactor in reactors:
-        for detector in detectors:
-            dydasl = Core(Ensemble, detector, reactor)
-            dydasl.configure_params(
-                ssl_algorithm=SelfFlexCon,
-                params_ssl_algorithm={},
-                params_detector={},
-                params_reactor={},
-            )
-            dydasl.add_metrics("acc", accuracy_score)
-            dydasl.add_metrics("f1", f1_score)
-            dydasl.add_metrics("kappa", kappa)
+for statistics in statistics_strategy:
+    for dataset in datasets:
+        for reactor in reactors:
+            for detector in detectors:
+                dydasl = Core(Ensemble, detector, reactor)
+                dydasl.configure_params(
+                    ssl_algorithm=SelfFlexCon,
+                    params_ssl_algorithm={},
+                    params_detector={},
+                    params_reactor={
+                        "pareto_strategy": "classifier_ensemble",
+                        "q_measure": {
+                            "absolute": True,
+                            "average": False,
+                        },
+                    },
+                )
+                dydasl.add_metrics("acc", accuracy_score)
+                dydasl.add_metrics("f1", f1_score)
+                dydasl.add_metrics("kappa", kappa)
 
-            dydasl.reset()
-            print(dataset)
-            dataframe = pd.read_csv(
-                dataset if "datasets/" in dataset else "datasets/" + dataset
-            )
-            Log().filename = {
-                "data_name": dataset.split(".", maxsplit=1)[0].split("/")[-1],
-                "method_name": f"DyDaSL_{type(dydasl.detector).__name__}"
-                f"_{type(dydasl.reactor).__name__}_{statistics}",
-            }
-            # depende do dataset
-            dim = dataframe.shape
-            array = dataframe.values
-            instances = array[: dim[0], : dim[1] - 1]
-            target = array[: dim[0], dim[1] - 1]
-            class_set = np.unique(target)
-            class_count = np.unique(target).shape[0]
-            stream = DataStream(
-                instances,
-                target,
-                target_idx=-1,
-                n_targets=class_count,
-                cat_features=None,  # Categorical features?
-                name=None,
-                allow_nan=True,
-            )
-            Log().write_archive_header()
-            dydasl.run(stream, statistics)
+                dydasl.reset()
+                print(dataset)
+                dataframe = pd.read_csv(
+                    dataset
+
+                    if "datasets/" in dataset
+                    else "datasets/" + dataset
+                )
+                Log().filename = {
+                    "data_name": dataset.split(".", maxsplit=1)[0].split("/")[
+                        -1
+                    ],
+                    "method_name": f"DyDaSL_{type(dydasl.detector).__name__}"
+                    f"_{type(dydasl.reactor).__name__}_{statistics}",
+                }
+                # depende do dataset
+                dim = dataframe.shape
+                array = dataframe.values
+                instances = array[: dim[0], : dim[1] - 1]
+                target = array[: dim[0], dim[1] - 1]
+                class_set = np.unique(target)
+                class_count = np.unique(target).shape[0]
+                stream = DataStream(
+                    instances,
+                    target,
+                    target_idx=-1,
+                    n_targets=class_count,
+                    cat_features=None,  # Categorical features?
+                    name=None,
+                    allow_nan=True,
+                )
+                Log().write_archive_header()
+                dydasl.run(stream, statistics)
