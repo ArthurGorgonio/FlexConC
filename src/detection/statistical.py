@@ -32,6 +32,7 @@ class Statistical(StatisticalTest):
     def eval_test(self):
         return (
             self.statistical_test(self.actual_chunk, self.last_chunk).pvalue
+
             if self.is_valid_to_process()
             else 1.0
         )

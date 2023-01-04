@@ -31,6 +31,7 @@ class Core:
     chunk_size : int
         Quantidade de instâncias que serão processadas de uma única vez
     """
+
     MAX_SIZE = 10
 
     def __init__(
@@ -38,12 +39,14 @@ class Core:
         ensemble: Ensemble = None,
         detector: DriftDetector = None,
         reactor: Reactor = None,
-        chunk_size: int = 500
+        chunk_size: int = 500,
     ):
         if ensemble is None:
             ensemble = Ensemble
+
         if detector is None:
             detector = FixedThreshold
+
         if reactor is None:
             reactor = Exchange
         self.ensemble = ensemble
@@ -100,7 +103,7 @@ class Core:
                 "Utilize a função 'configure_params' para preparar o ambiente."
             ) from exc
 
-    def run(self, chunk: DataStream, strategy: str = 'simple'):
+    def run(self, chunk: DataStream, strategy: str = "simple"):
         """
         Fluxo de execução do DyDaSL, loop para realizar a classificação
         de instâncias, enquanto houver instâncias disponíveis na stream
@@ -126,6 +129,7 @@ class Core:
                 y_pred,
                 self.detector.detector_type
             )
+
             if drift:
                 self.reactor.react(
                     self.ensemble,
@@ -140,6 +144,7 @@ class Core:
                 chunk.sample_idx,
                 elapsed_time
             )
+
             if self.ensemble_update(strategy, drift):
                 self.run_first_it(instances, classes)
 
@@ -147,7 +152,7 @@ class Core:
 
     def ensemble_update(
         self,
-        selection: str = 'drift',
+        selection: str = "drift",
         drift: bool = False
     ) -> bool:
         """Indica a forma que o comitê será atualizado.
@@ -167,8 +172,8 @@ class Core:
             contrário.
         """
         solver = {
-            'simple': len(self.ensemble.ensemble) < self.MAX_SIZE,
-            'drift': len(self.ensemble.ensemble) < self.MAX_SIZE and drift,
+            "simple": len(self.ensemble.ensemble) < self.MAX_SIZE,
+            "drift": len(self.ensemble.ensemble) < self.MAX_SIZE and drift,
         }
 
         return solver[selection]
@@ -202,12 +207,12 @@ class Core:
         y_pred: ndarray,
         is_metric_value: str,
     ) -> bool:
-        if is_metric_value == 'metric':
+        if is_metric_value == "metric":
             thr = accuracy_score(classes, y_pred)
 
             return self.detector.detect(thr, None)
 
-        if is_metric_value == 'classes':
+        if is_metric_value == "classes":
             return self.detector.detect(classes, y_pred)
 
         return self.detector.detect(instances)
@@ -239,12 +244,12 @@ class Core:
         y_pred : ndarray
             Rótulos preditos pelo comitê.
         """
-        for func_name in self.metrics_calls.keys():
-            metric = self.metrics_calls.get(func_name)
 
-            if func_name == 'f1':
+        for func_name, metric in self.metrics_calls.items():
+
+            if func_name == "f1":
                 self.metrics[func_name].append(
-                    metric(y_true, y_pred, average='macro')
+                    metric(y_true, y_pred, average="macro")
                 )
             else:
                 self.metrics[func_name].append(
@@ -254,15 +259,15 @@ class Core:
     def _log_iteration_info(self, hits, processed, elapsed_time):
         # version = self.detector.__class__
         iteration_info = {
-            'ensemble_size': len(self.ensemble.ensemble),
-            'ensemble_hits': hits,
-            'drift_detected': self.detector.drift,
-            'instances': processed,
-            'elapsed_time': elapsed_time,
-            'metrics': {
-                'acc': self.metrics['acc'][-1],
-                'f1': self.metrics['f1'][-1],
-                'kappa': self.metrics['kappa'][-1],
+            "ensemble_size": len(self.ensemble.ensemble),
+            "ensemble_hits": hits,
+            "drift_detected": self.detector.drift,
+            "instances": processed,
+            "elapsed_time": elapsed_time,
+            "metrics": {
+                "acc": self.metrics["acc"][-1],
+                "f1": self.metrics["f1"][-1],
+                "kappa": self.metrics["kappa"][-1],
             },
         }
         Log().write_archive_output(**iteration_info)

@@ -12,12 +12,17 @@ class Ensemble:
     Classe responsável por criar um comitê de classificadores e implementar
     seus métodos
     """
+
     def __init__(self, ssl_algorithm: callable, ssl_params=None):
         if ssl_params is None:
             ssl_params = {}
         self.ensemble = []
         self.ssl_algorithm = ssl_algorithm
         self.ssl_params = ssl_params
+        self.q_measure_funcs = {
+            "classifier_ensemble": self.q_measure_classifier_vs_ensemble,
+            "classifier_classifier": self.q_measure_classifier_vs_classifier,
+        }
 
     def add_classifier(self, classifier, need_train: bool = True):
         """
@@ -32,6 +37,7 @@ class Ensemble:
             Flag para indicar se é necessário treinar o classificador
             com o algoritmo semissupervisionado, por default True.
         """
+
         if need_train:
             self.ssl_params["base_estimator"] = classifier
             flexconc = self.ssl_algorithm(self.ssl_params)
@@ -127,6 +133,7 @@ class Ensemble:
         classes : ndarray
             Rótulos dos instâncias.
         """
+
         for classifier in self.ensemble:
             self.fit_single_classifier(classifier, instances, classes)
 
@@ -233,6 +240,7 @@ class Ensemble:
             Lista indicando quais classificadores do comitê devem ser
             substituídos pelos novos.
         """
+
         if len(pos) == len(classifier):
             for i, j in enumerate(pos):
                 if retrain:
@@ -264,6 +272,7 @@ class Ensemble:
         classes : np.ndarray
             Rótulos das instâncias.
         """
+
         for model in self.ensemble:
             model.partial_fit(instances, classes, labels, sample_weight)
 
@@ -284,6 +293,7 @@ class Ensemble:
         classes : np.ndarray
             Rótulos das instâncias.
         """
+
         for model in self.ensemble:
             model.fit(instances, classes, labels, sample_weight)
 
@@ -293,7 +303,9 @@ class Ensemble:
         self,
         instances: np.ndarray,
         classes: np.ndarray,
+        q_measure_func: str,
         minimization: bool = False,
+        **q_measure_params,
     ):
         """_summary_
 
@@ -306,7 +318,12 @@ class Ensemble:
         """
         acc = self.measure_ensemble(instances, classes)
         q_measure = (
-            1 - abs(self.calcule_q_measure(instances, classes))
+            1
+            - abs(
+                self.q_measure_funcs.get(
+                    q_measure_func, self.q_measure_classifier_vs_ensemble
+                )(instances, classes, **q_measure_params)
+            )
         ).tolist()
         measures = [tuple((x, y)) for x, y in zip(acc, q_measure)]
         ensemble_classifier = self.pareto_frontier(measures, minimization)
@@ -333,6 +350,7 @@ class Ensemble:
 
         non_dominated = []
         dominated = []
+
         for x, y in measures:
             if tuple((x, y)) not in dominated:
                 # calcula os pontos dominados pelo atual...
@@ -370,10 +388,11 @@ class Ensemble:
 
             return False
 
-    def calcule_q_measure(
+    def q_measure_classifier_vs_ensemble(
         self,
         instances: np.ndarray,
-        classes: np.ndarray
+        classes: np.ndarray,
+        **params,
     ) -> np.ndarray:
         """
 
@@ -405,6 +424,63 @@ class Ensemble:
             )
 
         return np.array(similarity)
+
+    def q_measure_classifier_vs_classifier(
+        self,
+        instances: np.ndarray,
+        classes: np.ndarray,
+        **params
+    ) -> np.ndarray:
+        """_summary_
+
+        Parameters
+        ----------
+        instances : np.ndarray
+            instâncias a serem comparadas.
+        classes : np.ndarray
+            classes das instâncias.
+        average : bool, optional
+            deve utilizar o menor valor da matriz, by default False.
+        average : bool, optional
+            deve utilizar o valor absoluto da medida, by default False.
+
+        Returns
+        -------
+        np.ndarray
+            lista com os resultado da medida de diversidade Q.
+        """
+        similarity = np.array([[0.0 for _ in range(10)] for _ in range(10)])
+
+        for cl1 in range(len(self.ensemble) - 1):
+            cl1_labels = self.predict_one_classifier(
+                self.ensemble[cl1], instances
+            )
+            cl1_pred = compare_labels(classes, cl1_labels)
+
+            for cl2 in range(cl1 + 1, len(self.ensemble)):
+                cl2_labels = self.predict_one_classifier(
+                    self.ensemble[cl2], instances
+                )
+                cl2_pred = compare_labels(classes, cl2_labels)
+
+                cl_similarity = self._evaluate_similarity(cl1_pred, cl2_pred)
+                similarity[cl1, cl2] = cl_similarity
+                similarity[cl2, cl1] = cl_similarity
+
+        absolute = params.get("absolute", False)
+
+        if params.get("average", False):
+            return np.array(
+                [
+                    np.mean(abs(i)) if absolute else np.mean(i)
+
+                    for i in similarity
+                ]
+            )
+
+        return np.array(
+            [min(abs(i)) if absolute else min(i) for i in similarity]
+        )
 
     def _evaluate_similarity(
         self,
@@ -444,4 +520,5 @@ class Ensemble:
         try:
             return (n11*n00 - n01*n10) / (n11*n00 + n01*n10)
         except ZeroDivisionError:
+            print(f"N11 = {n11}\nN00 = {n00}\nN10 = {n10}\nN01 = {n01}\n")
             return 1

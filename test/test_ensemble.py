@@ -188,7 +188,7 @@ class TestEnsemble(TestCase):
             expected_maximization_output
         )
 
-    @patch('src.ssl.ensemble.Ensemble.calcule_q_measure')
+    @patch('src.ssl.ensemble.Ensemble.q_measure_classifier_vs_ensemble')
     @patch('src.ssl.ensemble.Ensemble.measure_ensemble')
     def test_map_ensemble_pareto(self, acc, q_measure):
         acc_result = [.2, .1, .9, .4, .3, .12, .9, .6, .5, .4, .3]
@@ -204,7 +204,7 @@ class TestEnsemble(TestCase):
             [.3, .5, .1, .6, .7, .2, .4, .6, .7, .8, .9]
         )
 
-        self.ensemble.compute_pareto_frontier([], [])
+        self.ensemble.compute_pareto_frontier([], [], '')
 
         ensemble_names = [cl.name for cl in self.ensemble.ensemble]
 
@@ -238,7 +238,10 @@ class TestEnsemble(TestCase):
             self.ensemble.add_classifier(ClassifierMock(), False)
 
         self.assertListEqual(
-            self.ensemble.calcule_q_measure([], classes).tolist(),
+            self.ensemble.q_measure_classifier_vs_ensemble(
+                [],
+                classes
+            ).tolist(),
             expected_output
         )
 
@@ -256,6 +259,9 @@ class TestEnsemble(TestCase):
         expected_output = []
 
         self.assertEqual(
-            self.ensemble.calcule_q_measure([], classes).tolist(),
+            self.ensemble.q_measure_classifier_vs_ensemble(
+                [],
+                classes
+            ).tolist(),
             expected_output
         )
