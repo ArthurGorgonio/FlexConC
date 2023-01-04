@@ -27,7 +27,10 @@ class Pareto(Reactor):
         )
 
     def react(
-        self, ensemble: Ensemble, instances: ndarray, labels: ndarray
+        self,
+        ensemble: Ensemble,
+        instances: ndarray,
+        labels: ndarray
     ) -> Ensemble:
         ensemble.compute_pareto_frontier(
             instances,
