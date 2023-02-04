@@ -1,17 +1,15 @@
-import warnings
 import argparse
-
-import pandas as pd
-
-import src.utils as ut
-
+import os
+import warnings
 from os import listdir
 from os.path import isfile, join
 
+import pandas as pd
 from sklearn import datasets
 from sklearn.model_selection import StratifiedKFold
 from sklearn.naive_bayes import GaussianNB as Naive
 
+import src.utils as ut
 from src.ssl.ensemble import Ensemble
 from src.ssl.self_flexcon import SelfFlexCon
 
@@ -22,11 +20,14 @@ parser.add_argument('classifier', metavar='c', type=int, help='Escolha um classi
 
 args = parser.parse_args()
 comite = Ensemble(SelfFlexCon)
+parent_dir = "/home/gabriel/MyProjects/Python_projects/FlexConC/results"
 
 datasets = [f for f in listdir('datasets/') if isfile(join('datasets/', f))]
-init_labelled = [0.05, 0.1, 0.15, 0.2]
-
+init_labelled = [0.2]
+# 0.05, 0.1, 0.15,
 for dataset in datasets:
+    path = os.path.join(parent_dir, dataset)
+    os.mkdir(path)
     for labelled_level in init_labelled:
         df = pd.read_csv('datasets/'+dataset, header=0)
         kfold = StratifiedKFold(n_splits=10)
@@ -49,11 +50,10 @@ for dataset in datasets:
                 if(flag == 1):
                     flag += 1
                     print(f"\n\nO sistema irá selecionar instâncias da base {dataset}. Para o treinamento, será usado {round(labelled_level, 4) * 100}% das instâncias rotuladas de um total de {len(_instances)}.\n\n")
-                    print("Logo abaixo selecione qual classificador irá ser utilizado para criação do modelo preditivo.\n\n")
                 if args.classifier == 1:
                     if(fold == 1):
                         fold += 1
-                        with open(f'Comite_Naive_{round(labelled_level, 4) * 100} ({dataset}).txt', 'a') as f:
+                        with open(f'{path}/Comite_Naive_{round(labelled_level, 4) * 100} ({dataset}).txt', 'a') as f:
                             f.write(
                                 f"Instâncias rotuladas: {labelled_instances}\n" 
                                 f"Usando: {round(labelled_level, 4) * 100}% das instâncias rotuladas\n"
@@ -65,7 +65,7 @@ for dataset in datasets:
                 elif args.classifier == 2:
                     if(fold == 1):
                         fold += 1
-                        with open(f'Comite_Tree_{round(labelled_level, 4) * 100} ({dataset}).txt', 'a') as f:
+                        with open(f'{path}/Comite_Tree_{round(labelled_level, 4) * 100} ({dataset}).txt', 'a') as f:
                             f.write(
                                 f"Instâncias rotuladas: {labelled_instances}\n" 
                                 f"Usando: {round(labelled_level, 4) * 100}% das instâncias rotuladas\n"
@@ -78,7 +78,7 @@ for dataset in datasets:
                 elif args.classifier == 3:
                     if(fold == 1):
                         fold += 1
-                        with open(f'Comite_KNN_{round(labelled_level, 4) * 100} ({dataset}).txt', 'a') as f:
+                        with open(f'{path}/Comite_KNN_{round(labelled_level, 4) * 100} ({dataset}).txt', 'a') as f:
                             f.write(
                                 f"Instâncias rotuladas: {labelled_instances}\n" 
                                 f"Usando: {round(labelled_level, 4) * 100}% das instâncias rotuladas\n"
@@ -111,4 +111,4 @@ for dataset in datasets:
                 
                 y_pred = comite.predict(X_test)
 
-                ut.result(args.classifier, dataset, y_test, y_pred, comite, labelled_level)
+                ut.result(args.classifier, dataset, y_test, y_pred, path, labelled_level)

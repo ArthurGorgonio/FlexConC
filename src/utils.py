@@ -1,8 +1,10 @@
 from nis import match
+
 import numpy as np
+from sklearn.metrics import accuracy_score, f1_score
+
 # from pushbullet.pushbullet import PushBullet
 from sklearn.model_selection import StratifiedKFold
-from sklearn.metrics import accuracy_score, f1_score
 from sklearn.naive_bayes import GaussianNB as Naive
 from sklearn.neighbors import KNeighborsClassifier as KNN
 from sklearn.tree import DecisionTreeClassifier as Tree
@@ -26,8 +28,8 @@ list_knn_het = [
 list_tree = [
     Tree(criterion="entropy"), Tree(), 
     Tree(criterion="entropy", max_features=1), Tree(max_features=1),
-    Tree(criterion="entropy", max_features="log2"),
-    Tree(criterion="entropy", max_features='auto'), Tree(max_features='auto'),
+    Tree(criterion="entropy", max_features="auto"), Tree(max_features='auto'),
+    Tree(criterion="entropy", max_features='auto', splitter="random"), Tree(max_features='auto', splitter="random"),
     Tree(splitter="random"), Tree(criterion="entropy",splitter="random")]
 
 # list_knn= [
@@ -40,8 +42,8 @@ list_knn= [
     KNN(n_neighbors=1, weights='distance'),KNN(n_neighbors=1),
     KNN(n_neighbors=2, weights='distance'),KNN(n_neighbors=2),
     KNN(n_neighbors=3, weights='distance'),KNN(n_neighbors=3),
-    KNN(n_neighbors=4),KNN(n_neighbors=4, weights='distance'),
-    KNN(n_neighbors=5)]
+    KNN(n_neighbors=4, weights='distance'),KNN(n_neighbors=4),
+    KNN(n_neighbors=5, weights='distance'),KNN(n_neighbors=5)]
 
 def validate_estimator(estimator):
     """Make sure that an estimator implements the necessary methods."""
@@ -84,7 +86,7 @@ def select_labels(y_train, X_train, labelled_instances):
     y_train[mask] = -1
     return y_train
 
-def result(option, dataset, y_test, y_pred, comite, labelled_level):
+def result(option, dataset, y_test, y_pred, path, labelled_level):
     """
     Responsável por salvar os outputs dos cômites em arquivos
     Args:
@@ -100,11 +102,11 @@ def result(option, dataset, y_test, y_pred, comite, labelled_level):
         print('Finalizando...')
         # print('Enviando notificação push...')
         # p.pushNote(devices[1]["iden"], f"ACC: {round(accuracy_score(y_test, y_pred), 4) * 100}%", f'Comite_Naive_{round(labelled_level, 4) * 100} ({dataset}).txt')
-        with open(f'Comite_Naive_{round(labelled_level, 4) * 100} ({dataset}).txt', 'a') as f:
+        with open(f'{path}/Comite_Naive_{round(labelled_level, 4) * 100} ({dataset}).txt', 'a') as f:
             f.write(
                 f"\n\nACC: {round(accuracy_score(y_test, y_pred), 4) * 100}%\n"
                 f'F1-Score: {round(f1_score(y_test, y_pred, average="macro"), 4) * 100}%\n'
-                f"Motivo da finalização: {comite.ensemble[0].termination_condition_}\n"
+                # f"Motivo da finalização: {comite.ensemble[0].termination_condition_}\n"
                 # f"Valor do teste estatístico é de {alpha}, significante? {alpha <= 0.05}\n"
             )
 
@@ -113,25 +115,25 @@ def result(option, dataset, y_test, y_pred, comite, labelled_level):
         print('Finalizando...')
         # print('Enviando notificação push...')
         # p.pushNote(devices[1]["iden"], f"ACC: {round(accuracy_score(y_test, y_pred), 4) * 100}%", f'Comite_Tree_{round(labelled_level, 4) * 100} ({dataset}).txt')
-        with open(f'Comite_Tree_{round(labelled_level, 4) * 100} ({dataset}).txt', 'a') as f:
+        with open(f'{path}/Comite_Tree_{round(labelled_level, 4) * 100} ({dataset}).txt', 'a') as f:
             f.write(
                 f"\n\nACC: {round(accuracy_score(y_test, y_pred), 4) * 100}%\n"
                 f'F1-Score: {round(f1_score(y_test, y_pred, average="macro"), 4) * 100}%\n'
-                f"Motivo da finalização: {comite.ensemble[0].termination_condition_}\n"
+                # f"Motivo da finalização: {comite.ensemble[0].termination_condition_}\n"
                 # f"Valor do teste estatístico é de {alpha}, significante? {alpha <= 0.05}\n"
             )
 
     elif option == 3:
         print(f'Salvando os resultados em um arquivo Comite_KNN_{round(labelled_level, 4) * 100} ({dataset}).txt\n\n')
         print('Finalizando...')
-        print('Enviando notificação push...')
+        # print('Enviando notificação push...')
         # TODO: FALTA PEGAR CADA RESULTADO PREENCHER UM ARRAY REALIZAR A MÉDIA E AI SIM ENVIAR A MSG
         # p.pushNote(devices[1]["iden"], f"ACC: {round(accuracy_score(y_test, y_pred), 4) * 100}%", f'Comite_KNN_{round(labelled_level, 4) * 100} ({dataset}).txt')
-        with open(f'Comite_KNN_{round(labelled_level, 4) * 100} ({dataset}).txt', 'a') as f:
+        with open(f'{path}/Comite_KNN_{round(labelled_level, 4) * 100} ({dataset}).txt', 'a') as f:
             f.write(
                 f"\n\nACC: {round(accuracy_score(y_test, y_pred), 4) * 100}%\n"
                 f'F1-Score: {round(f1_score(y_test, y_pred, average="macro"), 4) * 100}%\n'
-                f"Motivo da finalização: {comite.ensemble[0].termination_condition_}\n"
+                # f"Motivo da finalização: {comite.ensemble[0].termination_condition_}\n"
                 # f"Valor do teste estatístico é de {alpha}, significante? {alpha <= 0.05}\n"
             )
 
@@ -140,10 +142,10 @@ def result(option, dataset, y_test, y_pred, comite, labelled_level):
         print('Finalizando...')
         # print('Enviando notificação push...')
         # p.pushNote(devices[1]["iden"], f"ACC: {round(accuracy_score(y_test, y_pred), 4) * 100}%", f'Comite_KNN_{round(labelled_level, 4) * 100} ({dataset}).txt')
-        with open(f'Comite_Heterogeneo_{round(labelled_level, 4) * 100} ({dataset}).txt', 'a') as f:
+        with open(f'{path}/Comite_Heterogeneo_{round(labelled_level, 4) * 100} ({dataset}).txt', 'a') as f:
             f.write(
                 f"\n\nACC: {round(accuracy_score(y_test, y_pred), 4) * 100}%\n"
                 f'F1-Score: {round(f1_score(y_test, y_pred, average="macro"), 4) * 100}%\n'
-                f"Motivo da finalização: {comite.ensemble[0].termination_condition_}\n"
+                # f"Motivo da finalização: {comite.ensemble[0].termination_condition_}\n"
                 # f"Valor do teste estatístico é de {alpha}, significante? {alpha <= 0.05}\n"
             )
