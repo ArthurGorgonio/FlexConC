@@ -23,8 +23,7 @@ comite = Ensemble(SelfFlexCon)
 parent_dir = "/home/gabriel/MyProjects/Python_projects/FlexConC/results"
 
 datasets = [f for f in listdir('datasets/') if isfile(join('datasets/', f))]
-init_labelled = [0.2]
-# 0.05, 0.1, 0.15,
+init_labelled = [0.05, 0.1, 0.15, 0.2]
 for dataset in datasets:
     path = os.path.join(parent_dir, dataset)
     os.mkdir(path)
