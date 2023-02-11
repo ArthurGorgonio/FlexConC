@@ -12,7 +12,7 @@ from src.utils import validate_estimator
 
 class BaseFlexConC(SelfTrainingClassifier):
     """
-    Funcão do FleconC, responsável por classificar instâncias com base em
+    Funcão do Flexcon-C, responsável por classificar instâncias com base em
         modelos de aprendizado semisupervisionado
     """
 

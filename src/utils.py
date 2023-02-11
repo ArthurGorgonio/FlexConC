@@ -1,4 +1,5 @@
 from nis import match
+from statistics import mean, stdev
 
 import numpy as np
 from sklearn.metrics import accuracy_score, f1_score
@@ -15,35 +16,24 @@ from sklearn.tree import DecisionTreeClassifier as Tree
 # devices = p.getDevices()
 
 # LISTA DE CLASSIFICADORES
-list_tree_het = [
-    Tree(criterion="entropy"), Tree(), 
-    Tree(criterion="entropy", max_features="log2"),
-    Tree(criterion="entropy", max_features='auto'), Tree(max_features='auto')]
-
-list_knn_het = [
-    KNN(n_neighbors=1, weights='distance'),KNN(n_neighbors=1),
-    KNN(n_neighbors=2, weights='distance'),KNN(n_neighbors=2),
-    KNN(n_neighbors=3, weights='distance')]
-
 list_tree = [
-    Tree(criterion="entropy"), Tree(), 
-    Tree(criterion="entropy", max_features=1), Tree(max_features=1),
-    Tree(criterion="entropy", max_features="auto"), Tree(max_features='auto'),
-    Tree(criterion="entropy", max_features='auto', splitter="random"), Tree(max_features='auto', splitter="random"),
-    Tree(splitter="random"), Tree(criterion="entropy",splitter="random")]
-
-# list_knn= [
-#     KNN(n_neighbors=10, weights='distance'),KNN(n_neighbors=11, weights='distance'),
-#     KNN(n_neighbors=12, weights='distance'),KNN(n_neighbors=13, weights='distance'),
-#     KNN(n_neighbors=14, weights='distance'),KNN(n_neighbors=11),KNN(n_neighbors=12),
-#     KNN(n_neighbors=13),KNN(n_neighbors=14)]
+    Tree(), 
+    Tree(splitter="random"),
+    Tree(max_features='auto'),
+    Tree(criterion="entropy"), 
+    Tree(criterion="entropy", splitter="random"), 
+    Tree(criterion="entropy", max_features="auto"),
+    Tree(criterion="entropy", max_features='auto', splitter="random"),
+    Tree(criterion="entropy", max_features='sqrt', splitter="random"), 
+    Tree(max_features='sqrt', splitter="random"), 
+    Tree(max_features='auto', splitter="random")]
 
 list_knn= [
-    KNN(n_neighbors=1, weights='distance'),KNN(n_neighbors=1),
-    KNN(n_neighbors=2, weights='distance'),KNN(n_neighbors=2),
-    KNN(n_neighbors=3, weights='distance'),KNN(n_neighbors=3),
     KNN(n_neighbors=4, weights='distance'),KNN(n_neighbors=4),
-    KNN(n_neighbors=5, weights='distance'),KNN(n_neighbors=5)]
+    KNN(n_neighbors=5, weights='distance'),KNN(n_neighbors=5),
+    KNN(n_neighbors=6, weights='distance'),KNN(n_neighbors=6),
+    KNN(n_neighbors=7, weights='distance'),KNN(n_neighbors=7),
+    KNN(n_neighbors=8, weights='distance'),KNN(n_neighbors=8)]
 
 def validate_estimator(estimator):
     """Make sure that an estimator implements the necessary methods."""
@@ -100,52 +90,82 @@ def result(option, dataset, y_test, y_pred, path, labelled_level):
     if option == 1:
         print(f'Salvando os resultados em um arquivo Comite_Naive_{round(labelled_level, 4) * 100} ({dataset}).txt\n\n')
         print('Finalizando...')
+        acc = round(accuracy_score(y_test, y_pred), 4) * 100
         # print('Enviando notificação push...')
         # p.pushNote(devices[1]["iden"], f"ACC: {round(accuracy_score(y_test, y_pred), 4) * 100}%", f'Comite_Naive_{round(labelled_level, 4) * 100} ({dataset}).txt')
         with open(f'{path}/Comite_Naive_{round(labelled_level, 4) * 100} ({dataset}).txt', 'a') as f:
             f.write(
-                f"\n\nACC: {round(accuracy_score(y_test, y_pred), 4) * 100}%\n"
+                f"\n\nACC: {acc}%\n"
                 f'F1-Score: {round(f1_score(y_test, y_pred, average="macro"), 4) * 100}%\n'
                 # f"Motivo da finalização: {comite.ensemble[0].termination_condition_}\n"
                 # f"Valor do teste estatístico é de {alpha}, significante? {alpha <= 0.05}\n"
             )
+        return acc
 
     elif option == 2:
         print(f'Salvando os resultados em um arquivo Comite_Tree_{round(labelled_level, 4) * 100} ({dataset}).txt\n\n')
         print('Finalizando...')
+        acc = round(accuracy_score(y_test, y_pred), 4) * 100
         # print('Enviando notificação push...')
         # p.pushNote(devices[1]["iden"], f"ACC: {round(accuracy_score(y_test, y_pred), 4) * 100}%", f'Comite_Tree_{round(labelled_level, 4) * 100} ({dataset}).txt')
         with open(f'{path}/Comite_Tree_{round(labelled_level, 4) * 100} ({dataset}).txt', 'a') as f:
             f.write(
-                f"\n\nACC: {round(accuracy_score(y_test, y_pred), 4) * 100}%\n"
+                f"\n\nACC: {acc}%\n"
                 f'F1-Score: {round(f1_score(y_test, y_pred, average="macro"), 4) * 100}%\n'
                 # f"Motivo da finalização: {comite.ensemble[0].termination_condition_}\n"
                 # f"Valor do teste estatístico é de {alpha}, significante? {alpha <= 0.05}\n"
             )
+        return acc
 
     elif option == 3:
         print(f'Salvando os resultados em um arquivo Comite_KNN_{round(labelled_level, 4) * 100} ({dataset}).txt\n\n')
         print('Finalizando...')
+        acc = round(accuracy_score(y_test, y_pred), 4) * 100
         # print('Enviando notificação push...')
         # TODO: FALTA PEGAR CADA RESULTADO PREENCHER UM ARRAY REALIZAR A MÉDIA E AI SIM ENVIAR A MSG
         # p.pushNote(devices[1]["iden"], f"ACC: {round(accuracy_score(y_test, y_pred), 4) * 100}%", f'Comite_KNN_{round(labelled_level, 4) * 100} ({dataset}).txt')
         with open(f'{path}/Comite_KNN_{round(labelled_level, 4) * 100} ({dataset}).txt', 'a') as f:
             f.write(
-                f"\n\nACC: {round(accuracy_score(y_test, y_pred), 4) * 100}%\n"
+                f"\n\nACC: {acc}%\n"
                 f'F1-Score: {round(f1_score(y_test, y_pred, average="macro"), 4) * 100}%\n'
                 # f"Motivo da finalização: {comite.ensemble[0].termination_condition_}\n"
                 # f"Valor do teste estatístico é de {alpha}, significante? {alpha <= 0.05}\n"
             )
+        return acc
 
     elif option == 4:
         print(f'Salvando os resultados em um arquivo Comite_Heterogeneo_{round(labelled_level, 4) * 100} ({dataset}).txt\n\n')
         print('Finalizando...')
+        acc = round(accuracy_score(y_test, y_pred), 4) * 100
         # print('Enviando notificação push...')
         # p.pushNote(devices[1]["iden"], f"ACC: {round(accuracy_score(y_test, y_pred), 4) * 100}%", f'Comite_KNN_{round(labelled_level, 4) * 100} ({dataset}).txt')
         with open(f'{path}/Comite_Heterogeneo_{round(labelled_level, 4) * 100} ({dataset}).txt', 'a') as f:
             f.write(
-                f"\n\nACC: {round(accuracy_score(y_test, y_pred), 4) * 100}%\n"
+                f"\n\nACC: {acc}%\n"
                 f'F1-Score: {round(f1_score(y_test, y_pred, average="macro"), 4) * 100}%\n'
                 # f"Motivo da finalização: {comite.ensemble[0].termination_condition_}\n"
                 # f"Valor do teste estatístico é de {alpha}, significante? {alpha <= 0.05}\n"
+            )
+        return acc
+
+def calculateMeanStdev(fold_result, option, labelled_level, path, dataset):
+    if option == 1:
+        with open(f'{path}/Comite_Naive_{round(labelled_level, 4) * 100} ({dataset}).txt', 'a') as f:
+            f.write(
+                f'\nMédia ± désvio padrão: {round(mean(fold_result), 2)} ± {round(stdev(fold_result), 2)}\n'
+            )
+    elif option == 2:
+        with open(f'{path}/Comite_Tree_{round(labelled_level, 4) * 100} ({dataset}).txt', 'a') as f:
+            f.write(
+                f'\nMédia ± désvio padrão: {round(mean(fold_result), 2)} ± {round(stdev(fold_result), 2)}\n'
+            )
+    elif option == 3:
+        with open(f'{path}/Comite_KNN_{round(labelled_level, 4) * 100} ({dataset}).txt', 'a') as f:
+            f.write(
+                f'\nMédia ± désvio padrão: {round(mean(fold_result), 2)} ± {round(stdev(fold_result), 2)}\n'
+            )
+    elif option == 4:
+        with open(f'{path}/Comite_Heterogeneo_{round(labelled_level, 4) * 100} ({dataset}).txt', 'a') as f:
+            f.write(
+                f'\nMédia ± désvio padrão: {round(mean(fold_result), 2)} ± {round(stdev(fold_result), 2)}\n'
             )
