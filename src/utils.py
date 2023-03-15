@@ -19,6 +19,7 @@ def compare_labels(y_true: ndarray, y_pred: ndarray) -> ndarray:
     """
     return where((y_true == y_pred), 1, 0)
 
+
 def validate_estimator(estimator):
     """Make sure that an estimator implements the necessary methods."""
     if not hasattr(estimator, "predict_proba"):

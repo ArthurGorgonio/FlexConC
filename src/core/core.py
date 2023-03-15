@@ -127,7 +127,6 @@ class Core:
                 instances,
                 classes,
                 y_pred,
-                self.detector.detector_type
             )
 
             if drift:
@@ -205,17 +204,17 @@ class Core:
         instances: ndarray,
         classes: ndarray,
         y_pred: ndarray,
-        is_metric_value: str,
     ) -> bool:
-        if is_metric_value == "metric":
-            thr = accuracy_score(classes, y_pred)
+        options = {
+            "threshold": self.detector.detect(
+                accuracy_score(classes, y_pred),
+                None
+            ),
+            "chunk": self.detector.detect(classes, y_pred),
+            "default": self.detector.detect(instances),
+        }
 
-            return self.detector.detect(thr, None)
-
-        if is_metric_value == "classes":
-            return self.detector.detect(classes, y_pred)
-
-        return self.detector.detect(instances)
+        return options.get(self.detector.detector_type, "default")
 
     def add_metrics(self, metric_name: str, metric_func: Callable) -> None:
         """

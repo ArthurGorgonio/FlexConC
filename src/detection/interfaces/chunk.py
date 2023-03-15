@@ -9,10 +9,9 @@ class Chunk(DriftDetector):
     identificar a ocorrência de drift na base de dados.
     """
     def __init__(self,):
-        super().__init__()
+        super().__init__(self.__class__.__name__.lower())
         self.last_chunk = None
         self.actual_chunk = None
-        self.detector_type = 'classes'
 
     def update_chunks(self, labels: ndarray) -> None:
         """

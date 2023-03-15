@@ -223,8 +223,8 @@ class Ensemble:
         self,
         classifier: List,
         pos: List[int],
-        instances,
-        classes,
+        instances: np.ndarray,
+        classes: np.ndarray,
         retrain: bool = True,
     ) -> None:
         """

@@ -4,7 +4,7 @@ from src.detection.interfaces.threshold import Threshold
 
 
 class FixedThreshold(Threshold):
-    """Classe de detecção de drift com treshold fixo"""
+    """Classe de detecção de drift com threshold fixo"""
     def __init__(self, **params: Dict[str, Any]):
         super().__init__(**params)
 

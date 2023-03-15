@@ -9,9 +9,10 @@ class DriftDetector(ABC):
     Interface para a criação de classes responsáveis pela detecção do
     drift em grupos de instâncias.
     """
-    def __init__(self):
+    def __init__(self, detector_type: str):
         self.drift_counter = 0
         self.drift = False
+        self.detector_type = detector_type
 
     @abstractmethod
     def detect(
@@ -41,7 +42,7 @@ class DriftDetector(ABC):
         Raises
         ------
         NotImplementedError
-            Requer sobreescrita nas classes filhas.
+            Requer sobrescrita nas classes filhas.
         """
         raise NotImplementedError("Método necessário não implementado!")
 

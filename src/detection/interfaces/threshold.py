@@ -1,5 +1,3 @@
-from numpy import ndarray
-
 from src.detection.interfaces.drift_detector import DriftDetector
 
 
@@ -15,10 +13,9 @@ class Threshold(DriftDetector):
         [0, 1].
     """
     def __init__(self, threshold: float = 0.8):
-        super().__init__()
+        super().__init__(self.__class__.__name__.lower())
         self.detection_threshold = threshold
         self.default_threshold = threshold
-        self.detector_type = 'metric'
 
     def __str__(self) -> str:
         msg = super().__str__()

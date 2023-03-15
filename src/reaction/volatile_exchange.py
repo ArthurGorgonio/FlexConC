@@ -5,8 +5,11 @@ from src.reaction.interfaces.reactor import Reactor
 from src.ssl.ensemble import Ensemble
 
 
-class Exchange(Reactor):
-    """Módulo de reação ao drift por troca de classificador"""
+class VolatileExchange(Reactor):
+    """
+    Módulo de reação ao drift por troca todos os classificadores que
+    não atingem o limiar.
+    """
     def __init__(self, **params):
         self.classifier = params.get("classifier", HT)
         self.thr = params.get("thr", 0.8)

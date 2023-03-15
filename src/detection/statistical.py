@@ -26,8 +26,8 @@ class Statistical(StatisticalTest):
                 "alpha": 0.05,
                 "statistical_test": kstest,
             }
-        self.alpha = params.get("alpha") or 0.05
-        self.statistical_test = params.get("statistical_test") or kstest
+        self.alpha = params.get("alpha", 0.05)
+        self.statistical_test = params.get("statistical_test", kstest)
 
     def eval_test(self):
         return (
