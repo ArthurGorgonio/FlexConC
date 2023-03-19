@@ -13,7 +13,7 @@ class Threshold(DriftDetector):
         [0, 1].
     """
     def __init__(self, threshold: float = 0.8):
-        super().__init__(self.__class__.__name__.lower())
+        super().__init__('threshold')
         self.detection_threshold = threshold
         self.default_threshold = threshold
 

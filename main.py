@@ -6,13 +6,17 @@ from sklearn.metrics import f1_score
 from skmultiflow.data import DataStream
 
 from src.core.core import Core
-from src.detection.fixed_threshold import FixedThreshold
-from src.detection.normal import Normal
-from src.detection.statistical import Statistical
-from src.reaction.exchange import Exchange
-from src.reaction.pareto import Pareto
-from src.ssl.ensemble import Ensemble
-from src.ssl.self_flexcon import SelfFlexCon
+from src.detection import (
+    FixedThreshold,
+    Normal,
+    Statistical,
+)
+from src.reaction import (
+    Exchange,
+    Pareto,
+    VolatileExchange,
+)
+from src.ssl import Ensemble, SelfFlexCon
 from src.utils import Log
 
 detectors = [
@@ -21,8 +25,9 @@ detectors = [
     FixedThreshold,
 ]
 reactors = [
-    Pareto,
-    # Exchange,
+    Exchange,
+    # Pareto,
+    # VolatileExchange,
 ]
 
 # datasets = glob('datasets/*.csv')
@@ -34,8 +39,8 @@ datasets = [
     "ForestCover.csv",
     "GEARS2C2D.csv",
     "Poker.csv",
-    # "Shuttle.csv",
-    # "UG2C3D.csv",
+    "Shuttle.csv",
+    "UG2C3D.csv",
 ]
 
 statistics_strategy = ["drift", "simple"]
@@ -53,7 +58,7 @@ for statistics in statistics_strategy:
                         "pareto_strategy": "classifier_ensemble",
                         "q_measure": {
                             "absolute": True,
-                            "average": False,
+                            "average": True,
                         },
                     },
                 )

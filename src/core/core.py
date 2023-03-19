@@ -205,16 +205,13 @@ class Core:
         classes: ndarray,
         y_pred: ndarray,
     ) -> bool:
-        options = {
-            "threshold": self.detector.detect(
-                accuracy_score(classes, y_pred),
-                None
-            ),
-            "chunk": self.detector.detect(classes, y_pred),
-            "default": self.detector.detect(instances),
-        }
+        if self.detector.detector_type == "threshold":
+            return self.detector.detect(accuracy_score(classes, y_pred), None)
 
-        return options.get(self.detector.detector_type, "default")
+        if self.detector.detector_type == "chunk":
+            return self.detector.detect(classes, y_pred)
+
+        return self.detector.detect(instances)
 
     def add_metrics(self, metric_name: str, metric_func: Callable) -> None:
         """

@@ -449,7 +449,13 @@ class Ensemble:
         np.ndarray
             lista com os resultado da medida de diversidade Q.
         """
-        similarity = np.array([[0.0 for _ in range(10)] for _ in range(10)])
+        similarity = np.array(
+            [
+                [0.0 for _ in range(len(self.ensemble))]
+
+                for _ in range(len(self.ensemble))
+            ]
+        )
 
         for cl1 in range(len(self.ensemble) - 1):
             cl1_labels = self.predict_one_classifier(
