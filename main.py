@@ -103,9 +103,9 @@ for dataset in datasets:
                     y = ut.select_labels(y_train, X_train, labelled_instances)
                     for i in range(9):
                         comite.add_classifier(Naive(var_smoothing=float(f'1e-{i}')))
-                    for i in ut.list_tree_het:
+                    for i in ut.list_tree:
                         comite.add_classifier(i)
-                    for i in ut.list_knn_het:
+                    for i in ut.list_knn:
                         comite.add_classifier(i)
                     comite.fit_ensemble(X_train, y)
                 

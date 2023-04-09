@@ -141,8 +141,8 @@ def result(option, dataset, y_test, y_pred, path, labelled_level):
         # p.pushNote(devices[1]["iden"], f"ACC: {round(accuracy_score(y_test, y_pred), 4) * 100}%", f'Comite_KNN_{round(labelled_level, 4) * 100} ({dataset}).txt')
         with open(f'{path}/Comite_Heterogeneo_{round(labelled_level, 4) * 100} ({dataset}).txt', 'a') as f:
             f.write(
-                f"\n\nACC: {acc}%\n"
-                f'F1-Score: {round(f1_score(y_test, y_pred, average="macro"), 4) * 100}%\n'
+                f"\n\n{acc}%\n"
+                # f'F1-Score: {round(f1_score(y_test, y_pred, average="macro"), 4) * 100}%\n'
                 # f"Motivo da finalização: {comite.ensemble[0].termination_condition_}\n"
                 # f"Valor do teste estatístico é de {alpha}, significante? {alpha <= 0.05}\n"
             )
@@ -167,5 +167,5 @@ def calculateMeanStdev(fold_result, option, labelled_level, path, dataset):
     elif option == 4:
         with open(f'{path}/Comite_Heterogeneo_{round(labelled_level, 4) * 100} ({dataset}).txt', 'a') as f:
             f.write(
-                f'\nMédia ± désvio padrão: {round(mean(fold_result), 2)} ± {round(stdev(fold_result), 2)}\n'
+                f'\n{round(mean(fold_result), 2)} ± {round(stdev(fold_result), 2)}\n'
             )
