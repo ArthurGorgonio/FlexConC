@@ -2,6 +2,7 @@ from nis import match
 from statistics import mean, stdev
 
 import numpy as np
+from ipdb import set_trace
 from sklearn.metrics import accuracy_score, f1_score
 
 # from pushbullet.pushbullet import PushBullet
@@ -59,6 +60,7 @@ def select_labels(y_train, X_train, labelled_instances):
     Returns:
         Retorna o array de classes com base nos rótulos das instâncias selecionadas
     """
+    set_trace()
     count = 0
     labels = np.unique(y_train)
     if -1 in labels:
