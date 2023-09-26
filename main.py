@@ -22,7 +22,7 @@ parser.add_argument('classifier', metavar='c', type=int, help='Escolha um classi
 
 args = parser.parse_args()
 comite = Ensemble(SelfFlexCon)
-parent_dir = "/home/gabriel/MyProjects/Python_projects/FlexConC/results"
+parent_dir = "path_for_results"
 
 datasets = [f for f in listdir('datasets/') if isfile(join('datasets/', f))]
 init_labelled = [0.05, 0.10, 0.15, 0.20, 0.25]

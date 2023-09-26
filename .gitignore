@@ -3,6 +3,12 @@ __pycache__/
 piton/
 datasets_bck/
 results/
+datasets-all/
+results/
+results (ja aplicados)/
+results (old)/
+results-seed/
+results-teste/
 datasets/
 .vscode/
 .venv/
