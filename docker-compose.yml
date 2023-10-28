@@ -1,0 +1,9 @@
+version: '3.6'
+
+services:
+  dydasl:
+    build:
+      args:
+        USR: ${USER}
+    volumes:
+      - .:/app
