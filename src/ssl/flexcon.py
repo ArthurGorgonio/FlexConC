@@ -12,7 +12,7 @@ from src.utils import validate_estimator
 
 class BaseFlexConC(SelfTrainingClassifier):
     """
-    Classe base do método Flexible Conficende with Classifier que
+    Classe base do método Flexible Confidence with Classifier que
     contém os métodos genéricos. Esse é um método semissupervisionado
     utilizado na tarefa de classificação de dados.
 

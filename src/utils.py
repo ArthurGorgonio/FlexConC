@@ -53,7 +53,7 @@ class Log():
         self.__time()
         self.__data_name = param.get("data_name", None)
         self.__method_name = param.get("method_name", None)
-        self.__filename = f"{self.__method_name}_{self.__data_name}.txt"
+        self.__filename = f"running/{self.__method_name}_{self.__data_name}.txt"
 
     def __new__(cls):
         if cls._instance is None:
