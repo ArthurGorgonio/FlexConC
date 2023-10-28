@@ -59,7 +59,7 @@ class Core:
     def configure_params(
         self,
         ssl_algorithm: Callable,
-        params_ssl_algorithm: Dict[str, any] = None,
+        params_training: Dict[str, any] = None,
         params_detector: Dict[str, any] = None,
         params_reactor: Dict[str, any] = None,
     ):
@@ -80,7 +80,7 @@ class Core:
         params_reactor : Dict[str, any], optional
             parâmetros necessários para , por default None
         """
-        self.ensemble = self.ensemble(ssl_algorithm, params_ssl_algorithm)
+        self.ensemble = self.ensemble(ssl_algorithm, **params_training or {})
         self.detector = self.detector(**params_detector or {})
         self.reactor = self.reactor(**params_reactor or {})
 
@@ -117,7 +117,9 @@ class Core:
             Existe suporte para `simple`, `drift`.
         """
         instances, classes = chunk.next_sample(self.chunk_size)
-        self.run_first_it(instances, classes)
+
+        while len(self.ensemble.ensemble) < self.MAX_SIZE:
+            self.run_first_it(instances, classes)
 
         while chunk.has_more_samples():
             start = time()
@@ -143,9 +145,6 @@ class Core:
                 chunk.sample_idx,
                 elapsed_time
             )
-
-            if self.ensemble_update(strategy, drift):
-                self.run_first_it(instances, classes)
 
         return self
 

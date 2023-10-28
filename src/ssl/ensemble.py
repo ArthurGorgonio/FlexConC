@@ -1,5 +1,4 @@
-from statistics import mode
-from typing import List
+from typing import Any, Dict, List
 
 import numpy as np
 from sklearn.metrics import accuracy_score
@@ -13,12 +12,12 @@ class Ensemble:
     seus métodos
     """
 
-    def __init__(self, ssl_algorithm: callable, ssl_params=None):
-        if ssl_params is None:
-            ssl_params = {}
+    def __init__(self, ssl_algorithm: callable, **params: Dict[str, Any]):
         self.ensemble = []
+        self.weights = []
+        self.is_weights = params.get('is_weight', False)
         self.ssl_algorithm = ssl_algorithm
-        self.ssl_params = ssl_params
+        self.ssl_params = params.get('ssl_params', {})
         self.q_measure_funcs = {
             "classifier_ensemble": self.q_measure_classifier_vs_ensemble,
             "classifier_classifier": self.q_measure_classifier_vs_classifier,
@@ -44,6 +43,7 @@ class Ensemble:
         else:
             flexconc = classifier
         self.ensemble.append(flexconc)
+        self.weights.append(1)
 
     def add_fit_classifier(
         self,
@@ -66,6 +66,7 @@ class Ensemble:
         """
         classifier.fit(instances, classes)
         self.ensemble.append(classifier)
+        self.weights.append(1)
 
     def remover_classifier(self, classifier):
         """
@@ -82,6 +83,7 @@ class Ensemble:
             Quando o classificador a ser removido não existe na lista.
         """
         try:
+            self.weights.pop(self.ensemble.index(classifier))
             self.ensemble.remove(classifier)
         except ValueError as err:
             raise ValueError(
@@ -119,6 +121,7 @@ class Ensemble:
     def drop_ensemble(self):
         """Esvazia o comitê de classificadores"""
         self.ensemble = []
+        self.weights = []
 
     def fit_ensemble(self, instances: np.ndarray, classes: np.ndarray):
         """
@@ -215,9 +218,42 @@ class Ensemble:
                 pred.append(
                     classifier.predict(instance.reshape(1, -1)).tolist()[0]
                 )
-            y_pred.append(mode(pred))
+            aux = {}
+            for y_cl, w in zip(pred, self.weights):
+                if y_cl in aux.keys():
+                    aux[y_cl] += w
+                else:
+                    aux[y_cl] = w
+            y_pred.append(max(aux, key=aux.get))
 
         return np.array(y_pred, dtype="int64")
+
+    def update_weights(
+        self,
+        instances: np.ndarray,
+        classes: np.ndarray,
+        metric: callable = None,
+    ) -> None:
+        """Realiza o ajuste nos pesos dos classificadores base do
+        comitê. Por meio da eficácia de classificação dos modelos.
+        Caso não seja informada nenhuma métrica, será utilizada a
+        acurácia. Além disso, é interessante pensar em métricas na
+        escala [0, 1].
+
+        Parameters
+        ----------
+        instances : np.ndarray
+            Instâncias a serem utilizadas no treinamento.
+        classes : np.ndarray
+            Rótulos das instâncias.
+        metric : callable
+            Métrica a ser utilizada.
+        """
+        if metric is None:
+            metric = accuracy_score
+        for i, cl in enumerate(self.ensemble):
+            y_pred = self.predict_one_classifier(cl, instances)
+            self.weights[i] = metric(classes, y_pred)
 
     def swap(
         self,
