@@ -2,7 +2,7 @@ from time import time
 from typing import Callable, Dict
 
 from numpy import ndarray
-from sklearn.metrics import accuracy_score, confusion_matrix
+from sklearn.metrics import accuracy_score, confusion_matrix, f1_score
 from skmultiflow.data import DataStream
 from skmultiflow.trees import HoeffdingAdaptiveTreeClassifier as HT
 
@@ -49,9 +49,9 @@ class Core:
 
         if reactor is None:
             reactor = Exchange
-        self.ensemble = ensemble
-        self.detector = detector
-        self.reactor = reactor
+        self.ensemble: Ensemble = ensemble
+        self.detector: DriftDetector = detector
+        self.reactor: Reactor = reactor
         self.chunk_size = chunk_size
         self.metrics_calls = {}
         self.metrics = {}
@@ -103,7 +103,12 @@ class Core:
                 "Utilize a função 'configure_params' para preparar o ambiente."
             ) from exc
 
-    def run(self, chunk: DataStream, strategy: str = "simple"):
+    def run(
+        self,
+        chunk: DataStream,
+        strategy: str = "simple",
+        std: bool = False,
+    ):
         """
         Fluxo de execução do DyDaSL, loop para realizar a classificação
         de instâncias, enquanto houver instâncias disponíveis na stream
@@ -115,11 +120,14 @@ class Core:
         strategy : str
             Estratégia de adição de novos classificadores no comitê.
             Existe suporte para `simple`, `drift`.
+        std : bool
+            Indica se está utilizando a versão padrão do módulo de treinamento.
         """
         instances, classes = chunk.next_sample(self.chunk_size)
 
-        while len(self.ensemble.ensemble) < self.MAX_SIZE:
-            self.run_first_it(instances, classes)
+        if std:
+            while len(self.ensemble.ensemble) < self.MAX_SIZE:
+                self.run_first_it(instances, classes)
 
         while chunk.has_more_samples():
             start = time()
@@ -145,6 +153,12 @@ class Core:
                 chunk.sample_idx,
                 elapsed_time
             )
+
+            if self.ensemble.is_weights:
+                self.ensemble.update_weights(instances, classes, f1_score)
+
+            if self.ensemble_update(strategy, drift):
+                self.run_first_it(instances, classes)
 
         return self
 
