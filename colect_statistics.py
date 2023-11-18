@@ -86,7 +86,7 @@ def generate_metrics(metric: list) -> str:
 
 def get_dataset_names(data_path: str) -> set:
     """get dataset names to filter"""
-    base_files = glob(f"{data_path}/DyDaSL*")
+    base_files = glob(f"{data_path}/*.txt")
     dataset_names = {data.split("_")[-1].split(".")[0] for data in base_files}
 
     return dataset_names
@@ -133,16 +133,14 @@ if __name__ == "__main__":
         for file in files:
             print("*" * 30)
             print(f"Dataset: {dataset}")
-            df = pd.read_csv(file, delimiter=r"\s+", skiprows=15, header=None)
-            COLUMN_NAME = "_".join(file.split("_")[1:-1])
-            print(COLUMN_NAME)
-            d, r, s = COLUMN_NAME.split("_")[-3:]
-            metrics[f"{d[0]}-{r[0]}-{s[0].upper()}"] = generate_basic_metrics(
+            df = pd.read_csv(file, delimiter=r"\s+", skiprows=16, header=None)
+            col_name = file.split("/")[-1].split('_')[0]
+            metrics[col_name] = generate_basic_metrics(
                 file.split("/")[-1], df, args.verbose
             )
 
             for metric_df, col in zip(data, args.all):
-                metric_df[COLUMN_NAME] = df.iloc[:, col]
+                metric_df[col_name] = df.iloc[:, col]
 
         metrics.to_csv(
             f"{args.results_path}/csv/{dataset}.csv",

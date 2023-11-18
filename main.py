@@ -1,3 +1,5 @@
+import os
+
 import numpy as np
 import pandas as pd
 from sklearn.metrics import accuracy_score
@@ -19,83 +21,95 @@ from src.reaction import (
 from src.ssl import Ensemble, SelfFlexCon
 from src.utils import Log
 
-detectors = [
-    Statistical,
-    Normal,
-    FixedThreshold,
-]
-reactors = [
-    Exchange,
-    # Pareto,
-    # VolatileExchange,
-]
+if __name__ == '__main__':
+    detectors = [
+        Statistical,
+        Normal,
+        FixedThreshold,
+    ]
+    reactors = [
+        Exchange,
+        Pareto,
+        VolatileExchange,
+    ]
 
-# datasets = glob('datasets/*.csv')
-# datasets.sort()
-datasets = [
-    "Connect-4.csv",
-    "Electricity.csv",
-    "Fars.csv",
-    "ForestCover.csv",
-    "GEARS2C2D.csv",
-    "Poker.csv",
-    "Shuttle.csv",
-    "UG2C3D.csv",
-]
+    # datasets = glob('datasets/*.csv')
+    # datasets.sort()
+    datasets = [
+        "Connect-4.csv",
+        "Electricity.csv",
+        "Fars.csv",
+        "ForestCover.csv",
+        "GEARS2C2D.csv",
+        "Poker.csv",
+        "Shuttle.csv",
+        "UG2C3D.csv",
+    ]
 
-statistics_strategy = ["drift", "simple"]
+    statistics_strategy = [
+        "drift",
+        "simple",
+    ]
 
-for statistics in statistics_strategy:
-    for dataset in datasets:
-        for reactor in reactors:
-            for detector in detectors:
-                dydasl = Core(Ensemble, detector, reactor)
-                dydasl.configure_params(
-                    ssl_algorithm=SelfFlexCon,
-                    params_ssl_algorithm={},
-                    params_detector={},
-                    params_reactor={
-                        "pareto_strategy": "classifier_ensemble",
-                        "q_measure": {
-                            "absolute": True,
-                            "average": True,
+    # Train all ensemble with first chunk?
+    std = False
+
+    os.makedirs('running', exist_ok=True)
+
+    for statistics in statistics_strategy:
+        for dataset in datasets:
+            for reactor in reactors:
+                for detector in detectors:
+                    dydasl = Core(Ensemble, detector, reactor)
+                    dydasl.configure_params(
+                        ssl_algorithm=SelfFlexCon,
+                        params_training={
+                            "is_weight": True,
                         },
-                    },
-                )
-                dydasl.add_metrics("acc", accuracy_score)
-                dydasl.add_metrics("f1", f1_score)
-                dydasl.add_metrics("kappa", kappa)
+                        params_detector={},
+                        params_reactor={
+                            "pareto_strategy": "classifier_ensemble",
+                            "q_measure": {
+                                "absolute": True,
+                                "average": True,
+                            },
+                        },
+                    )
+                    dydasl.add_metrics("acc", accuracy_score)
+                    dydasl.add_metrics("f1", f1_score)
+                    dydasl.add_metrics("kappa", kappa)
 
-                dydasl.reset()
-                print(dataset)
-                dataframe = pd.read_csv(
-                    dataset
+                    dydasl.reset()
+                    print(dataset)
+                    dataframe = pd.read_csv(
+                        dataset
 
-                    if "datasets/" in dataset
-                    else "datasets/" + dataset
-                )
-                Log().filename = {
-                    "data_name": dataset.split(".", maxsplit=1)[0].split("/")[
-                        -1
-                    ],
-                    "method_name": f"DyDaSL_{type(dydasl.detector).__name__}"
-                    f"_{type(dydasl.reactor).__name__}_{statistics}",
-                }
-                # depende do dataset
-                dim = dataframe.shape
-                array = dataframe.values
-                instances = array[: dim[0], : dim[1] - 1]
-                target = array[: dim[0], dim[1] - 1]
-                class_set = np.unique(target)
-                class_count = np.unique(target).shape[0]
-                stream = DataStream(
-                    instances,
-                    target,
-                    target_idx=-1,
-                    n_targets=class_count,
-                    cat_features=None,  # Categorical features?
-                    name=None,
-                    allow_nan=True,
-                )
-                Log().write_archive_header()
-                dydasl.run(stream, statistics)
+                        if "datasets/" in dataset
+                        else "datasets/" + dataset
+                    )
+                    Log().filename = {
+                        "data_name": dataset.split(".", maxsplit=1)[0].split("/")[
+                            -1
+                        ],
+                        "method_name": f"{statistics.upper()[0]}"
+                        f"-{type(dydasl.detector).__name__[0]}"
+                        f"-{type(dydasl.reactor).__name__[0]}",
+                    }
+                    # depende do dataset
+                    dim = dataframe.shape
+                    array = dataframe.values
+                    instances = array[: dim[0], : dim[1] - 1]
+                    target = array[: dim[0], dim[1] - 1]
+                    class_set = np.unique(target)
+                    class_count = np.unique(target).shape[0]
+                    stream = DataStream(
+                        instances,
+                        target,
+                        target_idx=-1,
+                        n_targets=class_count,
+                        cat_features=None,  # Categorical features?
+                        name=None,
+                        allow_nan=True,
+                    )
+                    Log().write_archive_header()
+                    dydasl.run(stream, statistics, std=std)

@@ -68,6 +68,7 @@ class Log():
             + f"Dataset: {self.__data_name}\n"
             + f"Start Time: {self._actual_time}\n"
             + "-" * 88
+            + "\n"
             + "In each iteration, info means:\n"
             + "info01: ensemble size;\n"
             + "info02: ensemble hits;\n"

@@ -6,4 +6,4 @@ services:
       args:
         USR: ${USER}
     volumes:
-      - .:/app
+      - .:/exp

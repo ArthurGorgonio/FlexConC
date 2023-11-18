@@ -125,6 +125,7 @@ class Core:
         """
         instances, classes = chunk.next_sample(self.chunk_size)
 
+        self.run_first_it(instances, classes)
         if std:
             while len(self.ensemble.ensemble) < self.MAX_SIZE:
                 self.run_first_it(instances, classes)
@@ -155,9 +156,14 @@ class Core:
             )
 
             if self.ensemble.is_weights:
-                self.ensemble.update_weights(instances, classes, f1_score)
+                self.ensemble.update_weights(
+                    instances,
+                    classes,
+                    f1_score,
+                    **{'average':'macro'}
+                )
 
-            if self.ensemble_update(strategy, drift):
+            if self.ensemble_update(strategy, drift) and not std:
                 self.run_first_it(instances, classes)
 
         return self

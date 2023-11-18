@@ -233,6 +233,7 @@ class Ensemble:
         instances: np.ndarray,
         classes: np.ndarray,
         metric: callable = None,
+        **metric_args,
     ) -> None:
         """Realiza o ajuste nos pesos dos classificadores base do
         comitê. Por meio da eficácia de classificação dos modelos.
@@ -253,7 +254,7 @@ class Ensemble:
             metric = accuracy_score
         for i, cl in enumerate(self.ensemble):
             y_pred = self.predict_one_classifier(cl, instances)
-            self.weights[i] = metric(classes, y_pred)
+            self.weights[i] = metric(classes, y_pred, **metric_args)
 
     def swap(
         self,
