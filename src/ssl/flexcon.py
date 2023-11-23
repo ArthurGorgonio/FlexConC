@@ -32,7 +32,7 @@ class BaseFlexConC(SelfTrainingClassifier):
         self.termination_condition_ = ""
         self.pred_x_it: Dict = {}
         self.cl_memory: List = []
-        self.size_y: 0
+        self.size_y: int = 0
         self.base_estimator_ = clone(self.base_estimator)
         self.base_estimator_select_ = clone(self.base_estimator)
 

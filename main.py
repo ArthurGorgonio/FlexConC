@@ -24,8 +24,10 @@ args = parser.parse_args()
 comite = Ensemble(SelfFlexCon)
 parent_dir = "path_for_results"
 
-datasets = [f for f in listdir('datasets/') if isfile(join('datasets/', f))]
-init_labelled = [0.05, 0.10, 0.15, 0.20, 0.25]
+# datasets = [f for f in listdir('datasets/') if isfile(join('datasets/', f))]
+# init_labelled = [0.05, 0.10, 0.15, 0.20, 0.25]
+datasets = ['Car.csv']
+init_labelled = [0.10]
 
 for dataset in datasets:
     path = os.path.join(parent_dir, dataset)
@@ -59,7 +61,7 @@ for dataset in datasets:
                         fold += 1
                         with open(f'{path}/Comite_Naive_{round(labelled_level, 4) * 100} ({dataset}).txt', 'a') as f:
                             f.write(
-                                f"Instâncias rotuladas: {labelled_instances}\n" 
+                                f"Instâncias rotuladas: {labelled_instances}\n"
                                 f"Usando: {round(labelled_level, 4) * 100}% das instâncias rotuladas\n"
                             )
                     y = ut.select_labels(y_train, X_train, labelled_instances)
@@ -71,7 +73,7 @@ for dataset in datasets:
                         fold += 1
                         with open(f'{path}/Comite_Tree_{round(labelled_level, 4) * 100} ({dataset}).txt', 'a') as f:
                             f.write(
-                                f"Instâncias rotuladas: {labelled_instances}\n" 
+                                f"Instâncias rotuladas: {labelled_instances}\n"
                                 f"Usando: {round(labelled_level, 4) * 100}% das instâncias rotuladas\n"
                             )
                     y = ut.select_labels(y_train, X_train, labelled_instances)
@@ -84,7 +86,7 @@ for dataset in datasets:
                         fold += 1
                         with open(f'{path}/Comite_KNN_{round(labelled_level, 4) * 100} ({dataset}).txt', 'a') as f:
                             f.write(
-                                f"Instâncias rotuladas: {labelled_instances}\n" 
+                                f"Instâncias rotuladas: {labelled_instances}\n"
                                 f"Usando: {round(labelled_level, 4) * 100}% das instâncias rotuladas\n"
                             )
                     y = ut.select_labels(y_train, X_train, labelled_instances)
@@ -97,7 +99,7 @@ for dataset in datasets:
                         fold += 1
                         with open(f'{path}/Comite_Heterogeneo_{round(labelled_level, 4) * 100} ({dataset}).txt', 'a') as f:
                             f.write(
-                                f"Instâncias rotuladas: {labelled_instances}\n" 
+                                f"Instâncias rotuladas: {labelled_instances}\n"
                                 f"Usando: {round(labelled_level, 4) * 100}% das instâncias rotuladas\n"
                             )
                     y = ut.select_labels(y_train, X_train, labelled_instances)
@@ -108,7 +110,7 @@ for dataset in datasets:
                     for i in ut.list_knn:
                         comite.add_classifier(i)
                     comite.fit_ensemble(X_train, y)
-                
+
                 y_pred = comite.predict(X_test)
 
                 fold_result.append(ut.result(args.classifier, dataset, y_test, y_pred, path, labelled_level))

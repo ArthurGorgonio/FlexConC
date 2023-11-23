@@ -2,7 +2,7 @@ from nis import match
 from statistics import mean, stdev
 
 import numpy as np
-from ipdb import set_trace
+# from ipdb import set_trace
 from sklearn.metrics import accuracy_score, f1_score
 
 # from pushbullet.pushbullet import PushBullet
@@ -11,22 +11,22 @@ from sklearn.naive_bayes import GaussianNB as Naive
 from sklearn.neighbors import KNeighborsClassifier as KNN
 from sklearn.tree import DecisionTreeClassifier as Tree
 
-# CONEXÃO COM PUSHBULLET            
+# CONEXÃO COM PUSHBULLET
 # apiKey = "o.uV6lySsrOlDbTyo0OJg9Jzh6SOZcWCTz"
 # p = PushBullet(apiKey)
 # devices = p.getDevices()
 
 # LISTA DE CLASSIFICADORES
 list_tree = [
-    Tree(), 
+    Tree(),
     Tree(splitter="random"),
     Tree(max_features='auto'),
-    Tree(criterion="entropy"), 
-    Tree(criterion="entropy", splitter="random"), 
+    Tree(criterion="entropy"),
+    Tree(criterion="entropy", splitter="random"),
     Tree(criterion="entropy", max_features="auto"),
     Tree(criterion="entropy", max_features='auto', splitter="random"),
-    Tree(criterion="entropy", max_features='sqrt', splitter="random"), 
-    Tree(max_features='sqrt', splitter="random"), 
+    Tree(criterion="entropy", max_features='sqrt', splitter="random"),
+    Tree(max_features='sqrt', splitter="random"),
     Tree(max_features='auto', splitter="random")]
 
 list_knn= [
@@ -60,7 +60,7 @@ def select_labels(y_train, X_train, labelled_instances):
     Returns:
         Retorna o array de classes com base nos rótulos das instâncias selecionadas
     """
-    set_trace()
+    # set_trace()
     count = 0
     labels = np.unique(y_train)
     if -1 in labels:
@@ -73,7 +73,7 @@ def select_labels(y_train, X_train, labelled_instances):
             instances.append(y_train[instance])
         for label in labels:
             if label in instances: count += 1
-    mask = np.ones(len(X_train), np.bool)
+    mask = np.ones(len(X_train), bool)
     mask[random_unlabeled_points] = 0
     y_train[mask] = -1
     return y_train
