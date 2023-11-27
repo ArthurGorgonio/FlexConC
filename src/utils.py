@@ -91,14 +91,17 @@ def result(option, dataset, y_test, y_pred, path, labelled_level):
     """
     if option == 1:
         print(f'Salvando os resultados em um arquivo Comite_Naive_{round(labelled_level, 4) * 100} ({dataset}).txt\n\n')
-        print('Finalizando...')
         acc = round(accuracy_score(y_test, y_pred), 4) * 100
         # print('Enviando notificação push...')
         # p.pushNote(devices[1]["iden"], f"ACC: {round(accuracy_score(y_test, y_pred), 4) * 100}%", f'Comite_Naive_{round(labelled_level, 4) * 100} ({dataset}).txt')
         with open(f'{path}/Comite_Naive_{round(labelled_level, 4) * 100} ({dataset}).txt', 'a') as f:
+            texto = centralizar_texto_float(acc,5,0)
+            texto2 = centralizar_texto_float((f1_score(y_test, y_pred, average="macro") * 100), 5, 0)
             f.write(
-                f"\n\nACC: {acc}%\n"
-                f'F1-Score: {round(f1_score(y_test, y_pred, average="macro"), 4) * 100}%\n'
+                #ACC
+                f"\n|          {texto}%           |"
+                #F1-Score
+                f'                 {texto2}%                 |'
                 # f"Motivo da finalização: {comite.ensemble[0].termination_condition_}\n"
                 # f"Valor do teste estatístico é de {alpha}, significante? {alpha <= 0.05}\n"
             )
@@ -106,14 +109,13 @@ def result(option, dataset, y_test, y_pred, path, labelled_level):
 
     elif option == 2:
         print(f'Salvando os resultados em um arquivo Comite_Tree_{round(labelled_level, 4) * 100} ({dataset}).txt\n\n')
-        print('Finalizando...')
         acc = round(accuracy_score(y_test, y_pred), 4) * 100
         # print('Enviando notificação push...')
         # p.pushNote(devices[1]["iden"], f"ACC: {round(accuracy_score(y_test, y_pred), 4) * 100}%", f'Comite_Tree_{round(labelled_level, 4) * 100} ({dataset}).txt')
         with open(f'{path}/Comite_Tree_{round(labelled_level, 4) * 100} ({dataset}).txt', 'a') as f:
             f.write(
-                f"\n\nACC: {acc}%\n"
-                f'F1-Score: {round(f1_score(y_test, y_pred, average="macro"), 4) * 100}%\n'
+                f"\n\nACC: {acc}%"
+                f'\t|\tF1-Score: {round(f1_score(y_test, y_pred, average="macro"), 4) * 100}%\n'
                 # f"Motivo da finalização: {comite.ensemble[0].termination_condition_}\n"
                 # f"Valor do teste estatístico é de {alpha}, significante? {alpha <= 0.05}\n"
             )
@@ -121,15 +123,14 @@ def result(option, dataset, y_test, y_pred, path, labelled_level):
 
     elif option == 3:
         print(f'Salvando os resultados em um arquivo Comite_KNN_{round(labelled_level, 4) * 100} ({dataset}).txt\n\n')
-        print('Finalizando...')
         acc = round(accuracy_score(y_test, y_pred), 4) * 100
         # print('Enviando notificação push...')
         # TODO: FALTA PEGAR CADA RESULTADO PREENCHER UM ARRAY REALIZAR A MÉDIA E AI SIM ENVIAR A MSG
         # p.pushNote(devices[1]["iden"], f"ACC: {round(accuracy_score(y_test, y_pred), 4) * 100}%", f'Comite_KNN_{round(labelled_level, 4) * 100} ({dataset}).txt')
         with open(f'{path}/Comite_KNN_{round(labelled_level, 4) * 100} ({dataset}).txt', 'a') as f:
             f.write(
-                f"\n\nACC: {acc}%\n"
-                f'F1-Score: {round(f1_score(y_test, y_pred, average="macro"), 4) * 100}%\n'
+                f"\n\nACC: {acc}%"
+                f'\t|\tF1-Score: {round(f1_score(y_test, y_pred, average="macro"), 4) * 100}%\n'
                 # f"Motivo da finalização: {comite.ensemble[0].termination_condition_}\n"
                 # f"Valor do teste estatístico é de {alpha}, significante? {alpha <= 0.05}\n"
             )
@@ -137,7 +138,6 @@ def result(option, dataset, y_test, y_pred, path, labelled_level):
 
     elif option == 4:
         print(f'Salvando os resultados em um arquivo Comite_Heterogeneo_{round(labelled_level, 4) * 100} ({dataset}).txt\n\n')
-        print('Finalizando...')
         acc = round(accuracy_score(y_test, y_pred), 4) * 100
         # print('Enviando notificação push...')
         # p.pushNote(devices[1]["iden"], f"ACC: {round(accuracy_score(y_test, y_pred), 4) * 100}%", f'Comite_KNN_{round(labelled_level, 4) * 100} ({dataset}).txt')
@@ -153,21 +153,54 @@ def result(option, dataset, y_test, y_pred, path, labelled_level):
 def calculateMeanStdev(fold_result, option, labelled_level, path, dataset):
     if option == 1:
         with open(f'{path}/Comite_Naive_{round(labelled_level, 4) * 100} ({dataset}).txt', 'a') as f:
+            texto = centralizar_texto_float((round(mean(fold_result), 4)),5,0)
+            texto2 = centralizar_texto_float(round(stdev(fold_result), 4),5,0)
             f.write(
-                f'\nMédia ± désvio padrão: {round(mean(fold_result), 2)} ± {round(stdev(fold_result), 2)}\n'
+                f'\n|       Média: {texto}        |          Désvio padrão: {texto2}          |\n'
+                f"----------------------------------------------------------------------\n"
             )
     elif option == 2:
         with open(f'{path}/Comite_Tree_{round(labelled_level, 4) * 100} ({dataset}).txt', 'a') as f:
             f.write(
-                f'\nMédia ± désvio padrão: {round(mean(fold_result), 2)} ± {round(stdev(fold_result), 2)}\n'
+                f'\nMédia ± désvio padrão: {round(mean(fold_result), 4)} ± {round(stdev(fold_result), 4)}\n'
+                f"\n-----------------------------------------------------------------------"
             )
     elif option == 3:
         with open(f'{path}/Comite_KNN_{round(labelled_level, 4) * 100} ({dataset}).txt', 'a') as f:
             f.write(
-                f'\nMédia ± désvio padrão: {round(mean(fold_result), 2)} ± {round(stdev(fold_result), 2)}\n'
+                f'\nMédia ± désvio padrão: {round(mean(fold_result), 4)} ± {round(stdev(fold_result), 4)}\n'
+                f"\n-----------------------------------------------------------------------"
             )
     elif option == 4:
         with open(f'{path}/Comite_Heterogeneo_{round(labelled_level, 4) * 100} ({dataset}).txt', 'a') as f:
             f.write(
-                f'\n{round(mean(fold_result), 2)} ± {round(stdev(fold_result), 2)}\n'
+                f'\n{round(mean(fold_result), 4)} ± {round(stdev(fold_result), 4)}\n'
+                f"\n-----------------------------------------------------------------------"
             )
+
+def centralizar_texto_float(numero, tam, horizontal):
+    # Converter o número para uma string com formatação
+    texto = "{:.2f}".format(numero)  # Considerando duas casas decimais, ajuste conforme necessário
+    tam_texto = len(texto)
+
+    # Contar caracteres especiais para ajustar o tamanho
+    for c in range(tam_texto):
+        if ord(texto[c]) < 0:
+            tam += 1
+            c += 1
+
+    if horizontal == 1:
+        pos = tam - tam_texto
+    elif horizontal == -1:
+        pos = 0
+    else:
+        pos = tam // 2 - tam_texto // 2
+
+    # Inicializar a string resultante com espaços em branco
+    result_str = [' '] * tam
+
+    for c in range(tam):
+        if pos <= c < (pos + tam_texto):
+            result_str[c] = texto[c - pos]
+
+    return ''.join(result_str)
