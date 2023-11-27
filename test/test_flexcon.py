@@ -1,8 +1,7 @@
+from mock import Mock, patch
 from unittest import TestCase
 
-from mock import Mock, patch
-
-from src.flexcon import FlexConC
+from src.ssl.flexcon import BaseFlexConC
 
 
 class SelfTrainingClassifierMock(Mock):
@@ -46,7 +45,7 @@ class GenerateMemory():
             },
             3: {
                 'confidence': 0.96,
-                'classes':1
+                'classes': 1
             },
             4: {
                 'confidence': 0.7,
@@ -58,20 +57,21 @@ class GenerateMemory():
             }
         }
 
+
 class TestFlexCon(TestCase):
-    @patch("src.flexcon.clone")
-    @patch("src.flexcon.SelfTrainingClassifier")
+    @patch("src.ssl.flexcon.clone")
+    @patch("src.ssl.flexcon.SelfTrainingClassifier")
     def setUp(self, super_class, model_clone):
         super_class.return_value = SelfTrainingClassifierMock()
         model_clone.return_value = ""
 
-        self.flexcon = FlexConC("")
+        self.flexcon = BaseFlexConC("")
 
-    def test_update_model_memory(self):
+    def test_should_return_updated_cl_memory_by_weights_when_weights_are_passed(self):  # NOQA
         instances = [i for i in range(10)]
         labels = [0, 0, 0, 1, 1, 1, 1, 1, 0, 1]
         weights = [0.3, 0.2, 0.5, 0.6, 0.7, 0.1, 0.8, 0.4, 0.9, 0.57]
-        output_without_weights = [
+        expected_output_weights = [
             [0.3, 0],
             [0.2, 0],
             [0.5, 0],
@@ -83,12 +83,14 @@ class TestFlexCon(TestCase):
             [0.9, 0],
             [0, 0.57],
         ]
-
         self.flexcon.cl_memory = [[0] * 2 for _ in range(len(instances))]
         self.flexcon.update_memory(instances, labels, weights)
-        self.assertListEqual(self.flexcon.cl_memory, output_without_weights)
+        self.assertListEqual(self.flexcon.cl_memory, expected_output_weights)
 
-        expected_output_weights = [
+    def test_should_return_updated_cl_memory_by_one_when_no_weights_are_passed(self):  # NOQA
+        instances = [i for i in range(10)]
+        labels = [0, 0, 0, 1, 1, 1, 1, 1, 0, 1]
+        output_without_weights = [
             [1, 0],
             [1, 0],
             [1, 0],
@@ -102,9 +104,9 @@ class TestFlexCon(TestCase):
         ]
         self.flexcon.cl_memory = [[0] * 2 for _ in range(len(instances))]
         self.flexcon.update_memory(instances, labels)
-        self.assertListEqual(self.flexcon.cl_memory, expected_output_weights)
+        self.assertListEqual(self.flexcon.cl_memory, output_without_weights)
 
-    @patch("src.flexcon.FlexConC.remember")
+    @patch("src.ssl.flexcon.BaseFlexConC.remember")
     def test_rules(self, remaind):
         remaind.return_value = [0]
         self.flexcon.threshold = 0.9

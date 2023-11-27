@@ -1,54 +1,117 @@
+import argparse
+import os
 import warnings
+from os import listdir
+from os.path import isfile, join
+from random import seed
 
-import numpy as np
+import pandas as pd
 from sklearn import datasets
-from sklearn.metrics import accuracy_score, f1_score
+from sklearn.metrics import accuracy_score
+from sklearn.model_selection import StratifiedKFold
 from sklearn.naive_bayes import GaussianNB as Naive
-from sklearn.tree import DecisionTreeClassifier as Tree
-from sklearn.neighbors import KNeighborsClassifier as KNN
 
-from src.ensemble import Ensemble
-from src.flexcon import FlexConC
+import src.utils as ut
+from src.ssl.ensemble import Ensemble
+from src.ssl.self_flexcon import SelfFlexCon
 
 warnings.simplefilter("ignore")
-# ssl = FlexConC(Naive(), verbose=True)
 
-# rng = np.random.RandomState(42)
-# iris = datasets.load_iris()
-# random_unlabeled_points = rng.rand(iris.target.shape[0]) < 0.9
-# iris.target_unlabelled = iris.target.copy()
-# iris.target_unlabelled[random_unlabeled_points] = -1
+parser = argparse.ArgumentParser(description="Escolha um classificador para criar um cômite")
+parser.add_argument('classifier', metavar='c', type=int, help='Escolha um classificador para criar um cômite. Opções: 1 - Naive Bayes, 2 - Tree Decision, 3 - Knn, 4 - Heterogeneous')
 
-# ssl.fit(iris.data, iris.target_unlabelled)
+args = parser.parse_args()
+comite = Ensemble(SelfFlexCon)
+parent_dir = "path_for_results"
 
-# y_pred = ssl.predict(iris.data[random_unlabeled_points, :])
-# y_true = iris.target[random_unlabeled_points]
+# datasets = [f for f in listdir('datasets/') if isfile(join('datasets/', f))]
+# init_labelled = [0.05, 0.10, 0.15, 0.20, 0.25]
+datasets = ['Car.csv']
+init_labelled = [0.10]
 
-# print(
-#     f"ACC: {round(accuracy_score(y_true, y_pred), 4)}%\n"
-#     f'F1-Score: {round(f1_score(y_true, y_pred, average="macro"), 4)}%\n'
-#     f"Motivo da finalização: {ssl.termination_condition_}"
-# )
+for dataset in datasets:
+    path = os.path.join(parent_dir, dataset)
+    os.makedirs(path, exist_ok=True)
+    for labelled_level in init_labelled:
+        fold_result = []
+        df = pd.read_csv('datasets/'+dataset, header=0)
+        seed(214)
+        kfold = StratifiedKFold(n_splits=10)
+        fold = 1
+        flag = 1
+        _instances = df.iloc[:,:-1].values #X
+        _target_unlabelled = df.iloc[:,-1].values #Y
+        # _target_unlabelled_copy = _target_unlabelled.copy()
 
-comite = Ensemble()
-comite.add_classifier(Naive())
-comite.add_classifier(Tree())
-comite.add_classifier(KNN())
+        for train, test in kfold.split(_instances, _target_unlabelled):
+            X_train, X_test = _instances[train], _instances[test]
+            y_train, y_test = _target_unlabelled[train], _target_unlabelled[test]
+            labelled_instances = round(len(X_train)*labelled_level)
 
+            if args.classifier != 1 and args.classifier != 2 and args.classifier != 3 and args.classifier != 4:
+                print('\nOpção inválida! Escolha corretamente...\nOpções: 1 - Naive Bayes, 2 - Tree Decision, 3 - Knn, 4 - Heterogeneous\nEx: python main.py 1\n')
+                exit()
+            else:
+                # DISPLAY QUE INFORMA PARA O USUÁRIO COMO PROCEDER
+                if(flag == 1):
+                    flag += 1
+                    print(f"\n\nO sistema irá selecionar instâncias da base {dataset}. Para o treinamento, será usado {round(labelled_level, 4) * 100}% das instâncias rotuladas de um total de {len(_instances)}.\n\n")
+                if args.classifier == 1:
+                    if(fold == 1):
+                        fold += 1
+                        with open(f'{path}/Comite_Naive_{round(labelled_level, 4) * 100} ({dataset}).txt', 'a') as f:
+                            f.write(
+                                f"Instâncias rotuladas: {labelled_instances}\n"
+                                f"Usando: {round(labelled_level, 4) * 100}% das instâncias rotuladas\n"
+                            )
+                    y = ut.select_labels(y_train, X_train, labelled_instances)
+                    for i in range(9):
+                        comite.add_classifier(Naive(var_smoothing=float(f'1e-{i}')))
+                    comite.fit_ensemble(X_train, y)
+                elif args.classifier == 2:
+                    if(fold == 1):
+                        fold += 1
+                        with open(f'{path}/Comite_Tree_{round(labelled_level, 4) * 100} ({dataset}).txt', 'a') as f:
+                            f.write(
+                                f"Instâncias rotuladas: {labelled_instances}\n"
+                                f"Usando: {round(labelled_level, 4) * 100}% das instâncias rotuladas\n"
+                            )
+                    y = ut.select_labels(y_train, X_train, labelled_instances)
+                    for i in ut.list_tree:
+                        comite.add_classifier(i)
+                    comite.fit_ensemble(X_train, y)
 
-rng = np.random.RandomState(42)
-iris = datasets.load_iris()
-random_unlabeled_points = rng.rand(iris.target.shape[0]) < 0.9
-iris.target_unlabelled = iris.target.copy()
-iris.target_unlabelled[random_unlabeled_points] = -1
+                elif args.classifier == 3:
+                    if(fold == 1):
+                        fold += 1
+                        with open(f'{path}/Comite_KNN_{round(labelled_level, 4) * 100} ({dataset}).txt', 'a') as f:
+                            f.write(
+                                f"Instâncias rotuladas: {labelled_instances}\n"
+                                f"Usando: {round(labelled_level, 4) * 100}% das instâncias rotuladas\n"
+                            )
+                    y = ut.select_labels(y_train, X_train, labelled_instances)
+                    for i in ut.list_knn:
+                        comite.add_classifier(i)
+                    comite.fit_ensemble(X_train, y)
 
-comite.fit_ensembĺe(iris.data, iris.target_unlabelled)
+                elif args.classifier == 4:
+                    if(fold == 1):
+                        fold += 1
+                        with open(f'{path}/Comite_Heterogeneo_{round(labelled_level, 4) * 100} ({dataset}).txt', 'a') as f:
+                            f.write(
+                                f"Instâncias rotuladas: {labelled_instances}\n"
+                                f"Usando: {round(labelled_level, 4) * 100}% das instâncias rotuladas\n"
+                            )
+                    y = ut.select_labels(y_train, X_train, labelled_instances)
+                    for i in range(9):
+                        comite.add_classifier(Naive(var_smoothing=float(f'1e-{i}')))
+                    for i in ut.list_tree:
+                        comite.add_classifier(i)
+                    for i in ut.list_knn:
+                        comite.add_classifier(i)
+                    comite.fit_ensemble(X_train, y)
 
-y_pred = comite.predict(iris.data[random_unlabeled_points, :])
-y_true = iris.target[random_unlabeled_points]
+                y_pred = comite.predict(X_test)
 
-print(
-    f"ACC: {round(accuracy_score(y_true, y_pred), 4)}%\n"
-    f'F1-Score: {round(f1_score(y_true, y_pred, average="macro"), 4)}%\n'
-    f"Motivo da finalização: {comite.ensemble[0].termination_condition_}"
-)
+                fold_result.append(ut.result(args.classifier, dataset, y_test, y_pred, path, labelled_level))
+        ut.calculateMeanStdev(fold_result, args.classifier, labelled_level, path, dataset)
