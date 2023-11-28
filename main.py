@@ -79,9 +79,11 @@ for i in range(1):
                             fold += 1
                             with open(f'{path}/Comite_Tree_{round(labelled_level, 4) * 100} ({dataset}).txt', 'a') as f:
                                 f.write(
-                                    f"\n-----------------------------------------------------------------------"
-                                    f"\n\nInstâncias rotuladas: {labelled_instances}"
-                                    f"\t|\tUsando: {round(labelled_level, 4) * 100}% das instâncias rotuladas\n"
+                                    f"----------------------------------------------------------------------"
+                                    f"\n| Instâncias rotuladas: {labelled_instances}"
+                                    f" | Usando: {round(labelled_level, 4) * 100}% das instâncias rotuladas |\n"
+                                    f"|- - - - - - ACC - - - - - -|"
+                                    f"- - - - - - - - F1-Score - - - - - - - -|"
                                 )
                         y = ut.select_labels(y_train, X_train, labelled_instances)
                         for i in ut.list_tree:
@@ -93,9 +95,11 @@ for i in range(1):
                             fold += 1
                             with open(f'{path}/Comite_KNN_{round(labelled_level, 4) * 100} ({dataset}).txt', 'a') as f:
                                 f.write(
-                                    f"\n-----------------------------------------------------------------------"
-                                    f"\n\nInstâncias rotuladas: {labelled_instances}"
-                                    f"\t|\tUsando: {round(labelled_level, 4) * 100}% das instâncias rotuladas\n"
+                                    f"----------------------------------------------------------------------"
+                                    f"\n| Instâncias rotuladas: {labelled_instances}"
+                                    f" | Usando: {round(labelled_level, 4) * 100}% das instâncias rotuladas |\n"
+                                    f"|- - - - - - ACC - - - - - -|"
+                                    f"- - - - - - - - F1-Score - - - - - - - -|"
                                 )
                         y = ut.select_labels(y_train, X_train, labelled_instances)
                         for i in ut.list_knn:
@@ -107,9 +111,11 @@ for i in range(1):
                             fold += 1
                             with open(f'{path}/Comite_Heterogeneo_{round(labelled_level, 4) * 100} ({dataset}).txt', 'a') as f:
                                 f.write(
-                                    f"\n-----------------------------------------------------------------------"
-                                    f"\n\nInstâncias rotuladas: {labelled_instances}"
-                                    f"\t|\tUsando: {round(labelled_level, 4) * 100}% das instâncias rotuladas\n"
+                                    f"----------------------------------------------------------------------"
+                                    f"\n| Instâncias rotuladas: {labelled_instances}"
+                                    f" | Usando: {round(labelled_level, 4) * 100}% das instâncias rotuladas |\n"
+                                    f"|- - - - - - ACC - - - - - -|"
+                                    f"- - - - - - - - F1-Score - - - - - - - -|"
                                 )
                         y = ut.select_labels(y_train, X_train, labelled_instances)
                         for i in range(9):
