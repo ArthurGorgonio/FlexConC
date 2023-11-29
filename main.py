@@ -15,7 +15,7 @@ import src.utils as ut
 from src.ssl.ensemble import Ensemble
 from src.ssl.self_flexcon import SelfFlexCon
 
-for i in range(1):
+for i in range(2):
         
     warnings.simplefilter("ignore")
 

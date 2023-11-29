@@ -89,9 +89,10 @@ def result(option, dataset, y_test, y_pred, path, labelled_level):
         comite (): Cômite de classificadores
         labelled_level (float): % que foi selecionada na iteração
     """
-    acc = round(accuracy_score(y_test, y_pred), 4) * 100
-    texto = centralizar_texto_float(acc,5,0)
-    texto2 = centralizar_texto_float((f1_score(y_test, y_pred, average="macro") * 100), 5, 0)
+    acc = round(accuracy_score(y_test, y_pred) * 100, 4)
+    f1  = round(f1_score(y_test, y_pred, average="macro") * 100, 4)
+    tAcc = str(acc) + "%"
+    tF1Score = str(f1) + "%"
     if option == 1:
         print(f'Salvando os resultados em um arquivo Comite_Naive_{round(labelled_level, 4) * 100} ({dataset}).txt\n\n')
         # print('Enviando notificação push...')
@@ -99,9 +100,9 @@ def result(option, dataset, y_test, y_pred, path, labelled_level):
         with open(f'{path}/Comite_Naive_{round(labelled_level, 4) * 100} ({dataset}).txt', 'a') as f:
             f.write(
                 #ACC
-                f"\n|          {texto}%           |"
+                f"\n|{tAcc.center(27)}|"
                 #F1-Score
-                f'                 {texto2}%                 |'
+                f'{tF1Score.center(40)}|'
                 # f"Motivo da finalização: {comite.ensemble[0].termination_condition_}\n"
                 # f"Valor do teste estatístico é de {alpha}, significante? {alpha <= 0.05}\n"
             )
@@ -114,9 +115,9 @@ def result(option, dataset, y_test, y_pred, path, labelled_level):
         with open(f'{path}/Comite_Tree_{round(labelled_level, 4) * 100} ({dataset}).txt', 'a') as f:
             f.write(
                 #ACC
-                f"\n|          {texto}%           |"
+                f"\n|{tAcc.center(27)}|"
                 #F1-Score
-                f'                 {texto2}%                 |'
+                f'{tF1Score.center(40)}|'
                 # f"Motivo da finalização: {comite.ensemble[0].termination_condition_}\n"
                 # f"Valor do teste estatístico é de {alpha}, significante? {alpha <= 0.05}\n"
             )
@@ -130,9 +131,9 @@ def result(option, dataset, y_test, y_pred, path, labelled_level):
         with open(f'{path}/Comite_KNN_{round(labelled_level, 4) * 100} ({dataset}).txt', 'a') as f:
             f.write(
                 #ACC
-                f"\n|          {texto}%           |"
+                f"\n|{tAcc.center(27)}|"
                 #F1-Score
-                f'                 {texto2}%                 |'
+                f'{tF1Score.center(40)}|'
                 # f"Motivo da finalização: {comite.ensemble[0].termination_condition_}\n"
                 # f"Valor do teste estatístico é de {alpha}, significante? {alpha <= 0.05}\n"
             )
@@ -145,65 +146,40 @@ def result(option, dataset, y_test, y_pred, path, labelled_level):
         with open(f'{path}/Comite_Heterogeneo_{round(labelled_level, 4) * 100} ({dataset}).txt', 'a') as f:
             f.write(
                 #ACC
-                f"\n|          {texto}%           |"
+                f"\n|{tAcc.center(27)}|"
                 #F1-Score
-                f'                 {texto2}%                 |'
+                f'{tF1Score.center(40)}|'
                 # f"Motivo da finalização: {comite.ensemble[0].termination_condition_}\n"
                 # f"Valor do teste estatístico é de {alpha}, significante? {alpha <= 0.05}\n"
             )
         return acc
 
 def calculateMeanStdev(fold_result, option, labelled_level, path, dataset):
-    texto = centralizar_texto_float((round(mean(fold_result), 4)),5,0)
-    texto2 = centralizar_texto_float(round(stdev(fold_result), 4),5,0)
+    media = round(mean(fold_result), 4)
+    dPadrao = round(stdev(fold_result), 4) 
+    tMedia = "Média: " + str(media) + "%"
+    tDesPadr = "Désvio padrão: " + str(dPadrao) + "%"
     if option == 1:
         with open(f'{path}/Comite_Naive_{round(labelled_level, 4) * 100} ({dataset}).txt', 'a') as f:
             f.write(
-                f'\n|       Média: {texto}        |          Désvio padrão: {texto2}          |\n'
+                f'\n|{tMedia.center(27)}|{tDesPadr.center(40)}|\n'
                 f"----------------------------------------------------------------------\n"
             )
     elif option == 2:
         with open(f'{path}/Comite_Tree_{round(labelled_level, 4) * 100} ({dataset}).txt', 'a') as f:
             f.write(
-                f'\n|       Média: {texto}        |          Désvio padrão: {texto2}          |\n'
+                f'\n|{tMedia.center(27)}|{tDesPadr.center(40)}|\n'
                 f"----------------------------------------------------------------------\n"
             )
     elif option == 3:
         with open(f'{path}/Comite_KNN_{round(labelled_level, 4) * 100} ({dataset}).txt', 'a') as f:
             f.write(
-                f'\n|       Média: {texto}        |          Désvio padrão: {texto2}          |\n'
+                f'\n|{tMedia.center(27)}|{tDesPadr.center(40)}|\n'
                 f"----------------------------------------------------------------------\n"
             )
     elif option == 4:
         with open(f'{path}/Comite_Heterogeneo_{round(labelled_level, 4) * 100} ({dataset}).txt', 'a') as f:
             f.write(
-                f'\n|       Média: {texto}        |          Désvio padrão: {texto2}          |\n'
+                f'\n|{tMedia.center(27)}|{tDesPadr.center(40)}|\n'
                 f"----------------------------------------------------------------------\n"
             )
-
-def centralizar_texto_float(numero, tam, horizontal):
-    # Converter o número para uma string com formatação
-    texto = "{:.2f}".format(numero)  # Considerando duas casas decimais, ajuste conforme necessário
-    tam_texto = len(texto)
-
-    # Contar caracteres especiais para ajustar o tamanho
-    for c in range(tam_texto):
-        if ord(texto[c]) < 0:
-            tam += 1
-            c += 1
-
-    if horizontal == 1:
-        pos = tam - tam_texto
-    elif horizontal == -1:
-        pos = 0
-    else:
-        pos = tam // 2 - tam_texto // 2
-
-    # Inicializar a string resultante com espaços em branco
-    result_str = [' '] * tam
-
-    for c in range(tam):
-        if pos <= c < (pos + tam_texto):
-            result_str[c] = texto[c - pos]
-
-    return ''.join(result_str)
