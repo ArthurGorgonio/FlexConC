@@ -15,7 +15,7 @@ import src.utils as ut
 from src.ssl.ensemble import Ensemble
 from src.ssl.self_flexcon import SelfFlexCon
 
-for i in range(1):
+for i in range(2):
         
     warnings.simplefilter("ignore")
 
@@ -58,15 +58,19 @@ for i in range(1):
                     if(flag == 1):
                         flag += 1
                         print(f"\n\nO sistema irá selecionar instâncias da base {dataset}. Para o treinamento, será usado {round(labelled_level, 4) * 100}% das instâncias rotuladas de um total de {len(_instances)}.\n\n")
+                    instanciasRot = labelled_instances
+                    instanciasRotPCento = (round(labelled_level, 4) * 100)
+                    tInstanciasRot = "Instâncias rotuladas: " + str(labelled_instances)
+                    tInstanciasRotPCento = " Usando: " + str(instanciasRotPCento) + "% das instâncias rotuladas "
                     if args.classifier == 1:
                         if(fold == 1):
                             fold += 1
                             with open(f'{path}/Comite_Naive_{round(labelled_level, 4) * 100} ({dataset}).txt', 'a') as f:
                                 f.write(
-                                    f"----------------------------------------------------------------------"
-                                    f"\n| Instâncias rotuladas: {labelled_instances}"
-                                    f" | Usando: {round(labelled_level, 4) * 100}% das instâncias rotuladas |\n"
-                                    f"|- - - - - - ACC - - - - - -|"
+                                    "-----------------------------------------------------------------------------------"
+                                    f"\n|{tInstanciasRot.center(40)}"
+                                    f"|{tInstanciasRotPCento.center(40)}|\n"
+                                    f"|- - - - - - - - - ACC  - - - - - - - - -|"
                                     f"- - - - - - - - F1-Score - - - - - - - -|"
                                 )
                         y = ut.select_labels(y_train, X_train, labelled_instances)
@@ -79,10 +83,10 @@ for i in range(1):
                             fold += 1
                             with open(f'{path}/Comite_Tree_{round(labelled_level, 4) * 100} ({dataset}).txt', 'a') as f:
                                 f.write(
-                                    f"----------------------------------------------------------------------"
-                                    f"\n| Instâncias rotuladas: {labelled_instances}"
-                                    f" | Usando: {round(labelled_level, 4) * 100}% das instâncias rotuladas |\n"
-                                    f"|- - - - - - ACC - - - - - -|"
+                                    "-----------------------------------------------------------------------------------"
+                                    f"\n|{tInstanciasRot.center(40)}"
+                                    f"|{tInstanciasRotPCento.center(40)}|\n"
+                                    f"|- - - - - - - - - ACC  - - - - - - - - -|"
                                     f"- - - - - - - - F1-Score - - - - - - - -|"
                                 )
                         y = ut.select_labels(y_train, X_train, labelled_instances)
@@ -95,10 +99,10 @@ for i in range(1):
                             fold += 1
                             with open(f'{path}/Comite_KNN_{round(labelled_level, 4) * 100} ({dataset}).txt', 'a') as f:
                                 f.write(
-                                    f"----------------------------------------------------------------------"
-                                    f"\n| Instâncias rotuladas: {labelled_instances}"
-                                    f" | Usando: {round(labelled_level, 4) * 100}% das instâncias rotuladas |\n"
-                                    f"|- - - - - - ACC - - - - - -|"
+                                    "-----------------------------------------------------------------------------------"
+                                    f"\n|{tInstanciasRot.center(40)}"
+                                    f"|{tInstanciasRotPCento.center(40)}|\n"
+                                    f"|- - - - - - - - - ACC  - - - - - - - - -|"
                                     f"- - - - - - - - F1-Score - - - - - - - -|"
                                 )
                         y = ut.select_labels(y_train, X_train, labelled_instances)
@@ -111,10 +115,10 @@ for i in range(1):
                             fold += 1
                             with open(f'{path}/Comite_Heterogeneo_{round(labelled_level, 4) * 100} ({dataset}).txt', 'a') as f:
                                 f.write(
-                                    f"----------------------------------------------------------------------"
-                                    f"\n| Instâncias rotuladas: {labelled_instances}"
-                                    f" | Usando: {round(labelled_level, 4) * 100}% das instâncias rotuladas |\n"
-                                    f"|- - - - - - ACC - - - - - -|"
+                                    "-----------------------------------------------------------------------------------"
+                                    f"\n|{tInstanciasRot.center(40)}"
+                                    f"|{tInstanciasRotPCento.center(40)}|\n"
+                                    f"|- - - - - - - - - ACC  - - - - - - - - -|"
                                     f"- - - - - - - - F1-Score - - - - - - - -|"
                                 )
                         y = ut.select_labels(y_train, X_train, labelled_instances)
