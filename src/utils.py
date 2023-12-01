@@ -20,14 +20,14 @@ from sklearn.tree import DecisionTreeClassifier as Tree
 list_tree = [
     Tree(),
     Tree(splitter="random"),
-    Tree(max_features='auto'),
+    Tree(max_features=None),
     Tree(criterion="entropy"),
     Tree(criterion="entropy", splitter="random"),
-    Tree(criterion="entropy", max_features="auto"),
-    Tree(criterion="entropy", max_features='auto', splitter="random"),
+    Tree(criterion="entropy", max_features=None),
+    Tree(criterion="entropy", max_features=None, splitter="random"),
     Tree(criterion="entropy", max_features='sqrt', splitter="random"),
     Tree(max_features='sqrt', splitter="random"),
-    Tree(max_features='auto', splitter="random")]
+    Tree(max_features=None, splitter="random")]
 
 list_knn= [
     KNN(n_neighbors=4, weights='distance'),KNN(n_neighbors=4),
