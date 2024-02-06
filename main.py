@@ -15,8 +15,24 @@ import src.utils as ut
 from src.ssl.ensemble import Ensemble
 from src.ssl.self_flexcon import SelfFlexCon
 
-for i in range(2):
-        
+# from src.ssl.flexcon import BaseFlexConC
+# from sklearn.semi_supervised import SelfTrainingClassifier
+# from sklearn.base import BaseEstimator, MetaEstimatorMixin
+
+cont = 0
+quant = 10
+
+# clas = SelfTrainingClassifier(MetaEstimatorMixin, BaseEstimator)
+# base = clas.base_estimator
+# cr = BaseFlexConC(base_estimator=base, cr=0.1, threshold=0.9, verbose=True)
+# valor_cr, valor_threshold = cr.get_atributs
+valor_cr = 0.05
+valor_threshold = 0.95
+
+for i in range(quant):
+    
+    cont += 1
+
     warnings.simplefilter("ignore")
 
     parser = argparse.ArgumentParser(description="Escolha um classificador para criar um cômite")
@@ -29,7 +45,7 @@ for i in range(2):
     # datasets = [f for f in listdir('datasets/') if isfile(join('datasets/', f))]
     # init_labelled = [0.05, 0.10, 0.15, 0.20, 0.25]
     datasets = ['Car.csv']
-    init_labelled = [0.10]
+    init_labelled = [0.05]
 
     for dataset in datasets:
         path = os.path.join(parent_dir, dataset)
@@ -133,4 +149,4 @@ for i in range(2):
                     y_pred = comite.predict(X_test)
 
                     fold_result.append(ut.result(args.classifier, dataset, y_test, y_pred, path, labelled_level))
-            ut.calculateMeanStdev(fold_result, args.classifier, labelled_level, path, dataset)
+            ut.calculateMeanStdev(fold_result, args.classifier, labelled_level, path, dataset, cont, quant, valor_cr, valor_threshold)

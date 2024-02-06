@@ -11,6 +11,8 @@ from sklearn.naive_bayes import GaussianNB as Naive
 from sklearn.neighbors import KNeighborsClassifier as KNN
 from sklearn.tree import DecisionTreeClassifier as Tree
 
+# from ssl.flexcon import BaseFlexConC
+
 # CONEXÃO COM PUSHBULLET
 # apiKey = "o.uV6lySsrOlDbTyo0OJg9Jzh6SOZcWCTz"
 # p = PushBullet(apiKey)
@@ -154,17 +156,15 @@ def result(option, dataset, y_test, y_pred, path, labelled_level):
             )
         return acc
 
-def calculateMeanStdev(fold_result, option, labelled_level, path, dataset):
-    cont = 1
+def calculateMeanStdev(fold_result, option, labelled_level, path, dataset, cont, quant, cr, threshold):
     media = round(mean(fold_result), 4)
     dPadrao = round(stdev(fold_result), 4)
-    mediaG = media/cont
     tMedia = "Média: " + str(media)
     tDesPadr = "Désvio padrão: " + str(dPadrao)
-    tCR = "CR = 0.05"
-    tTH = "THRESHOLD = 0.95"
-    tCont = "TESTE = " + str(cont) + "/100"
-    tMediaG = "MÉDIA G ATUAL = " + str(mediaG)
+    tCR = "CR = " + str(cr)
+    tTH = "THRESHOLD = " + str(threshold)
+    tCont = "TESTE = " + str(cont) + "/" + str(quant)
+    tMediaG = "MÉDIA G ATUAL = " + str(media)
     if option == 1:
         with open(f'{path}/Comite_Naive_{round(labelled_level, 4) * 100} ({dataset}).txt', 'a') as f:
             f.write(

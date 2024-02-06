@@ -22,6 +22,7 @@ class BaseFlexConC(SelfTrainingClassifier):
         )
         self.validate()
         self.cr: float = cr
+        self.threshold: float = threshold
         self.verbose = verbose
         self.old_selected: List = []
         self.dict_first: Dict = {}
@@ -40,6 +41,9 @@ class BaseFlexConC(SelfTrainingClassifier):
     def fit(self, X, y):
         ...
 
+    def get_atributs(self):
+        return self.cr, self.threshold
+    
     def validate(self):
         # Validate the fitted estimator since `predict_proba` can be
         # delegated to an underlying "final" fitted estimator as
