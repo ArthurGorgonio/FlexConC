@@ -45,7 +45,7 @@ for i in range(quant):
     # datasets = [f for f in listdir('datasets/') if isfile(join('datasets/', f))]
     # init_labelled = [0.05, 0.10, 0.15, 0.20, 0.25]
     datasets = ['Car.csv']
-    init_labelled = [0.05]
+    init_labelled = [0.1]
 
     for dataset in datasets:
         path = os.path.join(parent_dir, dataset)
