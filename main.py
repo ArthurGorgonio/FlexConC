@@ -73,7 +73,7 @@ for i in range(quant):
                     # DISPLAY QUE INFORMA PARA O USUÁRIO COMO PROCEDER
                     if(flag == 1):
                         flag += 1
-                        print(f"\n\nO sistema irá selecionar instâncias da base {dataset}. Para o treinamento, será usado {round(labelled_level, 4) * 100}% das instâncias rotuladas de um total de {len(_instances)}.\n\n")
+                        print(f"\n\nO sistema irá selecionar instâncias da base {dataset}. Para o treinamento, será usado {round(labelled_level, 4) * 100}% das instâncias rotuladas de um total de {len(_instances)}. {cont}ª rodada de {quant}.\n\n")
                     instanciasRot = labelled_instances
                     instanciasRotPCento = (round(labelled_level, 4) * 100)
                     tInstanciasRot = "Instâncias rotuladas: " + str(labelled_instances)
