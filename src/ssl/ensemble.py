@@ -11,9 +11,10 @@ class Ensemble:
     seus métodos
     """
 
-    def __init__(self, ssl_algorithm: callable):
+    def __init__(self, ssl_algorithm: callable, **kwargs):
         self.ensemble = []
         self.ssl_algorithm = ssl_algorithm
+        self.params = kwargs
 
     def add_classifier(self, classifier):
         """
@@ -22,7 +23,7 @@ class Ensemble:
         Args:
             classifier: Classificador
         """
-        flexconc = self.ssl_algorithm(classifier)
+        flexconc = self.ssl_algorithm(classifier, **self.params)
         self.ensemble.append(flexconc)
 
     def add_model(self, model):

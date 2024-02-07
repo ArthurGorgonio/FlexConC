@@ -43,7 +43,7 @@ class BaseFlexConC(SelfTrainingClassifier):
 
     def get_atributs(self):
         return self.cr, self.threshold
-    
+
     def validate(self):
         # Validate the fitted estimator since `predict_proba` can be
         # delegated to an underlying "final" fitted estimator as

@@ -5,8 +5,11 @@ from src.ssl.flexcon import BaseFlexConC
 
 
 class SelfFlexCon(BaseFlexConC):
-    def __init__(self, base_estimator):
-        super().__init__(base_estimator=base_estimator)
+    def __init__(self, base_estimator, **kwargs):
+        super().__init__(
+            base_estimator=base_estimator,
+            **kwargs
+        )
         self.n_iter_ = 0
 
     # def __str__(self):

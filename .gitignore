@@ -13,3 +13,8 @@ datasets/
 .vscode/
 .venv/
 venv/
+plots/
+*.txt
+*.dat
+*.png
+*.csv
