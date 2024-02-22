@@ -14,7 +14,7 @@ datasets/
 .venv/
 venv/
 plots/
-#path_for_results/
+path_for_results/
 *.txt
 *.dat
 *.png
