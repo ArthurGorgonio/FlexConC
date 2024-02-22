@@ -24,7 +24,7 @@ warnings.simplefilter("ignore")
 parser = argparse.ArgumentParser(description="Escolha um classificador para criar um cômite")
 parser.add_argument('classifier', metavar='c', type=int, help='Escolha um classificador para criar um cômite. Opções: 1 - Naive Bayes, 2 - Tree Decision, 3 - Knn, 4 - Heterogeneous')
 parent_dir = "path_for_results"
-datasets = ['Car.csv']
+datasets = ['Car.csv', 'Adult.csv']
 init_labelled = [0.05]
 
 args = parser.parse_args()
