@@ -16,16 +16,16 @@ from src.ssl.ensemble import Ensemble
 from src.ssl.self_flexcon import SelfFlexCon
 
 
-crs = [0.05]
-thresholds = [0.95]
+crs = [0.03, 0.05, 0.08, 0.1]
+thresholds = [0.98, 0.95, 0.93, 0.9]
 
 warnings.simplefilter("ignore")
 
 parser = argparse.ArgumentParser(description="Escolha um classificador para criar um cômite")
 parser.add_argument('classifier', metavar='c', type=int, help='Escolha um classificador para criar um cômite. Opções: 1 - Naive Bayes, 2 - Tree Decision, 3 - Knn, 4 - Heterogeneous')
 parent_dir = "path_for_results"
-datasets = ['Car.csv', 'Adult.csv']
-init_labelled = [0.05]
+datasets = ['Car.csv']
+init_labelled = [0.03, 0.05, 0.08, 0.1]
 
 args = parser.parse_args()
 
@@ -33,12 +33,14 @@ args = parser.parse_args()
 # init_labelled = [0.05, 0.10, 0.15, 0.20, 0.25]
 
 for dataset in datasets:
-    for cr in crs:
-        for threshold in thresholds:
-            comite = Ensemble(SelfFlexCon, cr=cr, threshold=threshold)
-            path = os.path.join(parent_dir, dataset)
-            os.makedirs(path, exist_ok=True)
-            for labelled_level in init_labelled:
+    for labelled_level in init_labelled:
+        for cr in crs:
+            for threshold in thresholds:
+                comite = Ensemble(SelfFlexCon, cr=cr, threshold=threshold)
+                path = os.path.join(parent_dir, dataset)
+                os.makedirs(path, exist_ok=True)
+
+
                 fold_result = []
                 df = pd.read_csv('datasets/'+dataset, header=0)
                 seed(214)
