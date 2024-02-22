@@ -11,8 +11,6 @@ from sklearn.naive_bayes import GaussianNB as Naive
 from sklearn.neighbors import KNeighborsClassifier as KNN
 from sklearn.tree import DecisionTreeClassifier as Tree
 
-# from ssl.flexcon import BaseFlexConC
-
 # CONEXÃO COM PUSHBULLET
 # apiKey = "o.uV6lySsrOlDbTyo0OJg9Jzh6SOZcWCTz"
 # p = PushBullet(apiKey)
@@ -102,9 +100,9 @@ def result(option, dataset, y_test, y_pred, path, labelled_level):
         with open(f'{path}/Comite_Naive_{round(labelled_level, 4) * 100} ({dataset}).txt', 'a') as f:
             f.write(
                 #ACC
-                f"\n|{tAcc.center(40)}|"
+                f"\n|{tAcc.center(28)}|"
                 #F1-Score
-                f'{tF1Score.center(40)}|'
+                f'{tF1Score.center(28)}|'
                 # f"Motivo da finalização: {comite.ensemble[0].termination_condition_}\n"
                 # f"Valor do teste estatístico é de {alpha}, significante? {alpha <= 0.05}\n"
             )
@@ -117,9 +115,9 @@ def result(option, dataset, y_test, y_pred, path, labelled_level):
         with open(f'{path}/Comite_Tree_{round(labelled_level, 4) * 100} ({dataset}).txt', 'a') as f:
             f.write(
                 #ACC
-                f"\n|{tAcc.center(40)}|"
+                f"\n|{tAcc.center(28)}|"
                 #F1-Score
-                f'{tF1Score.center(40)}|'
+                f'{tF1Score.center(28)}|'
                 # f"Motivo da finalização: {comite.ensemble[0].termination_condition_}\n"
                 # f"Valor do teste estatístico é de {alpha}, significante? {alpha <= 0.05}\n"
             )
@@ -133,9 +131,9 @@ def result(option, dataset, y_test, y_pred, path, labelled_level):
         with open(f'{path}/Comite_KNN_{round(labelled_level, 4) * 100} ({dataset}).txt', 'a') as f:
             f.write(
                 #ACC
-                f"\n|{tAcc.center(40)}|"
+                f"\n|{tAcc.center(28)}|"
                 #F1-Score
-                f'{tF1Score.center(40)}|'
+                f'{tF1Score.center(28)}|'
                 # f"Motivo da finalização: {comite.ensemble[0].termination_condition_}\n"
                 # f"Valor do teste estatístico é de {alpha}, significante? {alpha <= 0.05}\n"
             )
@@ -148,52 +146,50 @@ def result(option, dataset, y_test, y_pred, path, labelled_level):
         with open(f'{path}/Comite_Heterogeneo_{round(labelled_level, 4) * 100} ({dataset}).txt', 'a') as f:
             f.write(
                 #ACC
-                f"\n|{tAcc.center(40)}|"
+                f"\n|{tAcc.center(28)}|"
                 #F1-Score
-                f'{tF1Score.center(40)}|'
+                f'{tF1Score.center(28)}|'
                 # f"Motivo da finalização: {comite.ensemble[0].termination_condition_}\n"
                 # f"Valor do teste estatístico é de {alpha}, significante? {alpha <= 0.05}\n"
             )
         return acc
 
-def calculateMeanStdev(fold_result, option, labelled_level, path, dataset, cont, quant, cr, threshold):
+def calculateMeanStdev(fold_result, option, labelled_level, path, dataset, cr, threshold):
     media = round(mean(fold_result), 4)
     dPadrao = round(stdev(fold_result), 4)
-    tMedia = "Média: " + str(media)
+    tMedia = "Média: " + str(media) + "%"
     tDesPadr = "Désvio padrão: " + str(dPadrao)
     tCR = "CR = " + str(cr)
     tTH = "THRESHOLD = " + str(threshold)
-    tCont = "TESTE = " + str(cont) + "/" + str(quant)
-    tMediaG = "MÉDIA G ATUAL = " + str(media)
     if option == 1:
         with open(f'{path}/Comite_Naive_{round(labelled_level, 4) * 100} ({dataset}).txt', 'a') as f:
             f.write(
-                f'\n|{tMedia.center(40)}|{tDesPadr.center(40)}|\n'
-                f"- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n"
-                f'|{tCR.center(13)}|{tTH.center(20)}|{tCont.center(17)}|{tMediaG.center(28)}|\n'
-                f"-----------------------------------------------------------------------------------\n"
+                f'\n|{tMedia.center(28)}|{tDesPadr.center(28)}|\n'
+                f"- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n"
+                f'|{tCR.center(28)}|{tTH.center(28)}|\n'
+                f"-----------------------------------------------------------\n\n"
             )
     elif option == 2:
         with open(f'{path}/Comite_Tree_{round(labelled_level, 4) * 100} ({dataset}).txt', 'a') as f:
             f.write(
-                f'\n|{tMedia.center(40)}|{tDesPadr.center(40)}|\n'
-                f"- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n"
-                f'|{tCR.center(13)}|{tTH.center(20)}|{tCont.center(17)}|{tMediaG.center(28)}|\n'
-                f"-----------------------------------------------------------------------------------\n"
+                f'\n|{tMedia.center(28)}|{tDesPadr.center(28)}|\n'
+                f"- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n"
+                f'|{tCR.center(28)}|{tTH.center(28)}|\n'
+                f"-----------------------------------------------------------\n\n"
             )
     elif option == 3:
         with open(f'{path}/Comite_KNN_{round(labelled_level, 4) * 100} ({dataset}).txt', 'a') as f:
             f.write(
-                f'\n|{tMedia.center(40)}|{tDesPadr.center(40)}|\n'
-                f"- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n"
-                f'|{tCR.center(13)}|{tTH.center(20)}|{tCont.center(17)}|{tMediaG.center(28)}|\n'
-                f"-----------------------------------------------------------------------------------\n"
+                f'\n|{tMedia.center(28)}|{tDesPadr.center(28)}|\n'
+                f"- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n"
+                f'|{tCR.center(28)}|{tTH.center(28)}|\n'
+                f"-----------------------------------------------------------\n\n"
             )
     elif option == 4:
         with open(f'{path}/Comite_Heterogeneo_{round(labelled_level, 4) * 100} ({dataset}).txt', 'a') as f:
             f.write(
-                f'\n|{tMedia.center(40)}|{tDesPadr.center(40)}|\n'
-                f"- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n"
-                f'|{tCR.center(13)}|{tTH.center(20)}|{tCont.center(17)}|{tMediaG.center(28)}|\n'
-                f"-----------------------------------------------------------------------------------\n"
+                f'\n|{tMedia.center(28)}|{tDesPadr.center(28)}|\n'
+                f"- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n"
+                f'|{tCR.center(28)}|{tTH.center(28)}|\n'
+                f"-----------------------------------------------------------\n\n"
             )

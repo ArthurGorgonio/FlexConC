@@ -15,19 +15,9 @@ import src.utils as ut
 from src.ssl.ensemble import Ensemble
 from src.ssl.self_flexcon import SelfFlexCon
 
-# from src.ssl.flexcon import BaseFlexConC
-# from sklearn.semi_supervised import SelfTrainingClassifier
-# from sklearn.base import BaseEstimator, MetaEstimatorMixin
 
-cont = 0
-quant = 10
-
-# clas = SelfTrainingClassifier(MetaEstimatorMixin, BaseEstimator)
-# base = clas.base_estimator
-# cr = BaseFlexConC(base_estimator=base, cr=0.1, threshold=0.9, verbose=True)
-# valor_cr, valor_threshold = cr.get_atributs
-crs = [0.07]
-thresholds = [0.90]
+crs = [0.05]
+thresholds = [0.95]
 
 warnings.simplefilter("ignore")
 
@@ -35,7 +25,7 @@ parser = argparse.ArgumentParser(description="Escolha um classificador para cria
 parser.add_argument('classifier', metavar='c', type=int, help='Escolha um classificador para criar um cômite. Opções: 1 - Naive Bayes, 2 - Tree Decision, 3 - Knn, 4 - Heterogeneous')
 parent_dir = "path_for_results"
 datasets = ['Car.csv']
-init_labelled = [0.05, 0.1]
+init_labelled = [0.05]
 
 args = parser.parse_args()
 
@@ -71,21 +61,21 @@ for dataset in datasets:
                         # DISPLAY QUE INFORMA PARA O USUÁRIO COMO PROCEDER
                         if(flag == 1):
                             flag += 1
-                            print(f"\n\nO sistema irá selecionar instâncias da base {dataset}. Para o treinamento, será usado {round(labelled_level, 4) * 100}% das instâncias rotuladas de um total de {len(_instances)}. {cont}ª rodada de {quant}.\n\n")
+                            print(f"\n\nO sistema irá selecionar instâncias da base {dataset}. Para o treinamento, será usado {round(labelled_level, 4) * 100}% das instâncias rotuladas de um total de {len(_instances)}.\n\n")
                         instanciasRot = labelled_instances
                         instanciasRotPCento = (round(labelled_level, 4) * 100)
-                        tInstanciasRot = "Instâncias rotuladas: " + str(labelled_instances)
-                        tInstanciasRotPCento = " Usando: " + str(instanciasRotPCento) + "% das instâncias rotuladas "
+                        tInstanciasRot = "Inst. Rot.: " + str(labelled_instances)
+                        tInstanciasRotPCento = " Uso: " + str(instanciasRotPCento) + "% das Inst. Rot."
                         if args.classifier == 1:
                             if(fold == 1):
                                 fold += 1
                                 with open(f'{path}/Comite_Naive_{round(labelled_level, 4) * 100} ({dataset}).txt', 'a') as f:
                                     f.write(
-                                        "-----------------------------------------------------------------------------------"
-                                        f"\n|{tInstanciasRot.center(40)}"
-                                        f"|{tInstanciasRotPCento.center(40)}|\n"
-                                        f"|- - - - - - - - - ACC  - - - - - - - - -|"
-                                        f"- - - - - - - - F1-Score - - - - - - - -|"
+                                        "-----------------------------------------------------------"
+                                        f"\n|{tInstanciasRot.center(28)}"
+                                        f"|{tInstanciasRotPCento.center(28)}|\n"
+                                        f"|- - - - - -  ACC - - - - - -|"
+                                        f"- - - - - F1-Score - - - - -|"
                                     )
                             y = ut.select_labels(y_train, X_train, labelled_instances)
                             for i in range(9):
@@ -97,11 +87,11 @@ for dataset in datasets:
                                 fold += 1
                                 with open(f'{path}/Comite_Tree_{round(labelled_level, 4) * 100} ({dataset}).txt', 'a') as f:
                                     f.write(
-                                        "-----------------------------------------------------------------------------------"
-                                        f"\n|{tInstanciasRot.center(40)}"
-                                        f"|{tInstanciasRotPCento.center(40)}|\n"
-                                        f"|- - - - - - - - - ACC  - - - - - - - - -|"
-                                        f"- - - - - - - - F1-Score - - - - - - - -|"
+                                        "-----------------------------------------------------------"
+                                        f"\n|{tInstanciasRot.center(28)}"
+                                        f"|{tInstanciasRotPCento.center(28)}|\n"
+                                        f"|- - - - - -  ACC - - - - - -|"
+                                        f"- - - - - F1-Score - - - - -|"
                                     )
                             y = ut.select_labels(y_train, X_train, labelled_instances)
                             for i in ut.list_tree:
@@ -113,11 +103,11 @@ for dataset in datasets:
                                 fold += 1
                                 with open(f'{path}/Comite_KNN_{round(labelled_level, 4) * 100} ({dataset}).txt', 'a') as f:
                                     f.write(
-                                        "-----------------------------------------------------------------------------------"
-                                        f"\n|{tInstanciasRot.center(40)}"
-                                        f"|{tInstanciasRotPCento.center(40)}|\n"
-                                        f"|- - - - - - - - - ACC  - - - - - - - - -|"
-                                        f"- - - - - - - - F1-Score - - - - - - - -|"
+                                        "-----------------------------------------------------------"
+                                        f"\n|{tInstanciasRot.center(28)}"
+                                        f"|{tInstanciasRotPCento.center(28)}|\n"
+                                        f"|- - - - - -  ACC - - - - - -|"
+                                        f"- - - - - F1-Score - - - - -|"
                                     )
                             y = ut.select_labels(y_train, X_train, labelled_instances)
                             for i in ut.list_knn:
@@ -129,11 +119,11 @@ for dataset in datasets:
                                 fold += 1
                                 with open(f'{path}/Comite_Heterogeneo_{round(labelled_level, 4) * 100} ({dataset}).txt', 'a') as f:
                                     f.write(
-                                        "-----------------------------------------------------------------------------------"
-                                        f"\n|{tInstanciasRot.center(40)}"
-                                        f"|{tInstanciasRotPCento.center(40)}|\n"
-                                        f"|- - - - - - - - - ACC  - - - - - - - - -|"
-                                        f"- - - - - - - - F1-Score - - - - - - - -|"
+                                        "-----------------------------------------------------------"
+                                        f"\n|{tInstanciasRot.center(28)}"
+                                        f"|{tInstanciasRotPCento.center(28)}|\n"
+                                        f"|- - - - - -  ACC - - - - - -|"
+                                        f"- - - - - F1-Score - - - - -|"
                                     )
                             y = ut.select_labels(y_train, X_train, labelled_instances)
                             for i in range(9):
@@ -153,8 +143,6 @@ for dataset in datasets:
                     labelled_level,
                     path,
                     dataset,
-                    cont,
-                    quant,
                     cr,
                     threshold
                 )
