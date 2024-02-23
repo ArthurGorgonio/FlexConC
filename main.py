@@ -16,8 +16,8 @@ from src.ssl.ensemble import Ensemble
 from src.ssl.self_flexcon import SelfFlexCon
 
 
-crs = [0.03, 0.05, 0.08, 0.1]
-thresholds = [0.98, 0.95, 0.93, 0.9]
+crs = [0.03, 0.051]
+thresholds = [0.98, 0.95]
 
 warnings.simplefilter("ignore")
 
@@ -25,20 +25,33 @@ parser = argparse.ArgumentParser(description="Escolha um classificador para cria
 parser.add_argument('classifier', metavar='c', type=int, help='Escolha um classificador para criar um cômite. Opções: 1 - Naive Bayes, 2 - Tree Decision, 3 - Knn, 4 - Heterogeneous')
 parent_dir = "path_for_results"
 datasets = ['Car.csv']
-init_labelled = [0.03, 0.05, 0.08, 0.1]
+init_labelled = [0.05, 0.1]
 
 args = parser.parse_args()
+
+comite = "Comite_Naive_" if args.classifier == 1 else "Comite_Tree_" if args.classifier == 2 else 'Comite_KNN_' if args.classifier == 3 else "Comite_Heterogeneo_"
 
 # datasets = [f for f in listdir('datasets/') if isfile(join('datasets/', f))]
 # init_labelled = [0.05, 0.10, 0.15, 0.20, 0.25]
 
 for dataset in datasets:
     for labelled_level in init_labelled:
+        path = os.path.join(parent_dir, dataset)
+        os.makedirs(path, exist_ok=True)
+        
+        file_check = f'{comite}{round(labelled_level, 4) * 100} ({dataset}).csv'
+        folder_check = f'path_for_results/{dataset}'
+        checker = os.path.join(folder_check, file_check)
+
+        if not os.path.isfile(checker) and args.classifier <= 4:
+            with open(f'{path}/{comite}{round(labelled_level, 4) * 100} ({dataset}).csv', 'a') as f:
+                f.write(
+                    f'"DATA-SET","LABELLED-LEVEL","CR","THRESHOLD","ACC","F1-SCORE","AVERAGE","STANDARD-DEVIATION"'
+                )
+
         for cr in crs:
             for threshold in thresholds:
                 comite = Ensemble(SelfFlexCon, cr=cr, threshold=threshold)
-                path = os.path.join(parent_dir, dataset)
-                os.makedirs(path, exist_ok=True)
 
 
                 fold_result = []
@@ -138,7 +151,21 @@ for dataset in datasets:
 
                         y_pred = comite.predict(X_test)
 
-                        fold_result.append(ut.result(args.classifier, dataset, y_test, y_pred, path, labelled_level))
+                        # Adds new accuracy to fold_result
+                        fold_result.append(round(accuracy_score(y_test, y_pred) * 100, 4))
+
+                        # Save data to .txt and .csv
+                        ut.result(
+                            args.classifier,
+                            dataset,
+                            y_test,
+                            y_pred,
+                            path,
+                            labelled_level,
+                            cr,
+                            threshold,
+                            fold_result)
+
                 ut.calculateMeanStdev(
                     fold_result,
                     args.classifier,
