@@ -78,7 +78,7 @@ def select_labels(y_train, X_train, labelled_instances):
     y_train[mask] = -1
     return y_train
 
-def result(option, dataset, y_test, y_pred, path, labelled_level):
+def result(option, dataset, y_test, y_pred, path, labelled_level, cr, threshold, fold_result):
     """
     Responsável por salvar os outputs dos cômites em arquivos
     Args:
@@ -93,6 +93,13 @@ def result(option, dataset, y_test, y_pred, path, labelled_level):
     f1  = round(f1_score(y_test, y_pred, average="macro") * 100, 4)
     tAcc = str(acc) + "%"
     tF1Score = str(f1) + "%"
+    cr = cr
+    threshold = threshold
+    average = ''
+    standard_deviation = ''
+    if len(fold_result) == 10:
+        average = round(mean(fold_result), 4)
+        standard_deviation = round(stdev(fold_result), 4)
     if option == 1:
         print(f'Salvando os resultados em um arquivo Comite_Naive_{round(labelled_level, 4) * 100} ({dataset}).txt\n\n')
         # print('Enviando notificação push...')
@@ -103,6 +110,27 @@ def result(option, dataset, y_test, y_pred, path, labelled_level):
                 f"\n|{tAcc.center(28)}|"
                 #F1-Score
                 f'{tF1Score.center(28)}|'
+                # f"Motivo da finalização: {comite.ensemble[0].termination_condition_}\n"
+                # f"Valor do teste estatístico é de {alpha}, significante? {alpha <= 0.05}\n"
+            )
+        with open(f'{path}/Comite_Naive_{round(labelled_level, 4) * 100} ({dataset}).csv', 'a') as f:
+            f.write(
+                #DATA-SET
+                f'\n"{dataset}",'
+                #LABELLED_LEVEL
+                f'{labelled_level},'
+                #CR
+                f'{cr},'
+                #THRESHOLD
+                f'{threshold},'
+                #ACC
+                f'{acc},'
+                #F1-Score
+                f'{f1},'
+                # AVERAGE
+                f'{average},'
+                #STANDARD_DEVIATION
+                f'{standard_deviation}'
                 # f"Motivo da finalização: {comite.ensemble[0].termination_condition_}\n"
                 # f"Valor do teste estatístico é de {alpha}, significante? {alpha <= 0.05}\n"
             )
@@ -118,6 +146,27 @@ def result(option, dataset, y_test, y_pred, path, labelled_level):
                 f"\n|{tAcc.center(28)}|"
                 #F1-Score
                 f'{tF1Score.center(28)}|'
+                # f"Motivo da finalização: {comite.ensemble[0].termination_condition_}\n"
+                # f"Valor do teste estatístico é de {alpha}, significante? {alpha <= 0.05}\n"
+            )
+        with open(f'{path}/Comite_Tree_{round(labelled_level, 4) * 100} ({dataset}).csv', 'a') as f:
+            f.write(
+                #DATA-SET
+                f'\n"{dataset}",'
+                #LABELLED_LEVEL
+                f'{labelled_level},'
+                #CR
+                f'{cr},'
+                #THRESHOLD
+                f'{threshold},'
+                #ACC
+                f'{acc},'
+                #F1-Score
+                f'{f1},'
+                # AVERAGE
+                f'{average},'
+                #STANDARD_DEVIATION
+                f'{standard_deviation}'
                 # f"Motivo da finalização: {comite.ensemble[0].termination_condition_}\n"
                 # f"Valor do teste estatístico é de {alpha}, significante? {alpha <= 0.05}\n"
             )
@@ -137,6 +186,27 @@ def result(option, dataset, y_test, y_pred, path, labelled_level):
                 # f"Motivo da finalização: {comite.ensemble[0].termination_condition_}\n"
                 # f"Valor do teste estatístico é de {alpha}, significante? {alpha <= 0.05}\n"
             )
+        with open(f'{path}/Comite_KNN_{round(labelled_level, 4) * 100} ({dataset}).csv', 'a') as f:
+            f.write(
+                #DATA-SET
+                f'\n"{dataset}",'
+                #LABELLED_LEVEL
+                f'{labelled_level},'
+                #CR
+                f'{cr},'
+                #THRESHOLD
+                f'{threshold},'
+                #ACC
+                f'{acc},'
+                #F1-Score
+                f'{f1},'
+                # AVERAGE
+                f'{average},'
+                #STANDARD_DEVIATION
+                f'{standard_deviation}'
+                # f"Motivo da finalização: {comite.ensemble[0].termination_condition_}\n"
+                # f"Valor do teste estatístico é de {alpha}, significante? {alpha <= 0.05}\n"
+            )
         return acc
 
     elif option == 4:
@@ -149,6 +219,27 @@ def result(option, dataset, y_test, y_pred, path, labelled_level):
                 f"\n|{tAcc.center(28)}|"
                 #F1-Score
                 f'{tF1Score.center(28)}|'
+                # f"Motivo da finalização: {comite.ensemble[0].termination_condition_}\n"
+                # f"Valor do teste estatístico é de {alpha}, significante? {alpha <= 0.05}\n"
+            )
+        with open(f'{path}/Comite_Heterogeneo_{round(labelled_level, 4) * 100} ({dataset}).csv', 'a') as f:
+            f.write(
+                #DATA-SET
+                f'\n"{dataset}",'
+                #LABELLED_LEVEL
+                f'{labelled_level},'
+                #CR
+                f'{cr},'
+                #THRESHOLD
+                f'{threshold},'
+                #ACC
+                f'{acc},'
+                #F1-Score
+                f'{f1},'
+                # AVERAGE
+                f'{average},'
+                #STANDARD_DEVIATION
+                f'{standard_deviation}'
                 # f"Motivo da finalização: {comite.ensemble[0].termination_condition_}\n"
                 # f"Valor do teste estatístico é de {alpha}, significante? {alpha <= 0.05}\n"
             )
