@@ -78,7 +78,7 @@ def select_labels(y_train, X_train, labelled_instances):
     y_train[mask] = -1
     return y_train
 
-def result(option, dataset, y_test, y_pred, path, labelled_level, cr, threshold, fold_result, rounds):
+def result(option, dataset, y_test, y_pred, path, labelled_level, cr, threshold, rounds):
     """
     Responsável por salvar os outputs dos cômites em arquivos
     Args:
@@ -96,16 +96,11 @@ def result(option, dataset, y_test, y_pred, path, labelled_level, cr, threshold,
     cr = cr
     threshold = threshold
     rounds = rounds
-    average = ''
-    standard_deviation = ''
-    if len(fold_result) == 10:
-        average = round(mean(fold_result), 4)
-        standard_deviation = round(stdev(fold_result), 4)
     if option == 1:
         print(f'Salvando os resultados em arquivos Comite_Naive_{round(labelled_level, 4) * 100} ({dataset}).txt e Comite_Naive_{round(labelled_level, 4) * 100} ({dataset}).csv\n\n')
         # print('Enviando notificação push...')
         # p.pushNote(devices[1]["iden"], f"ACC: {round(accuracy_score(y_test, y_pred), 4) * 100}%", f'Comite_Naive_{round(labelled_level, 4) * 100} ({dataset}).txt')
-        with open(f'{path}/Comite_Naive_{round(labelled_level, 4) * 100} ({dataset}).txt', 'a') as f:
+        with open(f'{path}/txt/Comite_Naive_{round(labelled_level, 4) * 100} ({dataset}).txt', 'a') as f:
             f.write(
                 #ACC
                 f"\n|{tAcc.center(28)}|"
@@ -114,14 +109,10 @@ def result(option, dataset, y_test, y_pred, path, labelled_level, cr, threshold,
                 # f"Motivo da finalização: {comite.ensemble[0].termination_condition_}\n"
                 # f"Valor do teste estatístico é de {alpha}, significante? {alpha <= 0.05}\n"
             )
-        with open(f'{path}/Comite_Naive_{round(labelled_level, 4) * 100} ({dataset}).csv', 'a') as f:
+        with open(f'{path}/csv/Comite_Naive_{round(labelled_level, 4) * 100} ({dataset}).csv', 'a') as f:
             f.write(
                 #ROUNDS
                 f'\n{rounds},'
-                #DATA-SET
-                f'"{dataset}",'
-                #LABELLED_LEVEL
-                f'{labelled_level},'
                 #CR
                 f'{cr},'
                 #THRESHOLD
@@ -129,11 +120,7 @@ def result(option, dataset, y_test, y_pred, path, labelled_level, cr, threshold,
                 #ACC
                 f'{acc},'
                 #F1-Score
-                f'{f1},'
-                # AVERAGE
-                f'{average},'
-                #STANDARD_DEVIATION
-                f'{standard_deviation}'
+                f'{f1}'
                 # f"Motivo da finalização: {comite.ensemble[0].termination_condition_}\n"
                 # f"Valor do teste estatístico é de {alpha}, significante? {alpha <= 0.05}\n"
             )
@@ -143,7 +130,7 @@ def result(option, dataset, y_test, y_pred, path, labelled_level, cr, threshold,
         print(f'Salvando os resultados em arquivos Comite_Tree_{round(labelled_level, 4) * 100} ({dataset}).txt e Comite_Tree_{round(labelled_level, 4) * 100} ({dataset}).csv\n\n')
         # print('Enviando notificação push...')
         # p.pushNote(devices[1]["iden"], f"ACC: {round(accuracy_score(y_test, y_pred), 4) * 100}%", f'Comite_Tree_{round(labelled_level, 4) * 100} ({dataset}).txt')
-        with open(f'{path}/Comite_Tree_{round(labelled_level, 4) * 100} ({dataset}).txt', 'a') as f:
+        with open(f'{path}/txt/Comite_Tree_{round(labelled_level, 4) * 100} ({dataset}).txt', 'a') as f:
             f.write(
                 #ACC
                 f"\n|{tAcc.center(28)}|"
@@ -152,14 +139,10 @@ def result(option, dataset, y_test, y_pred, path, labelled_level, cr, threshold,
                 # f"Motivo da finalização: {comite.ensemble[0].termination_condition_}\n"
                 # f"Valor do teste estatístico é de {alpha}, significante? {alpha <= 0.05}\n"
             )
-        with open(f'{path}/Comite_Tree_{round(labelled_level, 4) * 100} ({dataset}).csv', 'a') as f:
+        with open(f'{path}/csv/Comite_Tree_{round(labelled_level, 4) * 100} ({dataset}).csv', 'a') as f:
             f.write(
                 #ROUNDS
                 f'\n{rounds},'
-                #DATA-SET
-                f'"{dataset}",'
-                #LABELLED_LEVEL
-                f'{labelled_level},'
                 #CR
                 f'{cr},'
                 #THRESHOLD
@@ -167,11 +150,7 @@ def result(option, dataset, y_test, y_pred, path, labelled_level, cr, threshold,
                 #ACC
                 f'{acc},'
                 #F1-Score
-                f'{f1},'
-                # AVERAGE
-                f'{average},'
-                #STANDARD_DEVIATION
-                f'{standard_deviation}'
+                f'{f1}'
                 # f"Motivo da finalização: {comite.ensemble[0].termination_condition_}\n"
                 # f"Valor do teste estatístico é de {alpha}, significante? {alpha <= 0.05}\n"
             )
@@ -182,7 +161,7 @@ def result(option, dataset, y_test, y_pred, path, labelled_level, cr, threshold,
         # print('Enviando notificação push...')
         # TODO: FALTA PEGAR CADA RESULTADO PREENCHER UM ARRAY REALIZAR A MÉDIA E AI SIM ENVIAR A MSG
         # p.pushNote(devices[1]["iden"], f"ACC: {round(accuracy_score(y_test, y_pred), 4) * 100}%", f'Comite_KNN_{round(labelled_level, 4) * 100} ({dataset}).txt')
-        with open(f'{path}/Comite_KNN_{round(labelled_level, 4) * 100} ({dataset}).txt', 'a') as f:
+        with open(f'{path}/txt/Comite_KNN_{round(labelled_level, 4) * 100} ({dataset}).txt', 'a') as f:
             f.write(
                 #ACC
                 f"\n|{tAcc.center(28)}|"
@@ -191,14 +170,10 @@ def result(option, dataset, y_test, y_pred, path, labelled_level, cr, threshold,
                 # f"Motivo da finalização: {comite.ensemble[0].termination_condition_}\n"
                 # f"Valor do teste estatístico é de {alpha}, significante? {alpha <= 0.05}\n"
             )
-        with open(f'{path}/Comite_KNN_{round(labelled_level, 4) * 100} ({dataset}).csv', 'a') as f:
+        with open(f'{path}/csv/Comite_KNN_{round(labelled_level, 4) * 100} ({dataset}).csv', 'a') as f:
             f.write(
                 #ROUNDS
                 f'\n{rounds},'
-                #DATA-SET
-                f'"{dataset}",'
-                #LABELLED_LEVEL
-                f'{labelled_level},'
                 #CR
                 f'{cr},'
                 #THRESHOLD
@@ -206,11 +181,7 @@ def result(option, dataset, y_test, y_pred, path, labelled_level, cr, threshold,
                 #ACC
                 f'{acc},'
                 #F1-Score
-                f'{f1},'
-                # AVERAGE
-                f'{average},'
-                #STANDARD_DEVIATION
-                f'{standard_deviation}'
+                f'{f1}'
                 # f"Motivo da finalização: {comite.ensemble[0].termination_condition_}\n"
                 # f"Valor do teste estatístico é de {alpha}, significante? {alpha <= 0.05}\n"
             )
@@ -220,7 +191,7 @@ def result(option, dataset, y_test, y_pred, path, labelled_level, cr, threshold,
         print(f'Salvando os resultados em arquivos Comite_Heterogeneo_{round(labelled_level, 4) * 100} ({dataset}).txt e Comite_Heterogeneo_{round(labelled_level, 4) * 100} ({dataset}).csv\n\n')
         # print('Enviando notificação push...')
         # p.pushNote(devices[1]["iden"], f"ACC: {round(accuracy_score(y_test, y_pred), 4) * 100}%", f'Comite_KNN_{round(labelled_level, 4) * 100} ({dataset}).txt')
-        with open(f'{path}/Comite_Heterogeneo_{round(labelled_level, 4) * 100} ({dataset}).txt', 'a') as f:
+        with open(f'{path}/txt/Comite_Heterogeneo_{round(labelled_level, 4) * 100} ({dataset}).txt', 'a') as f:
             f.write(
                 #ACC
                 f"\n|{tAcc.center(28)}|"
@@ -229,14 +200,10 @@ def result(option, dataset, y_test, y_pred, path, labelled_level, cr, threshold,
                 # f"Motivo da finalização: {comite.ensemble[0].termination_condition_}\n"
                 # f"Valor do teste estatístico é de {alpha}, significante? {alpha <= 0.05}\n"
             )
-        with open(f'{path}/Comite_Heterogeneo_{round(labelled_level, 4) * 100} ({dataset}).csv', 'a') as f:
+        with open(f'{path}/csv/Comite_Heterogeneo_{round(labelled_level, 4) * 100} ({dataset}).csv', 'a') as f:
             f.write(
                 #ROUNDS
                 f'\n{rounds},'
-                #DATA-SET
-                f'"{dataset}",'
-                #LABELLED_LEVEL
-                f'{labelled_level},'
                 #CR
                 f'{cr},'
                 #THRESHOLD
@@ -244,11 +211,7 @@ def result(option, dataset, y_test, y_pred, path, labelled_level, cr, threshold,
                 #ACC
                 f'{acc},'
                 #F1-Score
-                f'{f1},'
-                # AVERAGE
-                f'{average},'
-                #STANDARD_DEVIATION
-                f'{standard_deviation}'
+                f'{f1}'
                 # f"Motivo da finalização: {comite.ensemble[0].termination_condition_}\n"
                 # f"Valor do teste estatístico é de {alpha}, significante? {alpha <= 0.05}\n"
             )
@@ -262,7 +225,7 @@ def calculateMeanStdev(fold_result, option, labelled_level, path, dataset, cr, t
     tCR = "CR = " + str(cr)
     tTH = "THRESHOLD = " + str(threshold)
     if option == 1:
-        with open(f'{path}/Comite_Naive_{round(labelled_level, 4) * 100} ({dataset}).txt', 'a') as f:
+        with open(f'{path}/txt/Comite_Naive_{round(labelled_level, 4) * 100} ({dataset}).txt', 'a') as f:
             f.write(
                 f'\n|{tMedia.center(28)}|{tDesPadr.center(28)}|\n'
                 f"- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n"
@@ -270,7 +233,7 @@ def calculateMeanStdev(fold_result, option, labelled_level, path, dataset, cr, t
                 f"-----------------------------------------------------------\n\n"
             )
     elif option == 2:
-        with open(f'{path}/Comite_Tree_{round(labelled_level, 4) * 100} ({dataset}).txt', 'a') as f:
+        with open(f'{path}/txt/Comite_Tree_{round(labelled_level, 4) * 100} ({dataset}).txt', 'a') as f:
             f.write(
                 f'\n|{tMedia.center(28)}|{tDesPadr.center(28)}|\n'
                 f"- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n"
@@ -278,7 +241,7 @@ def calculateMeanStdev(fold_result, option, labelled_level, path, dataset, cr, t
                 f"-----------------------------------------------------------\n\n"
             )
     elif option == 3:
-        with open(f'{path}/Comite_KNN_{round(labelled_level, 4) * 100} ({dataset}).txt', 'a') as f:
+        with open(f'{path}/txt/Comite_KNN_{round(labelled_level, 4) * 100} ({dataset}).txt', 'a') as f:
             f.write(
                 f'\n|{tMedia.center(28)}|{tDesPadr.center(28)}|\n'
                 f"- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n"
@@ -286,7 +249,7 @@ def calculateMeanStdev(fold_result, option, labelled_level, path, dataset, cr, t
                 f"-----------------------------------------------------------\n\n"
             )
     elif option == 4:
-        with open(f'{path}/Comite_Heterogeneo_{round(labelled_level, 4) * 100} ({dataset}).txt', 'a') as f:
+        with open(f'{path}/txt/Comite_Heterogeneo_{round(labelled_level, 4) * 100} ({dataset}).txt', 'a') as f:
             f.write(
                 f'\n|{tMedia.center(28)}|{tDesPadr.center(28)}|\n'
                 f"- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n"

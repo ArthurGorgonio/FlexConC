@@ -42,13 +42,13 @@ for dataset in datasets:
         os.makedirs(path, exist_ok=True)
         
         file_check = f'{comite}{round(labelled_level, 4) * 100} ({dataset}).csv'
-        folder_check = f'path_for_results/{dataset}'
+        folder_check = f'path_for_results/{dataset}/csv'
         checker = os.path.join(folder_check, file_check)
 
         if not os.path.isfile(checker) and args.classifier <= 4:
-            with open(f'{path}/{comite}{round(labelled_level, 4) * 100} ({dataset}).csv', 'a') as f:
+            with open(f'{path}/csv/{comite}{round(labelled_level, 4) * 100} ({dataset}).csv', 'a') as f:
                 f.write(
-                    f'"ROUNDS","DATA-SET","LABELLED-LEVEL","CR","THRESHOLD","ACC","F1-SCORE","AVERAGE","STANDARD-DEVIATION"'
+                    f'"ROUNDS","CR","THRESHOLD","ACC","F1-SCORE"'
                 )
 
         for cr in crs:
@@ -90,7 +90,7 @@ for dataset in datasets:
                         if args.classifier == 1:
                             if(fold == 1):
                                 fold += 1
-                                with open(f'{path}/Comite_Naive_{round(labelled_level, 4) * 100} ({dataset}).txt', 'a') as f:
+                                with open(f'{path}/txt/Comite_Naive_{round(labelled_level, 4) * 100} ({dataset}).txt', 'a') as f:
                                     f.write(
                                         "-----------------------------------------------------------"
                                         f"\n|{tInstanciasRot.center(28)}"
@@ -106,7 +106,7 @@ for dataset in datasets:
                         elif args.classifier == 2:
                             if(fold == 1):
                                 fold += 1
-                                with open(f'{path}/Comite_Tree_{round(labelled_level, 4) * 100} ({dataset}).txt', 'a') as f:
+                                with open(f'{path}/txt/Comite_Tree_{round(labelled_level, 4) * 100} ({dataset}).txt', 'a') as f:
                                     f.write(
                                         "-----------------------------------------------------------"
                                         f"\n|{tInstanciasRot.center(28)}"
@@ -122,7 +122,7 @@ for dataset in datasets:
                         elif args.classifier == 3:
                             if(fold == 1):
                                 fold += 1
-                                with open(f'{path}/Comite_KNN_{round(labelled_level, 4) * 100} ({dataset}).txt', 'a') as f:
+                                with open(f'{path}/txt/Comite_KNN_{round(labelled_level, 4) * 100} ({dataset}).txt', 'a') as f:
                                     f.write(
                                         "-----------------------------------------------------------"
                                         f"\n|{tInstanciasRot.center(28)}"
@@ -138,7 +138,7 @@ for dataset in datasets:
                         elif args.classifier == 4:
                             if(fold == 1):
                                 fold += 1
-                                with open(f'{path}/Comite_Heterogeneo_{round(labelled_level, 4) * 100} ({dataset}).txt', 'a') as f:
+                                with open(f'{path}/txt/Comite_Heterogeneo_{round(labelled_level, 4) * 100} ({dataset}).txt', 'a') as f:
                                     f.write(
                                         "-----------------------------------------------------------"
                                         f"\n|{tInstanciasRot.center(28)}"
@@ -170,7 +170,6 @@ for dataset in datasets:
                             labelled_level,
                             cr,
                             threshold,
-                            fold_result,
                             rounds
                             )
 
