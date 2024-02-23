@@ -101,7 +101,7 @@ def result(option, dataset, y_test, y_pred, path, labelled_level, cr, threshold,
         average = round(mean(fold_result), 4)
         standard_deviation = round(stdev(fold_result), 4)
     if option == 1:
-        print(f'Salvando os resultados em um arquivo Comite_Naive_{round(labelled_level, 4) * 100} ({dataset}).txt\n\n')
+        print(f'Salvando os resultados em arquivos Comite_Naive_{round(labelled_level, 4) * 100} ({dataset}).txt e Comite_Naive_{round(labelled_level, 4) * 100} ({dataset}).csv\n\n')
         # print('Enviando notificação push...')
         # p.pushNote(devices[1]["iden"], f"ACC: {round(accuracy_score(y_test, y_pred), 4) * 100}%", f'Comite_Naive_{round(labelled_level, 4) * 100} ({dataset}).txt')
         with open(f'{path}/Comite_Naive_{round(labelled_level, 4) * 100} ({dataset}).txt', 'a') as f:
@@ -137,7 +137,7 @@ def result(option, dataset, y_test, y_pred, path, labelled_level, cr, threshold,
         return acc
 
     elif option == 2:
-        print(f'Salvando os resultados em um arquivo Comite_Tree_{round(labelled_level, 4) * 100} ({dataset}).txt\n\n')
+        print(f'Salvando os resultados em arquivos Comite_Tree_{round(labelled_level, 4) * 100} ({dataset}).txt e Comite_Tree_{round(labelled_level, 4) * 100} ({dataset}).csv\n\n')
         # print('Enviando notificação push...')
         # p.pushNote(devices[1]["iden"], f"ACC: {round(accuracy_score(y_test, y_pred), 4) * 100}%", f'Comite_Tree_{round(labelled_level, 4) * 100} ({dataset}).txt')
         with open(f'{path}/Comite_Tree_{round(labelled_level, 4) * 100} ({dataset}).txt', 'a') as f:
@@ -173,7 +173,7 @@ def result(option, dataset, y_test, y_pred, path, labelled_level, cr, threshold,
         return acc
 
     elif option == 3:
-        print(f'Salvando os resultados em um arquivo Comite_KNN_{round(labelled_level, 4) * 100} ({dataset}).txt\n\n')
+        print(f'Salvando os resultados em arquivos Comite_KNN_{round(labelled_level, 4) * 100} ({dataset}).txt e Comite_KNN_{round(labelled_level, 4) * 100} ({dataset}).csv\n\n')
         # print('Enviando notificação push...')
         # TODO: FALTA PEGAR CADA RESULTADO PREENCHER UM ARRAY REALIZAR A MÉDIA E AI SIM ENVIAR A MSG
         # p.pushNote(devices[1]["iden"], f"ACC: {round(accuracy_score(y_test, y_pred), 4) * 100}%", f'Comite_KNN_{round(labelled_level, 4) * 100} ({dataset}).txt')
@@ -210,7 +210,7 @@ def result(option, dataset, y_test, y_pred, path, labelled_level, cr, threshold,
         return acc
 
     elif option == 4:
-        print(f'Salvando os resultados em um arquivo Comite_Heterogeneo_{round(labelled_level, 4) * 100} ({dataset}).txt\n\n')
+        print(f'Salvando os resultados em arquivos Comite_Heterogeneo_{round(labelled_level, 4) * 100} ({dataset}).txt e Comite_Heterogeneo_{round(labelled_level, 4) * 100} ({dataset}).csv\n\n')
         # print('Enviando notificação push...')
         # p.pushNote(devices[1]["iden"], f"ACC: {round(accuracy_score(y_test, y_pred), 4) * 100}%", f'Comite_KNN_{round(labelled_level, 4) * 100} ({dataset}).txt')
         with open(f'{path}/Comite_Heterogeneo_{round(labelled_level, 4) * 100} ({dataset}).txt', 'a') as f:
