@@ -16,8 +16,8 @@ from src.ssl.ensemble import Ensemble
 from src.ssl.self_flexcon import SelfFlexCon
 
 
-crs = [0.03, 0.051]
-thresholds = [0.98, 0.95]
+crs = [0.03]
+thresholds = [0.95]
 
 warnings.simplefilter("ignore")
 
@@ -25,17 +25,19 @@ parser = argparse.ArgumentParser(description="Escolha um classificador para cria
 parser.add_argument('classifier', metavar='c', type=int, help='Escolha um classificador para criar um cômite. Opções: 1 - Naive Bayes, 2 - Tree Decision, 3 - Knn, 4 - Heterogeneous')
 parent_dir = "path_for_results"
 datasets = ['Car.csv']
-init_labelled = [0.05, 0.1]
+init_labelled = [0.05, 0.1, 0.15]
 
 args = parser.parse_args()
 
-comite = "Comite_Naive_" if args.classifier == 1 else "Comite_Tree_" if args.classifier == 2 else 'Comite_KNN_' if args.classifier == 3 else "Comite_Heterogeneo_"
 
 # datasets = [f for f in listdir('datasets/') if isfile(join('datasets/', f))]
 # init_labelled = [0.05, 0.10, 0.15, 0.20, 0.25]
 
 for dataset in datasets:
     for labelled_level in init_labelled:
+        
+        comite = "Comite_Naive_" if args.classifier == 1 else "Comite_Tree_" if args.classifier == 2 else 'Comite_KNN_' if args.classifier == 3 else "Comite_Heterogeneo_"
+
         path = os.path.join(parent_dir, dataset)
         os.makedirs(path, exist_ok=True)
         
@@ -46,7 +48,7 @@ for dataset in datasets:
         if not os.path.isfile(checker) and args.classifier <= 4:
             with open(f'{path}/{comite}{round(labelled_level, 4) * 100} ({dataset}).csv', 'a') as f:
                 f.write(
-                    f'"DATA-SET","LABELLED-LEVEL","CR","THRESHOLD","ACC","F1-SCORE","AVERAGE","STANDARD-DEVIATION"'
+                    f'"ROUNDS","DATA-SET","LABELLED-LEVEL","CR","THRESHOLD","ACC","F1-SCORE","AVERAGE","STANDARD-DEVIATION"'
                 )
 
         for cr in crs:
@@ -64,10 +66,14 @@ for dataset in datasets:
                 _target_unlabelled = df.iloc[:,-1].values #Y
                 # _target_unlabelled_copy = _target_unlabelled.copy()
 
+                # round counter
+                rounds = 0
                 for train, test in kfold.split(_instances, _target_unlabelled):
                     X_train, X_test = _instances[train], _instances[test]
                     y_train, y_test = _target_unlabelled[train], _target_unlabelled[test]
                     labelled_instances = round(len(X_train)*labelled_level)
+
+                    rounds += 1
 
                     if args.classifier != 1 and args.classifier != 2 and args.classifier != 3 and args.classifier != 4:
                         print('\nOpção inválida! Escolha corretamente...\nOpções: 1 - Naive Bayes, 2 - Tree Decision, 3 - Knn, 4 - Heterogeneous\nEx: python main.py 1\n')
@@ -164,7 +170,9 @@ for dataset in datasets:
                             labelled_level,
                             cr,
                             threshold,
-                            fold_result)
+                            fold_result,
+                            rounds
+                            )
 
                 ut.calculateMeanStdev(
                     fold_result,

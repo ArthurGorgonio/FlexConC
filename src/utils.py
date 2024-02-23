@@ -78,7 +78,7 @@ def select_labels(y_train, X_train, labelled_instances):
     y_train[mask] = -1
     return y_train
 
-def result(option, dataset, y_test, y_pred, path, labelled_level, cr, threshold, fold_result):
+def result(option, dataset, y_test, y_pred, path, labelled_level, cr, threshold, fold_result, rounds):
     """
     Responsável por salvar os outputs dos cômites em arquivos
     Args:
@@ -95,6 +95,7 @@ def result(option, dataset, y_test, y_pred, path, labelled_level, cr, threshold,
     tF1Score = str(f1) + "%"
     cr = cr
     threshold = threshold
+    rounds = rounds
     average = ''
     standard_deviation = ''
     if len(fold_result) == 10:
@@ -115,8 +116,10 @@ def result(option, dataset, y_test, y_pred, path, labelled_level, cr, threshold,
             )
         with open(f'{path}/Comite_Naive_{round(labelled_level, 4) * 100} ({dataset}).csv', 'a') as f:
             f.write(
+                #ROUNDS
+                f'\n{rounds},'
                 #DATA-SET
-                f'\n"{dataset}",'
+                f'"{dataset}",'
                 #LABELLED_LEVEL
                 f'{labelled_level},'
                 #CR
@@ -151,8 +154,10 @@ def result(option, dataset, y_test, y_pred, path, labelled_level, cr, threshold,
             )
         with open(f'{path}/Comite_Tree_{round(labelled_level, 4) * 100} ({dataset}).csv', 'a') as f:
             f.write(
+                #ROUNDS
+                f'\n{rounds},'
                 #DATA-SET
-                f'\n"{dataset}",'
+                f'"{dataset}",'
                 #LABELLED_LEVEL
                 f'{labelled_level},'
                 #CR
@@ -188,8 +193,10 @@ def result(option, dataset, y_test, y_pred, path, labelled_level, cr, threshold,
             )
         with open(f'{path}/Comite_KNN_{round(labelled_level, 4) * 100} ({dataset}).csv', 'a') as f:
             f.write(
+                #ROUNDS
+                f'\n{rounds},'
                 #DATA-SET
-                f'\n"{dataset}",'
+                f'"{dataset}",'
                 #LABELLED_LEVEL
                 f'{labelled_level},'
                 #CR
@@ -224,8 +231,10 @@ def result(option, dataset, y_test, y_pred, path, labelled_level, cr, threshold,
             )
         with open(f'{path}/Comite_Heterogeneo_{round(labelled_level, 4) * 100} ({dataset}).csv', 'a') as f:
             f.write(
+                #ROUNDS
+                f'\n{rounds},'
                 #DATA-SET
-                f'\n"{dataset}",'
+                f'"{dataset}",'
                 #LABELLED_LEVEL
                 f'{labelled_level},'
                 #CR
