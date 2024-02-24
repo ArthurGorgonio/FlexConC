@@ -16,7 +16,7 @@ from src.ssl.ensemble import Ensemble
 from src.ssl.self_flexcon import SelfFlexCon
 
 
-crs = [0.03]
+crs = [0.05]
 thresholds = [0.95]
 
 warnings.simplefilter("ignore")
@@ -25,7 +25,7 @@ parser = argparse.ArgumentParser(description="Escolha um classificador para cria
 parser.add_argument('classifier', metavar='c', type=int, help='Escolha um classificador para criar um cômite. Opções: 1 - Naive Bayes, 2 - Tree Decision, 3 - Knn, 4 - Heterogeneous')
 parent_dir = "path_for_results"
 datasets = ['Car.csv']
-init_labelled = [0.05, 0.1, 0.15]
+init_labelled = [0.05]
 
 args = parser.parse_args()
 
@@ -39,14 +39,17 @@ for dataset in datasets:
         comite = "Comite_Naive_" if args.classifier == 1 else "Comite_Tree_" if args.classifier == 2 else 'Comite_KNN_' if args.classifier == 3 else "Comite_Heterogeneo_"
 
         path = os.path.join(parent_dir, dataset)
-        os.makedirs(path, exist_ok=True)
         
-        file_check = f'{comite}{round(labelled_level, 4) * 100} ({dataset}).csv'
-        folder_check = f'path_for_results/{dataset}/csv'
-        checker = os.path.join(folder_check, file_check)
+        folder_check_csv = f'path_for_results/{dataset}/csv'
+        folder_check_txt = f'path_for_results/{dataset}/txt'
+        os.makedirs(folder_check_csv, exist_ok=True)
+        os.makedirs(folder_check_txt, exist_ok=True)
 
-        if not os.path.isfile(checker) and args.classifier <= 4:
-            with open(f'{path}/csv/{comite}{round(labelled_level, 4) * 100} ({dataset}).csv', 'a') as f:
+        file_check = f'{comite}{round(labelled_level, 4) * 100} ({dataset}).csv'
+        check = os.path.join(folder_check_csv, file_check)
+
+        if not os.path.exists(check):
+            with open(f'{folder_check_csv}/{file_check}', 'a') as f:
                 f.write(
                     f'"ROUNDS","CR","THRESHOLD","ACC","F1-SCORE"'
                 )
@@ -90,7 +93,7 @@ for dataset in datasets:
                         if args.classifier == 1:
                             if(fold == 1):
                                 fold += 1
-                                with open(f'{path}/txt/Comite_Naive_{round(labelled_level, 4) * 100} ({dataset}).txt', 'a') as f:
+                                with open(f'{folder_check_txt}/Comite_Naive_{round(labelled_level, 4) * 100} ({dataset}).txt', 'a') as f:
                                     f.write(
                                         "-----------------------------------------------------------"
                                         f"\n|{tInstanciasRot.center(28)}"
@@ -106,7 +109,7 @@ for dataset in datasets:
                         elif args.classifier == 2:
                             if(fold == 1):
                                 fold += 1
-                                with open(f'{path}/txt/Comite_Tree_{round(labelled_level, 4) * 100} ({dataset}).txt', 'a') as f:
+                                with open(f'{folder_check_txt}/Comite_Tree_{round(labelled_level, 4) * 100} ({dataset}).txt', 'a') as f:
                                     f.write(
                                         "-----------------------------------------------------------"
                                         f"\n|{tInstanciasRot.center(28)}"
@@ -122,7 +125,7 @@ for dataset in datasets:
                         elif args.classifier == 3:
                             if(fold == 1):
                                 fold += 1
-                                with open(f'{path}/txt/Comite_KNN_{round(labelled_level, 4) * 100} ({dataset}).txt', 'a') as f:
+                                with open(f'{folder_check_txt}/Comite_KNN_{round(labelled_level, 4) * 100} ({dataset}).txt', 'a') as f:
                                     f.write(
                                         "-----------------------------------------------------------"
                                         f"\n|{tInstanciasRot.center(28)}"
@@ -138,7 +141,7 @@ for dataset in datasets:
                         elif args.classifier == 4:
                             if(fold == 1):
                                 fold += 1
-                                with open(f'{path}/txt/Comite_Heterogeneo_{round(labelled_level, 4) * 100} ({dataset}).txt', 'a') as f:
+                                with open(f'{folder_check_txt}/Comite_Heterogeneo_{round(labelled_level, 4) * 100} ({dataset}).txt', 'a') as f:
                                     f.write(
                                         "-----------------------------------------------------------"
                                         f"\n|{tInstanciasRot.center(28)}"
