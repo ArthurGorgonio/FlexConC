@@ -16,16 +16,17 @@ from src.ssl.ensemble import Ensemble
 from src.ssl.self_flexcon import SelfFlexCon
 
 
-crs = [0.05, 0.1]
-thresholds = [0.95, 0.9]
+crs = [0.05]
+thresholds = [0.95]
 
 warnings.simplefilter("ignore")
 
 parser = argparse.ArgumentParser(description="Escolha um classificador para criar um cômite")
 parser.add_argument('classifier', metavar='c', type=int, help='Escolha um classificador para criar um cômite. Opções: 1 - Naive Bayes, 2 - Tree Decision, 3 - Knn, 4 - Heterogeneous')
 parent_dir = "path_for_results"
-datasets = ['Car.csv']
-init_labelled = [0.05, 0.1]
+datasets_dir = '../FlexConC/datasets'
+datasets = sorted(os.listdir(datasets_dir))
+init_labelled = [0.03, 0.05, 0.8, 0.1, 1.3, 1.5, 1.8, 2.0, 2.3, 2.5]
 
 args = parser.parse_args()
 
@@ -33,36 +34,36 @@ args = parser.parse_args()
 # datasets = [f for f in listdir('datasets/') if isfile(join('datasets/', f))]
 # init_labelled = [0.05, 0.10, 0.15, 0.20, 0.25]
 
-for dataset in datasets:
-    for threshold in thresholds:
-        
-        comite = "Comite_Naive_" if args.classifier == 1 else "Comite_Tree_" if args.classifier == 2 else 'Comite_KNN_' if args.classifier == 3 else "Comite_Heterogeneo_"
+for threshold in thresholds:
+    
+    comite = "Comite_Naive_" if args.classifier == 1 else "Comite_Tree_" if args.classifier == 2 else 'Comite_KNN_' if args.classifier == 3 else "Comite_Heterogeneo_"
 
-        path = os.path.join(parent_dir)
-        
-        folder_check_csv = f'path_for_results'
-        os.makedirs(folder_check_csv, exist_ok=True)
+    path = os.path.join(parent_dir)
+    
+    folder_check_csv = f'path_for_results'
+    os.makedirs(folder_check_csv, exist_ok=True)
 
-        file_check = f'{comite}.csv'
-        check = os.path.join(folder_check_csv, file_check)
+    file_check = f'{comite}.csv'
+    check = os.path.join(folder_check_csv, file_check)
 
-        if not os.path.exists(check):
-            with open(f'{folder_check_csv}/{file_check}', 'a') as f:
-                f.write(
-                    f'"ROUNDS", "DATASET","LABELLED-LEVEL","CR","THRESHOLD","ACC","F1-SCORE"'
-                )
-
-        file_check = f'{comite}F.csv'
-        check = os.path.join(folder_check_csv, file_check)
-
-        if not os.path.exists(check):
-            with open(f'{folder_check_csv}/{file_check}', 'a') as f:
-                f.write(
-                    f'"DATASET","LABELLED-LEVEL","CR","THRESHOLD","ACC-AVERAGE","STANDARD-DEVIATION"'
+    if not os.path.exists(check):
+        with open(f'{folder_check_csv}/{file_check}', 'a') as f:
+            f.write(
+                f'"ROUNDS", "DATASET","LABELLED-LEVEL","CR","THRESHOLD","ACC","F1-SCORE"'
             )
 
-        for cr in crs:
-            for labelled_level in init_labelled:
+    file_check = f'{comite}F.csv'
+    check = os.path.join(folder_check_csv, file_check)
+
+    if not os.path.exists(check):
+        with open(f'{folder_check_csv}/{file_check}', 'a') as f:
+            f.write(
+                f'"DATASET","LABELLED-LEVEL","CR","THRESHOLD","ACC-AVERAGE","STANDARD-DEVIATION"'
+        )
+
+    for cr in crs:
+        for labelled_level in init_labelled:
+            for dataset in datasets:
                 comite = Ensemble(SelfFlexCon, cr=cr, threshold=threshold)
 
 
