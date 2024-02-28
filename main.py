@@ -16,8 +16,8 @@ from src.ssl.ensemble import Ensemble
 from src.ssl.self_flexcon import SelfFlexCon
 
 
-crs = [0.05]
-thresholds = [0.95]
+crs = [0.05, 0.1]
+thresholds = [0.95, 0.9]
 
 warnings.simplefilter("ignore")
 
@@ -25,7 +25,7 @@ parser = argparse.ArgumentParser(description="Escolha um classificador para cria
 parser.add_argument('classifier', metavar='c', type=int, help='Escolha um classificador para criar um cômite. Opções: 1 - Naive Bayes, 2 - Tree Decision, 3 - Knn, 4 - Heterogeneous')
 parent_dir = "path_for_results"
 datasets = ['Car.csv']
-init_labelled = [0.05]
+init_labelled = [0.05, 0.1]
 
 args = parser.parse_args()
 
@@ -34,28 +34,35 @@ args = parser.parse_args()
 # init_labelled = [0.05, 0.10, 0.15, 0.20, 0.25]
 
 for dataset in datasets:
-    for labelled_level in init_labelled:
+    for threshold in thresholds:
         
         comite = "Comite_Naive_" if args.classifier == 1 else "Comite_Tree_" if args.classifier == 2 else 'Comite_KNN_' if args.classifier == 3 else "Comite_Heterogeneo_"
 
-        path = os.path.join(parent_dir, dataset)
+        path = os.path.join(parent_dir)
         
-        folder_check_csv = f'path_for_results/{dataset}/csv'
-        folder_check_txt = f'path_for_results/{dataset}/txt'
+        folder_check_csv = f'path_for_results'
         os.makedirs(folder_check_csv, exist_ok=True)
-        os.makedirs(folder_check_txt, exist_ok=True)
 
-        file_check = f'{comite}{round(labelled_level, 4) * 100} ({dataset}).csv'
+        file_check = f'{comite}.csv'
         check = os.path.join(folder_check_csv, file_check)
 
         if not os.path.exists(check):
             with open(f'{folder_check_csv}/{file_check}', 'a') as f:
                 f.write(
-                    f'"ROUNDS","CR","THRESHOLD","ACC","F1-SCORE"'
+                    f'"ROUNDS", "DATASET","LABELLED-LEVEL","CR","THRESHOLD","ACC","F1-SCORE"'
                 )
 
+        file_check = f'{comite}F.csv'
+        check = os.path.join(folder_check_csv, file_check)
+
+        if not os.path.exists(check):
+            with open(f'{folder_check_csv}/{file_check}', 'a') as f:
+                f.write(
+                    f'"DATASET","LABELLED-LEVEL","CR","THRESHOLD","ACC-AVERAGE","STANDARD-DEVIATION"'
+            )
+
         for cr in crs:
-            for threshold in thresholds:
+            for labelled_level in init_labelled:
                 comite = Ensemble(SelfFlexCon, cr=cr, threshold=threshold)
 
 
@@ -93,14 +100,6 @@ for dataset in datasets:
                         if args.classifier == 1:
                             if(fold == 1):
                                 fold += 1
-                                with open(f'{folder_check_txt}/Comite_Naive_{round(labelled_level, 4) * 100} ({dataset}).txt', 'a') as f:
-                                    f.write(
-                                        "-----------------------------------------------------------"
-                                        f"\n|{tInstanciasRot.center(28)}"
-                                        f"|{tInstanciasRotPCento.center(28)}|\n"
-                                        f"|- - - - - -  ACC - - - - - -|"
-                                        f"- - - - - F1-Score - - - - -|"
-                                    )
                             y = ut.select_labels(y_train, X_train, labelled_instances)
                             for i in range(9):
                                 comite.add_classifier(Naive(var_smoothing=float(f'1e-{i}')))
@@ -109,14 +108,6 @@ for dataset in datasets:
                         elif args.classifier == 2:
                             if(fold == 1):
                                 fold += 1
-                                with open(f'{folder_check_txt}/Comite_Tree_{round(labelled_level, 4) * 100} ({dataset}).txt', 'a') as f:
-                                    f.write(
-                                        "-----------------------------------------------------------"
-                                        f"\n|{tInstanciasRot.center(28)}"
-                                        f"|{tInstanciasRotPCento.center(28)}|\n"
-                                        f"|- - - - - -  ACC - - - - - -|"
-                                        f"- - - - - F1-Score - - - - -|"
-                                    )
                             y = ut.select_labels(y_train, X_train, labelled_instances)
                             for i in ut.list_tree:
                                 comite.add_classifier(i)
@@ -125,14 +116,6 @@ for dataset in datasets:
                         elif args.classifier == 3:
                             if(fold == 1):
                                 fold += 1
-                                with open(f'{folder_check_txt}/Comite_KNN_{round(labelled_level, 4) * 100} ({dataset}).txt', 'a') as f:
-                                    f.write(
-                                        "-----------------------------------------------------------"
-                                        f"\n|{tInstanciasRot.center(28)}"
-                                        f"|{tInstanciasRotPCento.center(28)}|\n"
-                                        f"|- - - - - -  ACC - - - - - -|"
-                                        f"- - - - - F1-Score - - - - -|"
-                                    )
                             y = ut.select_labels(y_train, X_train, labelled_instances)
                             for i in ut.list_knn:
                                 comite.add_classifier(i)
@@ -141,14 +124,6 @@ for dataset in datasets:
                         elif args.classifier == 4:
                             if(fold == 1):
                                 fold += 1
-                                with open(f'{folder_check_txt}/Comite_Heterogeneo_{round(labelled_level, 4) * 100} ({dataset}).txt', 'a') as f:
-                                    f.write(
-                                        "-----------------------------------------------------------"
-                                        f"\n|{tInstanciasRot.center(28)}"
-                                        f"|{tInstanciasRotPCento.center(28)}|\n"
-                                        f"|- - - - - -  ACC - - - - - -|"
-                                        f"- - - - - F1-Score - - - - -|"
-                                    )
                             y = ut.select_labels(y_train, X_train, labelled_instances)
                             for i in range(9):
                                 comite.add_classifier(Naive(var_smoothing=float(f'1e-{i}')))

@@ -97,22 +97,15 @@ def result(option, dataset, y_test, y_pred, path, labelled_level, cr, threshold,
     threshold = threshold
     rounds = rounds
     if option == 1:
-        print(f'Salvando os resultados em arquivos Comite_Naive_{round(labelled_level, 4) * 100} ({dataset}).txt e Comite_Naive_{round(labelled_level, 4) * 100} ({dataset}).csv\n\n')
-        # print('Enviando notificação push...')
-        # p.pushNote(devices[1]["iden"], f"ACC: {round(accuracy_score(y_test, y_pred), 4) * 100}%", f'Comite_Naive_{round(labelled_level, 4) * 100} ({dataset}).txt')
-        with open(f'{path}/txt/Comite_Naive_{round(labelled_level, 4) * 100} ({dataset}).txt', 'a') as f:
-            f.write(
-                #ACC
-                f"\n|{tAcc.center(28)}|"
-                #F1-Score
-                f'{tF1Score.center(28)}|'
-                # f"Motivo da finalização: {comite.ensemble[0].termination_condition_}\n"
-                # f"Valor do teste estatístico é de {alpha}, significante? {alpha <= 0.05}\n"
-            )
-        with open(f'{path}/csv/Comite_Naive_{round(labelled_level, 4) * 100} ({dataset}).csv', 'a') as f:
+        print(f'Salvando os resultados em arquivos Comite_Naive_{round(labelled_level, 4) * 100} ({dataset}).csv\n\n')
+        with open(f'{path}/Comite_Naive_.csv', 'a') as f:
             f.write(
                 #ROUNDS
                 f'\n{rounds},'
+                # DATASET
+                f'"{dataset}",'
+                # LABELLED-LEVEL
+                f'{labelled_level},'
                 #CR
                 f'{cr},'
                 #THRESHOLD
@@ -127,22 +120,15 @@ def result(option, dataset, y_test, y_pred, path, labelled_level, cr, threshold,
         return acc
 
     elif option == 2:
-        print(f'Salvando os resultados em arquivos Comite_Tree_{round(labelled_level, 4) * 100} ({dataset}).txt e Comite_Tree_{round(labelled_level, 4) * 100} ({dataset}).csv\n\n')
-        # print('Enviando notificação push...')
-        # p.pushNote(devices[1]["iden"], f"ACC: {round(accuracy_score(y_test, y_pred), 4) * 100}%", f'Comite_Tree_{round(labelled_level, 4) * 100} ({dataset}).txt')
-        with open(f'{path}/txt/Comite_Tree_{round(labelled_level, 4) * 100} ({dataset}).txt', 'a') as f:
-            f.write(
-                #ACC
-                f"\n|{tAcc.center(28)}|"
-                #F1-Score
-                f'{tF1Score.center(28)}|'
-                # f"Motivo da finalização: {comite.ensemble[0].termination_condition_}\n"
-                # f"Valor do teste estatístico é de {alpha}, significante? {alpha <= 0.05}\n"
-            )
-        with open(f'{path}/csv/Comite_Tree_{round(labelled_level, 4) * 100} ({dataset}).csv', 'a') as f:
+        print(f'Salvando os resultados em arquivos Comite_Tree_{round(labelled_level, 4) * 100} ({dataset}).csv\n\n')        
+        with open(f'{path}/Comite_Tree_.csv', 'a') as f:
             f.write(
                 #ROUNDS
                 f'\n{rounds},'
+                # DATASET
+                f'"{dataset}",'
+                # LABELLED-LEVEL
+                f'{labelled_level},'
                 #CR
                 f'{cr},'
                 #THRESHOLD
@@ -157,23 +143,15 @@ def result(option, dataset, y_test, y_pred, path, labelled_level, cr, threshold,
         return acc
 
     elif option == 3:
-        print(f'Salvando os resultados em arquivos Comite_KNN_{round(labelled_level, 4) * 100} ({dataset}).txt e Comite_KNN_{round(labelled_level, 4) * 100} ({dataset}).csv\n\n')
-        # print('Enviando notificação push...')
-        # TODO: FALTA PEGAR CADA RESULTADO PREENCHER UM ARRAY REALIZAR A MÉDIA E AI SIM ENVIAR A MSG
-        # p.pushNote(devices[1]["iden"], f"ACC: {round(accuracy_score(y_test, y_pred), 4) * 100}%", f'Comite_KNN_{round(labelled_level, 4) * 100} ({dataset}).txt')
-        with open(f'{path}/txt/Comite_KNN_{round(labelled_level, 4) * 100} ({dataset}).txt', 'a') as f:
-            f.write(
-                #ACC
-                f"\n|{tAcc.center(28)}|"
-                #F1-Score
-                f'{tF1Score.center(28)}|'
-                # f"Motivo da finalização: {comite.ensemble[0].termination_condition_}\n"
-                # f"Valor do teste estatístico é de {alpha}, significante? {alpha <= 0.05}\n"
-            )
-        with open(f'{path}/csv/Comite_KNN_{round(labelled_level, 4) * 100} ({dataset}).csv', 'a') as f:
+        print(f'Salvando os resultados em arquivos Comite_KNN_{round(labelled_level, 4) * 100} ({dataset}).csv\n\n')
+        with open(f'{path}/Comite_KNN_.csv', 'a') as f:
             f.write(
                 #ROUNDS
                 f'\n{rounds},'
+                # DATASET
+                f'"{dataset}",'
+                # LABELLED-LEVEL
+                f'{labelled_level},'
                 #CR
                 f'{cr},'
                 #THRESHOLD
@@ -188,22 +166,15 @@ def result(option, dataset, y_test, y_pred, path, labelled_level, cr, threshold,
         return acc
 
     elif option == 4:
-        print(f'Salvando os resultados em arquivos Comite_Heterogeneo_{round(labelled_level, 4) * 100} ({dataset}).txt e Comite_Heterogeneo_{round(labelled_level, 4) * 100} ({dataset}).csv\n\n')
-        # print('Enviando notificação push...')
-        # p.pushNote(devices[1]["iden"], f"ACC: {round(accuracy_score(y_test, y_pred), 4) * 100}%", f'Comite_KNN_{round(labelled_level, 4) * 100} ({dataset}).txt')
-        with open(f'{path}/txt/Comite_Heterogeneo_{round(labelled_level, 4) * 100} ({dataset}).txt', 'a') as f:
-            f.write(
-                #ACC
-                f"\n|{tAcc.center(28)}|"
-                #F1-Score
-                f'{tF1Score.center(28)}|'
-                # f"Motivo da finalização: {comite.ensemble[0].termination_condition_}\n"
-                # f"Valor do teste estatístico é de {alpha}, significante? {alpha <= 0.05}\n"
-            )
-        with open(f'{path}/csv/Comite_Heterogeneo_{round(labelled_level, 4) * 100} ({dataset}).csv', 'a') as f:
+        print(f'Salvando os resultados em arquivos Comite_Heterogeneo_{round(labelled_level, 4) * 100} ({dataset}).csv\n\n')
+        with open(f'{path}/Comite_Heterogeneo_.csv', 'a') as f:
             f.write(
                 #ROUNDS
                 f'\n{rounds},'
+                # DATASET
+                f'"{dataset}",'
+                # LABELLED-LEVEL
+                f'{labelled_level},'
                 #CR
                 f'{cr},'
                 #THRESHOLD
@@ -218,41 +189,69 @@ def result(option, dataset, y_test, y_pred, path, labelled_level, cr, threshold,
         return acc
 
 def calculateMeanStdev(fold_result, option, labelled_level, path, dataset, cr, threshold):
-    media = round(mean(fold_result), 4)
-    dPadrao = round(stdev(fold_result), 4)
-    tMedia = "Média: " + str(media) + "%"
-    tDesPadr = "Désvio padrão: " + str(dPadrao)
-    tCR = "CR = " + str(cr)
-    tTH = "THRESHOLD = " + str(threshold)
+    acc_average = round(mean(fold_result), 4)
+    standard_deviation = round(stdev(fold_result), 4)
     if option == 1:
-        with open(f'{path}/txt/Comite_Naive_{round(labelled_level, 4) * 100} ({dataset}).txt', 'a') as f:
+        with open(f'{path}/Comite_Naive_F.csv', 'a') as f:
             f.write(
-                f'\n|{tMedia.center(28)}|{tDesPadr.center(28)}|\n'
-                f"- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n"
-                f'|{tCR.center(28)}|{tTH.center(28)}|\n'
-                f"-----------------------------------------------------------\n\n"
+                # DATASET
+                f'\n"{dataset}",'
+                # LABELLED-LEVEL
+                f'{labelled_level},'
+                #CR
+                f'{cr},'
+                #THRESHOLD
+                f'{threshold},'
+                #ACC-AVERAGE
+                f'{acc_average},'
+                #STANDARD-DEVIATION
+                f'{standard_deviation}'
             )
     elif option == 2:
-        with open(f'{path}/txt/Comite_Tree_{round(labelled_level, 4) * 100} ({dataset}).txt', 'a') as f:
+        with open(f'{path}/Comite_Tree_F.csv', 'a') as f:
             f.write(
-                f'\n|{tMedia.center(28)}|{tDesPadr.center(28)}|\n'
-                f"- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n"
-                f'|{tCR.center(28)}|{tTH.center(28)}|\n'
-                f"-----------------------------------------------------------\n\n"
+                # DATASET
+                f'\n"{dataset}",'
+                # LABELLED-LEVEL
+                f'{labelled_level},'
+                #CR
+                f'{cr},'
+                #THRESHOLD
+                f'{threshold},'
+                #ACC-AVERAGE
+                f'{acc_average},'
+                #STANDARD-DEVIATION
+                f'{standard_deviation}'
             )
     elif option == 3:
-        with open(f'{path}/txt/Comite_KNN_{round(labelled_level, 4) * 100} ({dataset}).txt', 'a') as f:
+        with open(f'{path}/Comite_KNN_F.csv', 'a') as f:
             f.write(
-                f'\n|{tMedia.center(28)}|{tDesPadr.center(28)}|\n'
-                f"- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n"
-                f'|{tCR.center(28)}|{tTH.center(28)}|\n'
-                f"-----------------------------------------------------------\n\n"
+                # DATASET
+                f'\n"{dataset}",'
+                # LABELLED-LEVEL
+                f'{labelled_level},'
+                #CR
+                f'{cr},'
+                #THRESHOLD
+                f'{threshold},'
+                #ACC-AVERAGE
+                f'{acc_average},'
+                #STANDARD-DEVIATION
+                f'{standard_deviation}'
             )
     elif option == 4:
-        with open(f'{path}/txt/Comite_Heterogeneo_{round(labelled_level, 4) * 100} ({dataset}).txt', 'a') as f:
+        with open(f'{path}/Comite_Heterogeneo_F.csv', 'a') as f:
             f.write(
-                f'\n|{tMedia.center(28)}|{tDesPadr.center(28)}|\n'
-                f"- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n"
-                f'|{tCR.center(28)}|{tTH.center(28)}|\n'
-                f"-----------------------------------------------------------\n\n"
+                # DATASET
+                f'\n"{dataset}",'
+                # LABELLED-LEVEL
+                f'{labelled_level},'
+                #CR
+                f'{cr},'
+                #THRESHOLD
+                f'{threshold},'
+                #ACC-AVERAGE
+                f'{acc_average},'
+                #STANDARD-DEVIATION
+                f'{standard_deviation}'
             )
