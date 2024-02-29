@@ -9,7 +9,7 @@ results (ja aplicados)/
 results (old)/
 results-seed/
 results-teste/
-# datasets/
+datasets/
 .vscode/
 .venv/
 venv/
@@ -18,4 +18,4 @@ path_for_results/
 *.txt
 *.dat
 *.png
-# *.csv
+*.csv
