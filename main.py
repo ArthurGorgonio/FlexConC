@@ -24,15 +24,12 @@ warnings.simplefilter("ignore")
 parser = argparse.ArgumentParser(description="Escolha um classificador para criar um cômite")
 parser.add_argument('classifier', metavar='c', type=int, help='Escolha um classificador para criar um cômite. Opções: 1 - Naive Bayes, 2 - Tree Decision, 3 - Knn, 4 - Heterogeneous')
 parent_dir = "path_for_results"
-datasets_dir = '../FlexConC/datasets'
+datasets_dir = "../FlexConC/datasets"
 datasets = sorted(os.listdir(datasets_dir))
-init_labelled = [0.03, 0.05, 0.8, 0.1, 1.3, 1.5, 1.8, 2.0, 2.3, 2.5]
+init_labelled = [0.03, 0.05, 0.08, 0.10, 0.13, 0.15, 0.18, 0.20, 0.23, 0.25]
 
 args = parser.parse_args()
 
-
-# datasets = [f for f in listdir('datasets/') if isfile(join('datasets/', f))]
-# init_labelled = [0.05, 0.10, 0.15, 0.20, 0.25]
 
 for threshold in thresholds:
     
@@ -139,7 +136,7 @@ for threshold in thresholds:
                         # Adds new accuracy to fold_result
                         fold_result.append(round(accuracy_score(y_test, y_pred) * 100, 4))
 
-                        # Save data to .txt and .csv
+                        # Save data to .csv
                         ut.result(
                             args.classifier,
                             dataset,

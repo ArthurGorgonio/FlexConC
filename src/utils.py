@@ -91,8 +91,6 @@ def result(option, dataset, y_test, y_pred, path, labelled_level, cr, threshold,
     """
     acc = round(accuracy_score(y_test, y_pred) * 100, 4)
     f1  = round(f1_score(y_test, y_pred, average="macro") * 100, 4)
-    tAcc = str(acc) + "%"
-    tF1Score = str(f1) + "%"
     cr = cr
     threshold = threshold
     rounds = rounds
