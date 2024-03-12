@@ -60,19 +60,27 @@ def select_labels(y_train, X_train, labelled_instances):
     Returns:
         Retorna o array de classes com base nos rótulos das instâncias selecionadas
     """
-    # set_trace()
-    count = 0
+
     labels = np.unique(y_train)
     if -1 in labels:
         labels = list(filter(lambda result: result != -1, labels))
-    while count != len(labels):
-        count = 0
-        instances = []
-        random_unlabeled_points = np.random.choice(len(X_train), labelled_instances, replace=False)
-        for instance in random_unlabeled_points:
-            instances.append(y_train[instance])
-        for label in labels:
-            if label in instances: count += 1
+    from ipdb import set_trace
+    set_trace()
+    random_unlabeled_points = []
+    for cl, ins in enumerate(np.bincount(y_train)):
+        min_acceptable_instances_by_class = int(round(ins * 0.03, 0)) or 1
+        instances_by_class = np.random.choice(np.where(y_train == cl)[0], min_acceptable_instances_by_class, replace=False)
+        random_unlabeled_points += instances_by_class
+        print(instances_by_class)
+    
+    amount_instances = labelled_instances - len(random_unlabeled_points)
+    if amount_instances:
+        selected = np.random.choice(len(X_train), amount_instances, replace=False)
+        print(selected)
+    
+    instances = [y_train[instance] for instance in random_unlabeled_points]
+    print(instances)
+    
     mask = np.ones(len(X_train), bool)
     mask[random_unlabeled_points] = 0
     y_train[mask] = -1

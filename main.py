@@ -25,10 +25,15 @@ parser = argparse.ArgumentParser(description="Escolha um classificador para cria
 parser.add_argument('classifier', metavar='c', type=int, help='Escolha um classificador para criar um cômite. Opções: 1 - Naive Bayes, 2 - Tree Decision, 3 - Knn, 4 - Heterogeneous')
 parent_dir = "path_for_results"
 datasets_dir = "../FlexConC/datasets"
-datasets = sorted(os.listdir(datasets_dir))
-init_labelled = [0.03, 0.05, 0.08, 0.10, 0.13, 0.15, 0.18, 0.20, 0.23, 0.25]
 
+# BASES QUE QUEBRAM = ["iris.csv", "Adult.csv", "Glass.csv"]
+# BASES QUE RODAM INFINITAMENTE = ["Arrhythmia.csv", "Flags.csv"]
+datasets = ["iris.csv", "Adult.csv", "Glass.csv"]
+
+
+init_labelled = [0.03, 0.05, 0.08, 0.10, 0.13, 0.15, 0.18, 0.20, 0.23, 0.25]
 args = parser.parse_args()
+
 
 
 for threshold in thresholds:
@@ -91,10 +96,6 @@ for threshold in thresholds:
                         if(flag == 1):
                             flag += 1
                             print(f"\n\nO sistema irá selecionar instâncias da base {dataset}. Para o treinamento, será usado {round(labelled_level, 4) * 100}% das instâncias rotuladas de um total de {len(_instances)}.\n\n")
-                        instanciasRot = labelled_instances
-                        instanciasRotPCento = (round(labelled_level, 4) * 100)
-                        tInstanciasRot = "Inst. Rot.: " + str(labelled_instances)
-                        tInstanciasRotPCento = " Uso: " + str(instanciasRotPCento) + "% das Inst. Rot."
                         if args.classifier == 1:
                             if(fold == 1):
                                 fold += 1
