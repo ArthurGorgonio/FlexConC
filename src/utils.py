@@ -78,7 +78,7 @@ def select_labels(y_train, X_train, labelled_instances):
     y_train[mask] = -1
     return y_train
 
-def result(option, dataset, y_test, y_pred, path, labelled_level, cr, threshold, rounds):
+def result(option, dataset, y_test, y_pred, path, labelled_level, rounds):
     """
     Responsável por salvar os outputs dos cômites em arquivos
     Args:
@@ -90,9 +90,7 @@ def result(option, dataset, y_test, y_pred, path, labelled_level, cr, threshold,
         labelled_level (float): % que foi selecionada na iteração
     """
     acc = round(accuracy_score(y_test, y_pred) * 100, 4)
-    f1  = round(f1_score(y_test, y_pred, average="macro") * 100, 4)
-    cr = cr
-    threshold = threshold
+    f1 = round(f1_score(y_test, y_pred, average="macro") * 100, 4)
     rounds = rounds
     if option == 1:
         print(f'Salvando os resultados em arquivos Comite_Naive_{round(labelled_level, 4) * 100} ({dataset}).csv\n\n')
@@ -104,10 +102,6 @@ def result(option, dataset, y_test, y_pred, path, labelled_level, cr, threshold,
                 f'"{dataset}",'
                 # LABELLED-LEVEL
                 f'{labelled_level},'
-                #CR
-                f'{cr},'
-                #THRESHOLD
-                f'{threshold},'
                 #ACC
                 f'{acc},'
                 #F1-Score
@@ -115,7 +109,8 @@ def result(option, dataset, y_test, y_pred, path, labelled_level, cr, threshold,
                 # f"Motivo da finalização: {comite.ensemble[0].termination_condition_}\n"
                 # f"Valor do teste estatístico é de {alpha}, significante? {alpha <= 0.05}\n"
             )
-        return acc
+            f1 = f1_score(y_test, y_pred, average="macro") * 100
+        return f1
 
     elif option == 2:
         print(f'Salvando os resultados em arquivos Comite_Tree_{round(labelled_level, 4) * 100} ({dataset}).csv\n\n')        
@@ -127,10 +122,6 @@ def result(option, dataset, y_test, y_pred, path, labelled_level, cr, threshold,
                 f'"{dataset}",'
                 # LABELLED-LEVEL
                 f'{labelled_level},'
-                #CR
-                f'{cr},'
-                #THRESHOLD
-                f'{threshold},'
                 #ACC
                 f'{acc},'
                 #F1-Score
@@ -138,7 +129,8 @@ def result(option, dataset, y_test, y_pred, path, labelled_level, cr, threshold,
                 # f"Motivo da finalização: {comite.ensemble[0].termination_condition_}\n"
                 # f"Valor do teste estatístico é de {alpha}, significante? {alpha <= 0.05}\n"
             )
-        return acc
+            f1 = f1_score(y_test, y_pred, average="macro") * 100
+        return f1
 
     elif option == 3:
         print(f'Salvando os resultados em arquivos Comite_KNN_{round(labelled_level, 4) * 100} ({dataset}).csv\n\n')
@@ -150,10 +142,6 @@ def result(option, dataset, y_test, y_pred, path, labelled_level, cr, threshold,
                 f'"{dataset}",'
                 # LABELLED-LEVEL
                 f'{labelled_level},'
-                #CR
-                f'{cr},'
-                #THRESHOLD
-                f'{threshold},'
                 #ACC
                 f'{acc},'
                 #F1-Score
@@ -161,7 +149,8 @@ def result(option, dataset, y_test, y_pred, path, labelled_level, cr, threshold,
                 # f"Motivo da finalização: {comite.ensemble[0].termination_condition_}\n"
                 # f"Valor do teste estatístico é de {alpha}, significante? {alpha <= 0.05}\n"
             )
-        return acc
+            f1 = f1_score(y_test, y_pred, average="macro") * 100
+        return f1
 
     elif option == 4:
         print(f'Salvando os resultados em arquivos Comite_Heterogeneo_{round(labelled_level, 4) * 100} ({dataset}).csv\n\n')
@@ -173,10 +162,6 @@ def result(option, dataset, y_test, y_pred, path, labelled_level, cr, threshold,
                 f'"{dataset}",'
                 # LABELLED-LEVEL
                 f'{labelled_level},'
-                #CR
-                f'{cr},'
-                #THRESHOLD
-                f'{threshold},'
                 #ACC
                 f'{acc},'
                 #F1-Score
@@ -184,11 +169,14 @@ def result(option, dataset, y_test, y_pred, path, labelled_level, cr, threshold,
                 # f"Motivo da finalização: {comite.ensemble[0].termination_condition_}\n"
                 # f"Valor do teste estatístico é de {alpha}, significante? {alpha <= 0.05}\n"
             )
-        return acc
+            f1 = f1_score(y_test, y_pred, average="macro") * 100
+        return f1
 
-def calculateMeanStdev(fold_result, option, labelled_level, path, dataset, cr, threshold):
-    acc_average = round(mean(fold_result), 4)
-    standard_deviation = round(stdev(fold_result), 4)
+def calculateMeanStdev(fold_result_acc, option, labelled_level, path, dataset, fold_result_f1_score):
+    acc_average = round(mean(fold_result_acc), 4)
+    standard_deviation_acc = round(stdev(fold_result_acc), 4)
+    f1_average = round(mean(fold_result_f1_score), 4)
+    standard_deviation_f1 = round(stdev(fold_result_f1_score), 4)
     if option == 1:
         with open(f'{path}/Comite_Naive_F.csv', 'a') as f:
             f.write(
@@ -196,14 +184,14 @@ def calculateMeanStdev(fold_result, option, labelled_level, path, dataset, cr, t
                 f'\n"{dataset}",'
                 # LABELLED-LEVEL
                 f'{labelled_level},'
-                #CR
-                f'{cr},'
-                #THRESHOLD
-                f'{threshold},'
                 #ACC-AVERAGE
                 f'{acc_average},'
-                #STANDARD-DEVIATION
-                f'{standard_deviation}'
+                #STANDARD-DEVIATION-ACC
+                f'{standard_deviation_acc},'
+                #F1-SCORE-AVERAGE
+                f'{f1_average},'
+                #STANDARD-DEVIATION-ACC
+                f'{standard_deviation_f1}'
             )
     elif option == 2:
         with open(f'{path}/Comite_Tree_F.csv', 'a') as f:
@@ -212,14 +200,14 @@ def calculateMeanStdev(fold_result, option, labelled_level, path, dataset, cr, t
                 f'\n"{dataset}",'
                 # LABELLED-LEVEL
                 f'{labelled_level},'
-                #CR
-                f'{cr},'
-                #THRESHOLD
-                f'{threshold},'
                 #ACC-AVERAGE
                 f'{acc_average},'
-                #STANDARD-DEVIATION
-                f'{standard_deviation}'
+                #STANDARD-DEVIATION-ACC
+                f'{standard_deviation_acc},'
+                #F1-SCORE-AVERAGE
+                f'{f1_average},'
+                #STANDARD-DEVIATION-ACC
+                f'{standard_deviation_f1}'
             )
     elif option == 3:
         with open(f'{path}/Comite_KNN_F.csv', 'a') as f:
@@ -228,14 +216,14 @@ def calculateMeanStdev(fold_result, option, labelled_level, path, dataset, cr, t
                 f'\n"{dataset}",'
                 # LABELLED-LEVEL
                 f'{labelled_level},'
-                #CR
-                f'{cr},'
-                #THRESHOLD
-                f'{threshold},'
                 #ACC-AVERAGE
                 f'{acc_average},'
-                #STANDARD-DEVIATION
-                f'{standard_deviation}'
+                #STANDARD-DEVIATION-ACC
+                f'{standard_deviation_acc},'
+                #F1-SCORE-AVERAGE
+                f'{f1_average},'
+                #STANDARD-DEVIATION-ACC
+                f'{standard_deviation_f1}'
             )
     elif option == 4:
         with open(f'{path}/Comite_Heterogeneo_F.csv', 'a') as f:
@@ -244,12 +232,12 @@ def calculateMeanStdev(fold_result, option, labelled_level, path, dataset, cr, t
                 f'\n"{dataset}",'
                 # LABELLED-LEVEL
                 f'{labelled_level},'
-                #CR
-                f'{cr},'
-                #THRESHOLD
-                f'{threshold},'
                 #ACC-AVERAGE
                 f'{acc_average},'
-                #STANDARD-DEVIATION
-                f'{standard_deviation}'
+                #STANDARD-DEVIATION-ACC
+                f'{standard_deviation_acc},'
+                #F1-SCORE-AVERAGE
+                f'{f1_average},'
+                #STANDARD-DEVIATION-ACC
+                f'{standard_deviation_f1}'
             )

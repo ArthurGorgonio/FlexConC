@@ -30,6 +30,9 @@ init_labelled = [0.03, 0.05, 0.08, 0.10, 0.13, 0.15, 0.18, 0.20, 0.23, 0.25]
 
 args = parser.parse_args()
 
+fold_result_acc_final = []
+fold_result_f1_score_final = []
+
 
 for threshold in thresholds:
     
@@ -46,7 +49,7 @@ for threshold in thresholds:
     if not os.path.exists(check):
         with open(f'{folder_check_csv}/{file_check}', 'a') as f:
             f.write(
-                f'"ROUNDS", "DATASET","LABELLED-LEVEL","CR","THRESHOLD","ACC","F1-SCORE"'
+                f'"ROUNDS", "DATASET","LABELLED-LEVEL","ACC","F1-SCORE"'
             )
 
     file_check = f'{comite}F.csv'
@@ -55,7 +58,7 @@ for threshold in thresholds:
     if not os.path.exists(check):
         with open(f'{folder_check_csv}/{file_check}', 'a') as f:
             f.write(
-                f'"DATASET","LABELLED-LEVEL","CR","THRESHOLD","ACC-AVERAGE","STANDARD-DEVIATION"'
+                f'"DATASET","LABELLED-LEVEL","ACC-AVERAGE","STANDARD-DEVIATION-ACC","F1-SCORE-AVERAGE","STANDARD-DEVIATION-F1-SCORE"'
         )
 
     for cr in crs:
@@ -64,7 +67,8 @@ for threshold in thresholds:
                 comite = Ensemble(SelfFlexCon, cr=cr, threshold=threshold)
 
 
-                fold_result = []
+                fold_result_acc = []
+                fold_result_f1_score = []
                 df = pd.read_csv('datasets/'+dataset, header=0)
                 seed(214)
                 kfold = StratifiedKFold(n_splits=10)
@@ -132,29 +136,44 @@ for threshold in thresholds:
                             comite.fit_ensemble(X_train, y)
 
                         y_pred = comite.predict(X_test)
+                        
+                        result_acc = round(accuracy_score(y_test, y_pred) * 100, 4)
 
-                        # Adds new accuracy to fold_result
-                        fold_result.append(round(accuracy_score(y_test, y_pred) * 100, 4))
+                        # Adds new accuracy to fold_result_acc
+                        fold_result_acc.append(result_acc)
+
+                        # Adds new accuracy to fold_result_acc_final
+                        fold_result_acc_final.append(result_acc)
 
                         # Save data to .csv
-                        ut.result(
+                        result_f1 = ut.result(
                             args.classifier,
                             dataset,
                             y_test,
                             y_pred,
                             path,
                             labelled_level,
-                            cr,
-                            threshold,
                             rounds
                             )
+                        
+                        fold_result_f1_score.append(result_f1)
+
+                        fold_result_f1_score_final.append(result_f1)
 
                 ut.calculateMeanStdev(
-                    fold_result,
+                    fold_result_acc,
                     args.classifier,
                     labelled_level,
                     path,
                     dataset,
-                    cr,
-                    threshold
+                    fold_result_f1_score
                 )
+
+ut.calculateMeanStdev(
+    fold_result_acc_final,
+    args.classifier,
+    labelled_level,
+    path,
+    'FINAL-RESULTS',
+    fold_result_f1_score_final
+)
