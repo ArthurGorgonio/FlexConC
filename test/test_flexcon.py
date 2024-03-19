@@ -1,5 +1,5 @@
-from mock import Mock, patch
 from unittest import TestCase
+from unittest.mock import Mock, patch
 
 from src.ssl.flexcon import BaseFlexConC
 
@@ -124,3 +124,4 @@ class TestFlexCon(TestCase):
         self.assertTupleEqual(self.flexcon.rule_2(), expected_rule2)
         self.assertTupleEqual(self.flexcon.rule_3(), expected_rule3)
         self.assertTupleEqual(self.flexcon.rule_4(), expected_rule4)
+
