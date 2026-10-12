@@ -14,7 +14,6 @@ from mlabican.threshold.classifier import Classifier
 from mlabican.utils import get_logger
 
 
-
 class FlexCon(SelfTrainingClassifier):
     """
     Implementation of the FlexCon algorithm. Delegates instance
@@ -88,7 +87,7 @@ class FlexCon(SelfTrainingClassifier):
         self.selection_strategy = selection_strategy or Rules()
         self.labeling_strategy = labeling_strategy or RuleBasedLabelStrategy()
         self.threshold_strategy = threshold_strategy or Classifier()
-        self.revaluation_strategy: RevaluationStrategy | None = revaluation_strategy
+        self.revaluation_strategy = revaluation_strategy
 
     def __str__(self) -> str:
         return (
